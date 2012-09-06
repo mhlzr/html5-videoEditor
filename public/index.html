@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+
+<html lang="en" lang="en">
+
+<head>
+
+    <title></title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <meta name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <script data-main="js/main" src="js/require.js"></script>
+
+</head>
+
+<body>
+
+
+<button id="saveBtn">Save Project</button>
+<button id="fetchBtn">Fetch Project</button>
+<button id="deleteBtn">Delete Project</button>
+<button id="projectSyncBtn">Backbone.sync</button>
+<button id="dumpProject">Dump Project</button>
+
+<p>
+    <button id="addAssetToLibBtn">Add Asset To Library</button>
+    <button id="addSequenceToCompBtn">Add Sequence To Compositions</button>
+</p>
+
+<p>
+    <button id="saveLocalBtn">Save Project Local</button>
+    <button id="clearLocalBtn">Clear Local Data</button>
+<ul id="availableProjects"></ul>
+</p>
+
+<p>
+    <input type="file" id="fileUpload"/>
+</p>
+
+<ul id="library" style="border:1px solid red"></ul>
+
+<textarea id="output" style="width:600px;height:400px">
+</textarea>
+</body>
+</html>

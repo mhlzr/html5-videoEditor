@@ -27,7 +27,11 @@ app.put("/api/project/:id", projects.updateProject);
 app.del("/api/project/:id", projects.deleteProject);
 
 //UPLOAD
-app.post("/api/upload", upload.acceptData);
+app.post("/api/upload", function(req, res){
+    projects.getAssetPathByProjectId(req.body.id, function (path){
+        upload.acceptData(req, res, path);
+    });
+});
 
 /*
 
@@ -39,61 +43,6 @@ app.post("/api/upload", upload.acceptData);
  db.projects.remove({});
 
 
-
- app.post('/upload', function(req, res){
-
- var data = req.body,
- response;
-
- //console.log(util.inspect(data));
-
- fs.open(__dirname+"public/projects/" + data.fileName, "a", function(err, fd){
-
- if(err) {throw err};
-
-
- //console.log(data.bytes);
-
- var buffer = new Buffer(data.bytes, "base64"),
- pos = parseInt(data.bytePosition);
-
- console.log("\n", pos, "\n");
-
- //fs.write(fd, buffer, offset, length, position, [callback])
- fs.write(fd, buffer, 0, buffer.length, null, function(err, written, buffer) {
-
- if(err) {throw err};
-
- console.log("WRITING COMPLETE");
-
- fs.close(fd, function(err){
- console.log("FILE CLOSED");
-
- response = {
- "fileName" : data.fileName,
- "bytePosition" : pos+buffer.length
- ,					"status" : (pos + buffer.length === parseInt(data.bytesTotal)) ? "complete" : "success"
- };
-
-
-
- res.writeHead(200, {"content-type": "application/json"});
- res.end( JSON.stringify( response) );
- });
-
-
-
-
-
- });
-
- });
-
-
-
-
-
- });
 
  */
 app.listen(80);

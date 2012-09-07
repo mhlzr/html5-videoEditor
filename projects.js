@@ -10,7 +10,6 @@ var PROJECTS_PATH = __dirname + "/public/projects/";
 
 
 function createProject(req, res) {
-    console.log("CREATE PROJECT");
 
     //UUID for asset-folder
     req.body.assetFolder = uuid.v4();
@@ -22,17 +21,17 @@ function createProject(req, res) {
         res.writeHead(200, {"content-type":"application/json"});
         res.end(JSON.stringify(docs));
 
-        console.log("Added New Project: ", docs._id)
+        console.log("PROJECTS.JS::PROJECT CREATED", docs._id);
 
         createDir(PROJECTS_PATH + req.body.assetFolder, function onComplete() {
-            console.log("YEAH");
+
         });
 
 
     });
 
 }
-;
+
 
 
 function getProject(req, res) {
@@ -51,7 +50,12 @@ function getProject(req, res) {
     });
 
 }
-;
+
+function getAssetPathByProjectId(id, callback){
+   var path = "99612bc6-ccb4-4a2c-9803-c38862e2d32f";// TODO db.projects.find
+    callback(path);
+}
+
 
 function updateProject(req, res) {
 
@@ -70,7 +74,7 @@ function updateProject(req, res) {
     });
 
 }
-;
+
 
 function deleteProject(req, res) {
     var id = db.ObjectId(req.params.id),
@@ -91,17 +95,17 @@ function deleteProject(req, res) {
 
     });
 }
-;
+
 
 function addAsset() {
 
 }
-;
+
 
 function addComposition() {
 
 }
-;
+
 
 
 function deleteFile(filepath, callback) {
@@ -126,7 +130,7 @@ function createDir(path, callback) {
         });
     });
 }
-;
+
 
 
 //EXPORTS
@@ -134,3 +138,4 @@ exports.createProject = createProject;
 exports.getProject = getProject;
 exports.updateProject = updateProject;
 exports.deleteProject = deleteProject;
+exports.getAssetPathByProjectId = getAssetPathByProjectId;

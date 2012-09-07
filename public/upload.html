@@ -6,7 +6,6 @@
 
     <script src="js/lib/jquery-1.8.1.min.js"></script>
     <script src="js/lib/underscore.js"></script>
-    <script src="js/upload.js"></script>
 
     <script>
 
@@ -19,26 +18,33 @@
 
 
         function uploadInputChangeHandler(e) {
-            _.each(e.target.files, function (file) {
+
+            for (var i = 0; i < e.target.files.length; i++) {
+
                 uploader.postMessage({
                     "cmd":"add",
-                    "file":file,
+                    "file": e.target.files[i],
                     "byteOffset":0,
-                    "params":null,
-                    "url":" http://.."
+                    "params":{"id":"FTW"},
+                    "url":" /api/upload/"
                 });
-            });
+
+            }
         }
 
 
         function onUploaderMessage(e) {
-            console.log(event.data);
+            //console.log(event.data);
         }
 
         $(document).ready(function () {
             $("#uploadInput").on("change", uploadInputChangeHandler);
-            $("#startBtn").on("click", start);
-            $("#stopBtn").on("click", stop);
+            $("#startBtn").on("click", function () {
+                uploader.postMessage({"cmd":"start"});
+            });
+            $("#stopBtn").on("click", function () {
+                uploader.postMessage({"cmd":"stop"});
+            });
         });
 
 
@@ -50,6 +56,7 @@
 <input type="file" id="uploadInput" name="uploadInput" multiple/>
 <button id="startBtn">Start</button>
 <button id="stopBtn">Stop</button>
+
 
 </body>
 </html>

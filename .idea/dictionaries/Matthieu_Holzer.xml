@@ -4,6 +4,8 @@
       <w>deps</w>
       <w>jstorage</w>
       <w>modernizr</w>
+      <w>mongojs</w>
+      <w>onmessage</w>
     </words>
   </dictionary>
 </component>

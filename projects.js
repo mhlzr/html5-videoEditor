@@ -5,9 +5,7 @@ var fs = require("fs"),
     mongo = require("mongojs"),
     db = mongo.connect("/videoProjects", ["projects"]);
 
-
 var PROJECTS_PATH = __dirname + "/public/projects/";
-
 
 function createProject(req, res) {
 
@@ -18,95 +16,105 @@ function createProject(req, res) {
 
         if (err) throw err;
 
-        res.writeHead(200, {"content-type":"application/json"});
+        res.writeHead(200, {"content-type" : "application/json"});
         res.end(JSON.stringify(docs));
 
         console.log("PROJECTS.JS::PROJECT CREATED", docs._id);
 
         createDir(PROJECTS_PATH + req.body.assetFolder, function onComplete() {
+            createDir(PROJECTS_PATH + req.body.assetFolder + "/assets", function onComplete() {
 
+            });
         });
-
 
     });
 
 }
 
-
-
 function getProject(req, res) {
-    console.log("HERE");
     var id = req.params.id;
 
-    res.writeHead(200, {"content-type":"application/json"});
+    res.writeHead(200, {"content-type" : "application/json"});
 
     if (id.length !== 24) {
         res.end(JSON.stringify(null));
     }
 
-    db.projects.findOne({_id:db.ObjectId(id)}, function onFound(err, docs) {
-        console.log("FOUND: " + util.inspect(docs));
+    db.projects.findOne({_id : db.ObjectId(id)}, function onFound(err, docs) {
+        console.log("PROJECTS.JS::PROJECT FOUND", docs._id);
         res.end(JSON.stringify(docs));
     });
 
 }
 
-function getAssetPathByProjectId(id, callback){
-   var path = "99612bc6-ccb4-4a2c-9803-c38862e2d32f";// TODO db.projects.find
-    callback(path);
-}
+function getProjectPathByProjectId(id, callback) {
 
+    db.projects.findOne({_id : db.ObjectId(id)}, function onFound(err, docs) {
+        if (err) throw err;
+        callback(docs.assetFolder);
+    });
+
+}
 
 function updateProject(req, res) {
 
-    db.projects.update({_id:db.ObjectId(req.params.id)}, {
-        $set:{
-            name:req.body.name,
-            library:req.body.library,
-            compositions:req.body.compositions
+    db.projects.update({_id : db.ObjectId(req.params.id)}, {
+        $set : {
+            name         : req.body.name,
+            library      : req.body.library,
+            compositions : req.body.compositions
         }
 
-    }, {multi:false}, function updateCallback(err, docs) {
+    }, {multi : false}, function updateCallback(err, docs) {
         if (err) throw err;
-        res.writeHead(200, {"content-type":"application/json"});
+
+        res.writeHead(200, {"content-type" : "application/json"});
         res.end(JSON.stringify(docs));
-        console.log("Updated Project: ", docs);
+        console.log("PROJECTS.JS::PROJECT UPDATED", req.params.id);
+
     });
 
 }
-
 
 function deleteProject(req, res) {
     var id = db.ObjectId(req.params.id),
         assetFolder = null;
 
-    db.projects.findOne({_id:id}, {assetFolder:1}, function onFound(err, docs) {
+    db.projects.findOne({_id : id}, {assetFolder : 1}, function onFound(err, docs) {
 
         if (err) throw err;
         assetFolder = docs.assetFolder;
 
-        db.projects.remove({_id:id}, function deleteCallback(err, docs) {
+        db.projects.remove({_id : id}, function deleteCallback(err, docs) {
             if (err) throw err;
-            res.writeHead(200, {"content-type":"application/json"});
+
+            res.writeHead(200, {"content-type" : "application/json"});
             res.end(JSON.stringify(docs));
 
             deleteDirSync(PROJECTS_PATH + assetFolder);
+            console.log("PROJECTS.JS::PROJECT DELETED", id)
+
         });
 
     });
 }
 
+function markAssetFileAsComplete(projectId, fileName) {
 
-function addAsset() {
+    db.projects.findOne({_id : db.ObjectId(projectId)}, {library : 1}, function onFound(err, docs) {
 
+        if (err) console.log(err);
+        //var file = docs.library;
+                    //TODO   update status off file
+        console.log(util.inspect(docs));
+
+    });
 }
 
 
 function addComposition() {
 
 }
-
-
 
 function deleteFile(filepath, callback) {
     fs.exists(filepath, function onFileExists(exists) {
@@ -125,17 +133,26 @@ function deleteDirSync(path) {
 function createDir(path, callback) {
     fs.exists(path, function onFileExists(exists) {
         if (!exists) fs.mkdir(path, 0777, function onDirCreated(err) {
-            if (err) throw err;
+            if (err) console.log(err);
             callback();
         });
     });
 }
 
-
+function clean(callback) {
+    console.log("PROJECTS.JS::PROJECTS CLEANED");
+    db.projects.remove({}, function onRemoved() {
+        wrench.rmdirSyncRecursive(PROJECTS_PATH);
+        createDir(PROJECTS_PATH, callback);
+    });
+}
 
 //EXPORTS
 exports.createProject = createProject;
 exports.getProject = getProject;
 exports.updateProject = updateProject;
 exports.deleteProject = deleteProject;
-exports.getAssetPathByProjectId = getAssetPathByProjectId;
+
+exports.markAssetFileAsComplete = markAssetFileAsComplete;
+exports.getProjectPathByProjectId = getProjectPathByProjectId;
+exports.clean = clean;

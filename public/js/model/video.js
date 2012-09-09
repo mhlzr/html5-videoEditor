@@ -4,22 +4,22 @@ define(["backbone", "model/asset"],
 
         var VideoAsset = AssetModel.extend({
 
-            idAttribute:"_id",
+            idAttribute : "_id",
 
-            defaults:{
-                width:0,
-                height:0,
-                ratio:0,
-                framerate:0,
-                hasAudio:false,
-                codec:null
+            defaults : {
+                width     : 0,
+                height    : 0,
+                ratio     : 0,
+                framerate : 0,
+                hasAudio  : false,
+                codec     : null
             },
 
-            initialize:function () {
+            initialize : function () {
 
             },
 
-            validate:function (attrs) {
+            validate : function (attrs) {
             }
 
         });

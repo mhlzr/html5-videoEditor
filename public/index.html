@@ -14,8 +14,29 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
 
-
     <script data-main="js/main" src="js/require.js"></script>
+
+    <script>
+        function uploadInputChangeHandler(e) {
+
+            $(Application.uploader).on("success complete", function (e, params) {
+                console.log(e.type, params);
+            });
+
+            var file;
+            for (var i = 0; i < e.target.files.length; i++) {
+                file = e.target.files[i];
+                Application.project.get("library").add(
+                        {
+                            "type" : "video",
+                            "name" : file.name
+                        }
+                );
+                Application.uploader.addFile(e.target.files[i], Application.project.get("_id"), 0);
+            }
+
+        }
+    </script>
 
 </head>
 
@@ -40,7 +61,9 @@
 </p>
 
 <p>
-    <input type="file" id="fileUpload"/>
+    <input type="file" id="uploadInput" name="uploadInput" multiple/>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
 </p>
 
 <ul id="library" style="border:1px solid red"></ul>
@@ -48,5 +71,6 @@
 
 <textarea id="output" style="width:600px;height:400px">
 </textarea>
+
 </body>
 </html>

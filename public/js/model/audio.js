@@ -4,14 +4,13 @@ define(["backbone", "model/asset"],
 
         var AudioAsset = AssetModel.extend({
 
-            idAttribute:"_id",
+            idAttribute : "_id",
 
-
-            initialize:function () {
+            initialize : function () {
 
             },
 
-            validate:function (attrs) {
+            validate : function (attrs) {
             }
 
         });

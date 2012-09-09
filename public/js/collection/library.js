@@ -4,17 +4,20 @@ define(["backbone", "model/asset"],
 
         var Library = Backbone.Collection.extend({
 
-            model:AssetModel,
+            model   : AssetModel,
+            urlRoot : "/api/",
 
-            url:function (models) {
-                return '/animal/' + ( models ? 'set/' + _.pluck(models, 'id').join(';') + '/' : '' );
+            url : function (models) {
+                console.log("/api/" + ( models ? 'set/' + _.pluck(models, 'id').join(';') + '/' : '' ));
+                return ( models ? 'set/' + _.pluck(models, 'id').join(';') + '/' : '' );
             },
 
-            initialize:function () {
-
+            initialize : function () {
+                // this.on("add", Backbone.sync);
+                // this.on("change", Backbone.sync);
             },
 
-            validate:function (attrs) {
+            validate : function (attrs) {
             }
 
 

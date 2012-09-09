@@ -1,8 +1,8 @@
 define([
-    "jquery", "jstorage", "backbone", "modernizr", "router",
+    "jquery", "jstorage", "backbone", "modernizr", "router", "modules/capabilities", "modules/uploader.xhr2",
     "model/project", "view/libraryView", "model/asset", "model/video", "model/sequence"],
 
-    function ($, jStorage, Backbone, Modernizr, Router, ProjectModel, LibraryView, AssetModel, VideoModel, SequenceModel) {
+    function ($, jStorage, Backbone, Modernizr, Router, Capabilities, Uploader, ProjectModel, LibraryView, AssetModel, VideoModel, SequenceModel) {
 
         var Application = Application || {};
 
@@ -10,11 +10,18 @@ define([
         Application.project = Application.project || {};
         Application.views = Application.views || {};
         Application.router = Application.router || {};
+        Application.uploader = Uploader;
+        Application.capabilities = Capabilities;
 
 
         Application.initialize = function () {
 
             console.log("APPLICATION::INIT");
+
+            if(!Capabilities.runBrowserSupportTest){
+                console.log("Your browser is not supported");
+                return;
+            }
 
             this.router = new Router({
                 application : this
@@ -42,10 +49,15 @@ define([
 
             $("button").on("click", this.buttonHandler);
 
+           //TODO ONLY FOR TESTING UPLOAD!!     REMOVE THIS
+            $("#uploadInput").on("change", uploadInputChangeHandler);
+            $("#startBtn").on("click", Application.uploader.start );
+            $("#stopBtn").on("click", Application.uploader.stop);
 
             //no jquery here
             //window.onbeforeunload = this.controller.windowEventHandler;
             //window.onunload = this.controller.windowEventHandler;
+
         };
 
 

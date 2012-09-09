@@ -7,6 +7,7 @@
     "wrench": "1.3.x",
     "buffered-writer": "0.1.x",
     "mongojs": "0.4.x",
-    "fluent-ffmpeg": "1.2.x"
+    "fluent-ffmpeg": "1.2.x",
+    "binaryjs": "0.1.x"
   }
 }

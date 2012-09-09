@@ -1,20 +1,35 @@
 var ffmpeg = require("fluent-ffmpeg"),
-    jobs = getPendingEncodingJobs();
+    util = require('util'),
+    events = require('events');
 
-function getPendingEncodingJobs() {
-    //TODO
-    return [];
-}
-;
+var Encoder = function (db) {
 
-function addEncodingJob(job) {
-    jobs.push(job);
-}
+    var self = this,
+        db = db,
+        jobs = [];
 
-function encode() {
-    console.log("Starting Encoder");
-}
+    events.EventEmitter.call(this);
 
+    this.start = function () {
+        console.log("ENCODER.JS :: STARTED");
+        _getPendingEncodingJobsFromDatabase(function onJobsReceived(jobs) {
 
-exports.encode = encode;
-exports.addEncodingJob = addEncodingJob;
+        })
+    };
+
+    var _getPendingEncodingJobsFromDatabase = function (callback) {
+        //TODO
+        callback([]);
+    };
+
+    this.addEncodingJob = function (job, hasPriority) {
+        jobs.push(job);
+    };
+
+    return this;
+
+};
+
+util.inherits(Encoder, events.EventEmitter);
+
+exports.Encoder = Encoder;

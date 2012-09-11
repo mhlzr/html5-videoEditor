@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <script src="js/lib/jquery-1.8.1.min.js"></script>
+    <script src="js/lib/noty/jquery.noty.js"></script>
+
+    <script src="js/lib/noty/"></script>
+    <script src="js/lib/.js"></script>
+
+
+
+
+    <script>
+
+        $(document).ready(function(){
+
+
+
+
+            noty({text: 'noty - a jquery notification library!'});
+
+            noty({
+                text: 'Do you want to continue?',
+                buttons: [
+                    {addClass: 'btn btn-primary', text: 'Ok', onClick: function($noty) {
+
+                        // this = button element
+                        // $noty = $noty element
+
+                        $noty.close();
+                        noty({text: 'You clicked "Ok" button', type: 'success'});
+                    }
+                    },
+                    {addClass: 'btn btn-danger', text: 'Cancel', onClick: function($noty) {
+                        $noty.close();
+                        noty({text: 'You clicked "Cancel" button', type: 'error'});
+                    }
+                    }
+                ]
+            });
+        });
+
+
+    </script>
+
+<body>
+
+  Test
+
+
+</body>
+</html>

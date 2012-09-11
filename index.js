@@ -1,5 +1,7 @@
 var express = require('express'),
     app = express(),
+    server = require('http').createServer(app),
+    io = require('socket.io').listen(3000),
     util = require('util'),
     fs = require('fs'),
     mongo = require("mongojs"),
@@ -7,7 +9,7 @@ var express = require('express'),
     projects = require('./projects'),
     encoder = require('./encoder').Encoder(db),
     events = require('events'),
-    uploadXhr2 = require('./upload-xhr2');
+    upload = require('./upload-socket');
 
 app.use(express.bodyParser());
 
@@ -17,28 +19,79 @@ app.configure(function () {
 
 });
 
+io.enable('browser client minification');  // send minified client
+io.enable('browser client etag');          // apply etag caching logic based on version number
+io.enable('browser client gzip');          // gzip the file
+io.set('log level', 1);                    // reduce logging
+io.set('transports', [                     // enable all transports (optional if you want flashsocket)
+    'websocket'
+    , 'flashsocket'
+    , 'htmlfile'
+    , 'xhr-polling'
+    , 'jsonp-polling'
+]);
+
 /*app.get('/preview/:id', function(req, res){
  res.redirect('/backbone/preview/#' + req.params.id);
  });
  */
 
-//PROJECT CRUDS
-app.post('/api/project/', projects.createProject);
-app.get('/api/project/:id', projects.getProject);
-app.put('/api/project/:id', projects.updateProject);
-app.del('/api/project/:id', projects.deleteProject);
+io.sockets.on('connection', function (socket) {
 
-//XHR2-UPLOAD
-app.post("/api/upload", function onUpload(req, res) {
-    projects.getProjectPathByProjectId(req.body.projectId, function (path) {
-        uploadXhr2.acceptData(req, res, req.body.projectId, path);
+    socket.on('create', function (data) {
+        projects.createProject(data, function onProjectCreated(res) {
+            socket.emit('reply', res);
+        });
     });
+    socket.on('read', function (data) {
+        projects.readProject(data, function onProjectRead(res) {
+            socket.emit('reply', res);
+        });
+    });
+
+    socket.on('update', function (data) {
+        projects.updateProject(data, function onProjectUpdated(res) {
+            socket.emit('reply', res);
+        });
+    });
+
+    socket.on('delete', function (data) {
+        projects.deleteProject(data, function onProjectDeleted(res) {
+            socket.emit('reply', res);
+        });
+    });
+
+    socket.on('upload', function (data) {
+        projects.getProjectPathByProjectId(data.projectId, function (path) {
+            upload.acceptData(data, data.projectId, path, function dataAccepted(res) {
+                if (res.isComplete) {
+                    projects.markAssetFileAsComplete(data.projectId, res.fileName);
+                }
+                socket.emit('upload:progress', res);
+            });
+        });
+    })
+
 });
 
-//UPLOADER EVENTS
-uploadXhr2.on("file:complete", function onFileUploadComplete(projectId, fileName) {
-    projects.markAssetFileAsComplete(projectId, fileName);
-});
+/*
+ //ENCODER EVENTS
+ encoder.on("encoding:complete", function onEncodingComplete() {
+
+ });
+ encoder.on("encoding:progress", function onEncodingProgress() {
+
+ });
+
+ encoder.on("transcoding:progress", function onTranscodingProgress() {
+
+ });
+
+ encoder.on("transcoding:complete", function onTranscodingComplete() {
+
+ });
+
+ */
 
 /*
  db.projects.find({'compositions.name' : 'krasserSchnitt', 'name' : 'Lorem_254'}, function onFound(err, docs) {
@@ -58,3 +111,5 @@ app.get('/api/reset', function onReset(req, res) {
 app.listen(80);
 
 encoder.start();
+
+//encoder.transcode("public/projects/43fe913e-b140-4420-afb1-3dd61cc87334/assets/", "beatsteaks_-_meantime_-_casatt", "mkv");

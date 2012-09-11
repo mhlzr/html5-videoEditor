@@ -4,48 +4,47 @@ define(["backbone", "backbone-rel", "model/sequence", "model/file"],
 
         var Composition = Backbone.RelationalModel.extend({
 
-            relations:[
+            relations : [
                 {
-                    type:Backbone.HasMany,
-                    key:"sequences",
-                    relatedModel:SequenceModel,
-                    createModels:true,
-                    reverseRelation:{
-                        key:"composition",
-                        includeInJSON:"_id"
+                    type            : Backbone.HasMany,
+                    key             : "sequences",
+                    relatedModel    : SequenceModel,
+                    createModels    : true,
+                    reverseRelation : {
+                        key           : "composition",
+                        includeInJSON : "_id"
                     }
                 },
                 {
-                    type:Backbone.HasMany,
-                    key:"encodedFiles",
-                    relatedModel:FileModel,
-                    createModels:true,
-                    reverseRelation:{
-                        key:"composition",
-                        includeInJSON:"_id"
+                    type            : Backbone.HasMany,
+                    key             : "files",
+                    relatedModel    : FileModel,
+                    createModels    : true,
+                    reverseRelation : {
+                        key           : "composition",
+                        includeInJSON : "_id"
                     }
                 }
             ],
 
-            idAttribute:"_id",
+            idAttribute : "_id",
 
-            defaults:{
-                _id:null,
-                name:null,
-                width:0,
-                height:0,
-                sequences:[],
-                videoFiles:[],
-                fps:0,
-                duration:0,
-                bitrate:0
+            defaults : {
+                _id      : null,
+                name     : null,
+                width    : 0,
+                height   : 0,
+                fps      : 0,
+                duration : 0,
+                bitrate  : 0,
+                publicId : null
             },
 
-            initialize:function () {
+            initialize : function () {
 
             },
 
-            validate:function (attrs) {
+            validate : function (attrs) {
             }
 
         });

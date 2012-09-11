@@ -13,26 +13,38 @@
           content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
+    <script src="/js/lib/socket.io.js"></script>
 
     <script data-main="js/main" src="js/require.js"></script>
 
     <script>
+
+        /* $(document).ready(function () {
+         $("#fileBrowse").on("click", function () {
+         $("#uploadInput").trigger("click");
+         });
+         });
+         */
         function uploadInputChangeHandler(e) {
 
-            $(Application.uploader).on("success complete", function (e, params) {
+            $(app.uploader).on("progress complete", function (e, params) {
+                if (e.type === "complete") {
+                    app.info.noty({text : params.fileName + " is complete!" });
+                }
                 console.log(e.type, params);
             });
 
             var file;
             for (var i = 0; i < e.target.files.length; i++) {
+
                 file = e.target.files[i];
-                Application.project.get("library").add(
+                app.project.get("library").add(
                         {
-                            "type" : "video",
+                            "type" : "audio",
                             "name" : file.name
                         }
                 );
-                Application.uploader.addFile(e.target.files[i], Application.project.get("_id"), 0);
+                app.uploader.addFile(e.target.files[i], app.project.get("_id"), 0);
             }
 
         }
@@ -62,6 +74,7 @@
 
 <p>
     <input type="file" id="uploadInput" name="uploadInput" multiple/>
+    <button id="fileBrowse">Browse</button>
     <button id="startBtn">Start</button>
     <button id="stopBtn">Stop</button>
 </p>

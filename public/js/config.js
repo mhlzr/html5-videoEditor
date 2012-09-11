@@ -8,14 +8,14 @@ define(function () {
 
         "DEBUG" : true,
 
-        "API_HOST" : "localhost",
+        "API_HOST" : "192.168.178.34",
         "API_PORT" : 80,
 
-        "UPLOADER_XHR_PATH" : "/api/upload",
-        "UPLOADER_XHR_CHUNK_SIZE" : 1048576, //1MB
+        "WEBSOCKET_HOST" : "192.168.178.34",
+        "WEBSOCKET_PORT" : 3000,
 
-        "UPLOADER_BIN_HOST" : "localhost",
-        "UPLOADER_BIN_PORT" : 9000,
-        "UPLOADER_BIN_CHUNK_SIZE" : 40960 //40KB
+        "UPLOADER_XHR_PATH"       : "/api/upload",
+        "UPLOADER_XHR_CHUNK_SIZE" : 1048576, //1MB
+        "UPLOADER_SOCKET_CHUNK_SIZE" : 1048576 //1MB
     };
 });

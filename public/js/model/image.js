@@ -4,13 +4,19 @@ define(["backbone", "model/asset"],
 
         var ImageAsset = AssetModel.extend({
 
-            idAttribute:"_id",
+            idAttribute : "_id",
 
-            initialize:function () {
+            defaults : {
+                width  : 0,
+                height : 0,
+                ratio  : 0
+            },
+
+            initialize : function () {
 
             },
 
-            validate:function (attrs) {
+            validate : function (attrs) {
             }
 
         });

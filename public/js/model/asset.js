@@ -1,13 +1,13 @@
-define(["backbone", "backbone-rel", "model/file"],
+define(["backbone", "backbone-rel", "model/file", "collection/files"],
 
-    function (Backbone, BackboneRelational, FileModel) {
+    function (Backbone, BackboneRelational, FileModel, FileCollection) {
 
         var Asset = Backbone.RelationalModel.extend({
 
             subModelTypes : {
+                "image" : "ImageAsset",
                 "video" : "VideoAsset",
-                "audio" : "AudioAsset",
-                "image" : "ImageAsset"
+                "audio" : "AudioAsset"
             },
 
             relations : [
@@ -15,6 +15,7 @@ define(["backbone", "backbone-rel", "model/file"],
                     type            : Backbone.HasMany,
                     key             : "files",
                     relatedModel    : FileModel,
+                    collectionType  : FileCollection,
                     createModels    : true,
                     reverseRelation : {
                         key           : "asset",
@@ -26,21 +27,14 @@ define(["backbone", "backbone-rel", "model/file"],
             idAttribute : "_id",
 
             defaults : {
-                name      : null,
-                files     : null,
-                width     : 0,
-                height    : 0,
-                ratio     : 0,
-                localUrl  : null,
-                framerate : 0,
-                size      : 0,
-                type      : "video",
-                hasAudio  : false,
-                hash      : null
+                name : null,
+                type : null
             },
 
             initialize : function () {
-
+                this.bind("add:file", function (model, coll) {
+                    console.log("ADDED SOMETHIN");
+                });
             },
 
             validate : function (attrs) {

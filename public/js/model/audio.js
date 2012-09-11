@@ -6,6 +6,10 @@ define(["backbone", "model/asset"],
 
             idAttribute : "_id",
 
+            defaults : {
+                duration : 0
+            },
+
             initialize : function () {
 
             },

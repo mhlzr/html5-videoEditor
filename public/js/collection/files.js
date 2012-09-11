@@ -1,10 +1,10 @@
-define(["backbone", "model/composition"],
+define(["backbone", "model/file"],
 
-    function (Backbone, CompositionModel) {
+    function (Backbone, FileModel) {
 
-        var Compositions = Backbone.Collection.extend({
+        var Files = Backbone.Collection.extend({
 
-            model : CompositionModel,
+            model : FileModel,
 
             url : function (models) {
                 return '/animal/' + ( models ? 'set/' + _.pluck(models, 'id').join(';') + '/' : '' );
@@ -19,6 +19,6 @@ define(["backbone", "model/composition"],
 
         });
 
-        return Compositions;
+        return Files;
 
     });

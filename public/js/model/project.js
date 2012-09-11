@@ -5,50 +5,49 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
         var Project = Backbone.RelationalModel.extend({
 
 
-            relations:[
+            relations : [
                 {
-                    type:Backbone.HasMany,
-                    key:"library",
-                    relatedModel:AssetModel,
-                    collectionType:LibraryCollection,
-                    createModels:true,
-                    reverseRelation:{
-                        key:"project",
-                        includeInJSON:"_id"
+                    type            : Backbone.HasMany,
+                    key             : "library",
+                    relatedModel    : AssetModel,
+                    collectionType  : LibraryCollection,
+                    createModels    : true,
+                    reverseRelation : {
+                        key           : "project",
+                        includeInJSON : "_id"
                     }
                 },
                 {
-                    type:Backbone.HasMany,
-                    key:"compositions",
-                    relatedModel:CompositionModel,
-                    collectionType:CompositionCollection,
-                    createModels:true,
-                    reverseRelation:{
-                        key:"project",
-                        includeInJSON:"_id"
+                    type            : Backbone.HasMany,
+                    key             : "compositions",
+                    relatedModel    : CompositionModel,
+                    collectionType  : CompositionCollection,
+                    createModels    : true,
+                    reverseRelation : {
+                        key           : "project",
+                        includeInJSON : "_id"
                     }
 
                 }
             ],
 
-            urlRoot:"/api/project/",
-            idAttribute:"_id",
+            urlRoot     : "/api/project/",
+            idAttribute : "_id",
 
-            defaults:{
-                _id:null,
-                name:"Untitled",
-                date:new Date(),
-                assetFolder:null,
-                library:null,
-                compositions:null
+            defaults : {
+                _id          : null,
+                name         : "Untitled",
+                date         : new Date(),
+                assetFolder  : null,
+                library      : null,
+                compositions : null
             },
 
-
-            initialize:function () {
+            initialize : function () {
 
             },
 
-            validate:function (attrs) {
+            validate : function (attrs) {
             }
 
         });

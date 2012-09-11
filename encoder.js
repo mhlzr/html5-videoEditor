@@ -26,6 +26,24 @@ var Encoder = function (db) {
         jobs.push(job);
     };
 
+    this.transcode = function (path, fileName, ext) {
+
+        //mp4 --> "mpeg4" oder "libx264"
+        //ogg --> "ffmpeg2theora"
+
+        var proc = new ffmpeg({
+            source  : path + fileName + "." + ext,
+            timeout : 240 * 60
+        })
+            .withVideoBitrate(1024)
+            .toFormat('ogg')
+            // .withVideoCodec('ffmpeg2theora')
+            .saveToFile(path + fileName + "." + "ogg", function (retcode, error) {
+                console.log(retcode, error, 'file has been converted succesfully');
+            }
+        );
+    };
+
     return this;
 
 };

@@ -7,23 +7,24 @@ var fs = require("fs"),
 
 var PROJECTS_PATH = __dirname + "/public/projects/";
 
-function createProject(req, res) {
+function createProject(data, callback) {
+    var hasError,
+        model = data.model;
 
     //UUID for asset-folder
-    req.body.assetFolder = uuid.v4();
+    model.assetFolder = uuid.v4();
 
-    db.projects.save(req.body, function saveCallback(err, docs) {
-
-        if (err) throw err;
-
-        res.writeHead(200, {"content-type" : "application/json"});
-        res.end(JSON.stringify(docs));
+    db.projects.save(model, function saveCallback(err, docs) {
 
         console.log("PROJECTS.JS::PROJECT CREATED", docs._id);
 
-        createDir(PROJECTS_PATH + req.body.assetFolder, function onComplete() {
-            createDir(PROJECTS_PATH + req.body.assetFolder + "/assets", function onComplete() {
-
+        createDir(PROJECTS_PATH + model.assetFolder, function onComplete(err) {
+            createDir(PROJECTS_PATH + model.assetFolder + "/assets", function onComplete(err) {
+                callback({
+                    id      : data.id,
+                    payload : docs,
+                    status  : err ? "error" : "success"
+                });
             });
         });
 
@@ -31,18 +32,16 @@ function createProject(req, res) {
 
 }
 
-function getProject(req, res) {
-    var id = req.params.id;
+function readProject(data, callback) {
+    var model = data.model;
 
-    res.writeHead(200, {"content-type" : "application/json"});
-
-    if (id.length !== 24) {
-        res.end(JSON.stringify(null));
-    }
-
-    db.projects.findOne({_id : db.ObjectId(id)}, function onFound(err, docs) {
+    db.projects.findOne({_id : db.ObjectId(model._id)}, function onFound(err, docs) {
         console.log("PROJECTS.JS::PROJECT FOUND", docs._id);
-        res.end(JSON.stringify(docs));
+        callback({
+            id      : data.id,
+            payload : docs,
+            status  : err ? "error" : "success"
+        });
     });
 
 }
@@ -56,43 +55,47 @@ function getProjectPathByProjectId(id, callback) {
 
 }
 
-function updateProject(req, res) {
+function updateProject(data, callback) {
 
-    db.projects.update({_id : db.ObjectId(req.params.id)}, {
+    var model = data.model;
+
+    db.projects.update({_id : db.ObjectId(model._id)}, {
         $set : {
-            name         : req.body.name,
-            library      : req.body.library,
-            compositions : req.body.compositions
+            name         : model.name,
+            library      : model.library,
+            compositions : model.compositions
         }
 
     }, {multi : false}, function updateCallback(err, docs) {
-        if (err) throw err;
-
-        res.writeHead(200, {"content-type" : "application/json"});
-        res.end(JSON.stringify(docs));
-        console.log("PROJECTS.JS::PROJECT UPDATED", req.params.id);
-
+        console.log("PROJECTS.JS::PROJECT UPDATED", model._id);
+        callback({
+            id      : data.id,
+            payload : model,
+            status  : err ? "error" : "success"
+        });
     });
 
 }
 
-function deleteProject(req, res) {
-    var id = db.ObjectId(req.params.id),
+function deleteProject(data, callback) {
+
+    var id = db.ObjectId(data.model._id),
         assetFolder = null;
 
     db.projects.findOne({_id : id}, {assetFolder : 1}, function onFound(err, docs) {
 
-        if (err) throw err;
         assetFolder = docs.assetFolder;
 
         db.projects.remove({_id : id}, function deleteCallback(err, docs) {
-            if (err) throw err;
-
-            res.writeHead(200, {"content-type" : "application/json"});
-            res.end(JSON.stringify(docs));
 
             deleteDirSync(PROJECTS_PATH + assetFolder);
             console.log("PROJECTS.JS::PROJECT DELETED", id)
+
+            callback({
+                id      : data.id,
+                payload : data.model,
+                status  : err ? "error" : "success"
+            });
 
         });
 
@@ -105,12 +108,11 @@ function markAssetFileAsComplete(projectId, fileName) {
 
         if (err) console.log(err);
         //var file = docs.library;
-                    //TODO   update status off file
+        //TODO   update status of file
         console.log(util.inspect(docs));
 
     });
 }
-
 
 function addComposition() {
 
@@ -149,7 +151,7 @@ function clean(callback) {
 
 //EXPORTS
 exports.createProject = createProject;
-exports.getProject = getProject;
+exports.readProject = readProject;
 exports.updateProject = updateProject;
 exports.deleteProject = deleteProject;
 

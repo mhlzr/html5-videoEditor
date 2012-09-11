@@ -11,8 +11,8 @@ define(["backbone", "model/asset"],
                 height    : 0,
                 ratio     : 0,
                 framerate : 0,
-                hasAudio  : false,
-                codec     : null
+                duration  : 0,
+                hasAudio  : false
             },
 
             initialize : function () {

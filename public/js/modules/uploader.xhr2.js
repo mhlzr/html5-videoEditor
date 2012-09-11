@@ -65,7 +65,7 @@ define(["config", "jquery"], function (Config, $) {
             end = file.size;
         }
 
-        blob = (file.mozSlice || file.slice).call(file, start, end);
+        blob = (file.webkitSlice || file.mozSlice || file.slice).call(file, start, end);
 
         fileReader.onloadend = function (event) {
             if (event.target.readyState == FileReader.DONE) {
@@ -119,6 +119,8 @@ define(["config", "jquery"], function (Config, $) {
     };
 
     uploader.start = function () {
+
+        console.log("UPLOADER START");
 
         if (fileQueue.length > 0 && !isUploading) {
             uploader.onload = uploader.onXHRResponse;

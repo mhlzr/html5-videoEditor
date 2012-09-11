@@ -1,35 +1,64 @@
 define([
-    "jquery", "jstorage", "backbone", "modernizr", "router", "modules/capabilities", "modules/uploader.xhr2",
+    "config", "jquery", "jstorage", "backbone", "modernizr", "router",
+    "modules/device", "modules/uploader.socket", "modules/callbackRegistry",
+    "modules/info",
     "model/project", "view/libraryView", "model/asset", "model/video", "model/sequence"],
 
-    function ($, jStorage, Backbone, Modernizr, Router, Capabilities, Uploader, ProjectModel, LibraryView, AssetModel, VideoModel, SequenceModel) {
+    function (Config, $, jStorage, Backbone, Modernizr, Router, Device, Uploader, CallbackReg, Info, ProjectModel, LibraryView, AssetModel, VideoModel, SequenceModel) {
 
-        var Application = Application || {};
+        var app = app || {};
 
-        Application.device = Application.device || {};
-        Application.project = Application.project || {};
-        Application.views = Application.views || {};
-        Application.router = Application.router || {};
-        Application.uploader = Uploader;
-        Application.capabilities = Capabilities;
+        app.device = Device;
+        app.info = Info;
+
+        app.project = app.project || {};
+        app.views = app.views || {};
+        app.router = app.router || {};
 
 
-        Application.initialize = function () {
+        app.initialize = function () {
 
-            console.log("APPLICATION::INIT");
+            app.socket = io.connect("http://" + Config.WEBSOCKET_HOST + ":" + Config.WEBSOCKET_PORT);
+            app.uploader = new Uploader(app.socket);
 
-            if(!Capabilities.runBrowserSupportTest){
+            console.log("APPLICATION.JS::INIT");
+
+            if (!app.device.runBrowserSupportTest()) {
                 console.log("Your browser is not supported");
                 return;
             }
 
             this.router = new Router({
-                application : this
+                app : this
+            });
+
+            app.info.noty( {text: 'noty - a jquery notification library!' });
+
+
+            //configure Backbone to work with socket.io
+            //http://blog.mayflower.de/archives/853-Backbone.Js-und-Socket.IO.html
+            app.socket.callbackRegistry = CallbackReg;
+
+            Backbone.sync = function (method, model, options) {
+
+                var url = _.isFunction(model.url) ? model.url() : model.url,
+                    payload = {
+                        "model" : model,
+                        "url"   : url,
+                        "id"    : app.socket.callbackRegistry.addCallback(options)
+                    };
+
+                app.socket.emit(method, payload);
+            };
+
+            app.socket.on("reply", function (data) {
+                app.socket.callbackRegistry.execCallbackById(data);
+
             });
 
             Backbone.setDomLibrary($);
             Backbone.history.start({
-                pushState:true
+                pushState : true
             });
 
             this.getAvailableProjectsFromLocalStorage();
@@ -49,23 +78,19 @@ define([
 
             $("button").on("click", this.buttonHandler);
 
-           //TODO ONLY FOR TESTING UPLOAD!!     REMOVE THIS
+            //TODO ONLY FOR TESTING UPLOAD!!     REMOVE THIS
             $("#uploadInput").on("change", uploadInputChangeHandler);
-            $("#startBtn").on("click", Application.uploader.start );
-            $("#stopBtn").on("click", Application.uploader.stop);
-
             //no jquery here
             //window.onbeforeunload = this.controller.windowEventHandler;
             //window.onunload = this.controller.windowEventHandler;
 
         };
 
-
-        Application.projectChangeHandler = function (e) {
+        app.projectChangeHandler = function (e) {
             console.log(e);
         };
 
-        Application.getAvailableProjectsFromLocalStorage = function () {
+        app.getAvailableProjectsFromLocalStorage = function () {
             var localProjects = $.jStorage.index(),
                 outputList = $("#availableProjects");
 
@@ -78,10 +103,9 @@ define([
             }
         };
 
-        Application.buttonHandler = function (e) {
+        app.buttonHandler = function (e) {
 
-
-            var project = Application.project;
+            var project = app.project;
 
             switch (e.target.id) {
 
@@ -92,8 +116,8 @@ define([
                 case "saveLocalBtn":
                     console.log(project.get("_id"));
                     $.jStorage.set(project.get("_id"), {
-                        name:project.get("name"),
-                        date:project.get("date")
+                        name : project.get("name"),
+                        date : project.get("date")
                     });
                     break;
 
@@ -122,10 +146,18 @@ define([
                 case "addSequenceToCompBtn":
                     console.log("ADDING SEQUENCE");
                     project.get("compositions").add(new SequenceModel());
+                    break;
+
+                case "startBtn"  :
+                    app.uploader.start();
+                    break;
+                case "stopBtn" :
+                    app.uploader.stop();
+                    break;
+
             }
 
         };
-
 
         /*
          controller.windowEventHandler = function(e){
@@ -137,6 +169,6 @@ define([
          }
          */
 
-        return Application;
+        return app;
 
     })

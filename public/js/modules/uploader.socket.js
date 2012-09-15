@@ -3,7 +3,7 @@
  * Date: 09.09.12
  * Time: 14:21
  */
-define(["config", "jquery"], function (Config, $) {
+define(["config", "jquery", "underscore"], function (Config, $, _) {
 
     var uploader = function (socket) {
 
@@ -129,7 +129,7 @@ define(["config", "jquery"], function (Config, $) {
         };
 
         this.stop = function () {
-            if (isUploading) uploader.abort();
+            if (!isUploading)  return;
             if (fileReader) fileReader.abort();
             isUploading = false;
         };
@@ -140,9 +140,49 @@ define(["config", "jquery"], function (Config, $) {
             }
         };
 
-        socket.on("upload:progress", this.onResponse);
-    };
+        this.createLocalFileUrl = function (file) {
+            return (window.webkitURL || window.URL).createObjectURL(file);
 
+        };
+
+        this.revokeLocalFileUrl = function (url) {
+            //TODO use this when file gets removed from lib
+            return (window.webkitURL || window.URL).revokeObjectURL(url);
+        };
+
+        this.getCleanFileName = function (fileName) {
+            if (/(.+?)(\.[^.]*$|$)/.test(fileName)) {
+                return $.trim(/(.+?)(\.[^.]*$|$)/.exec(fileName)[1].substr(0,Config.GUI_MAX_FILENAME_LENGTH));
+            }
+            return null;
+        };
+
+        this.getFileExtension = function (fileName) {
+            var regEx = /\.([^\.]+)$/;
+            return ext = regEx.test(fileName) ? regEx.exec(fileName)[1].toString() : null;
+        }
+
+        this.getAssetTypeByExtension = function (ext) {
+            if (_.include(Config.UPLOADER_SUPPORTED_VIDEO_TYPES, ext)) return "video";
+            else if (_.include(Config.UPLOADER_SUPPORTED_AUDIO_TYPES, ext)) return "audio";
+            else if (_.include(Config.UPLOADER_SUPPORTED_IMAGE_TYPES, ext)) return "image";
+
+            return null;
+        };
+
+        this.getAssetTypeByFile = function (file) {
+            var mimeReg = /video|image|audio/,
+                extReg = /\.([^\.]+)$/,
+                mime = mimeReg.test(file.type) ? mimeReg.exec(file.type)[0].toString() : null,
+                ext = extReg.test(file.name) ? extReg.exec(file.name)[1].toString() : null;
+
+            if (!mime && !ext) return null;
+            else if (mime) return mime;
+            else return self.getAssetTypeByExtension(ext);
+
+        };
+
+        socket.on("upload:progress", this.onResponse);
+    }
     return uploader;
-})
-;
+});

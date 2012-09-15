@@ -7,6 +7,13 @@ var fs = require("fs"),
 
 var PROJECTS_PATH = __dirname + "/public/projects/";
 
+function isProjectExistent(id, callback) {
+
+    db.projects.findOne({_id : db.ObjectId(id)}, function onFound(err, docs) {
+        callback(err === null);
+    });
+}
+
 function createProject(data, callback) {
     var hasError,
         model = data.model;
@@ -35,6 +42,15 @@ function createProject(data, callback) {
 function readProject(data, callback) {
     var model = data.model;
 
+    if (!model._id || model._id.toString().length < 24) {
+        callback({
+            id      : data.id,
+            payload : null,
+            status  : "error"
+        });
+        return;
+    }
+
     db.projects.findOne({_id : db.ObjectId(model._id)}, function onFound(err, docs) {
         console.log("PROJECTS.JS::PROJECT FOUND", docs._id);
         callback({
@@ -61,7 +77,7 @@ function updateProject(data, callback) {
 
     db.projects.update({_id : db.ObjectId(model._id)}, {
         $set : {
-            name         : model.name,
+            title        : model.title,
             library      : model.library,
             compositions : model.compositions
         }
@@ -155,6 +171,7 @@ exports.readProject = readProject;
 exports.updateProject = updateProject;
 exports.deleteProject = deleteProject;
 
+exports.isProjectExistent = isProjectExistent;
 exports.markAssetFileAsComplete = markAssetFileAsComplete;
 exports.getProjectPathByProjectId = getProjectPathByProjectId;
 exports.clean = clean;

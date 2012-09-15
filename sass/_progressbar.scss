@@ -1,0 +1,49 @@
+/*http://www.useragentman.com/blog/2012/01/03/cross-browser-html5-progress-bars-in-depth/*/
+
+@mixin progressbar($bgColor, $fgColor) {
+
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background-size: auto;
+  background: $bgColor !important;
+  color: $fgColor;
+
+  &[role] {
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background-size: auto;
+  }
+
+  &[role]:after {
+    background-image: none;
+  }
+
+  &[role] strong {
+    display: none;
+  }
+
+  &[role][aria-valuenow] {
+    background: $fgColor !important;
+  }
+
+  &::-webkit-progress-bar {
+    background: $bgColor;
+  }
+
+  &::-moz-progress-bar {
+    background: $fgColor;
+  }
+
+  &::-webkit-progress-value {
+    background: $fgColor;
+  }
+
+  &[aria-valuenow]:before {
+    background: $fgColor;
+  }
+
+}

@@ -19,6 +19,29 @@ app.configure(function () {
 
 });
 
+app.get(/^\/([0-9a-fA-F]{24}$)/, function (req, res) {
+    projects.isProjectExistent(req.params[0], function onResponse(exists) {
+        if (exists) res.redirect('/#' + req.params[0]);
+        else res.redirect('/');
+    });
+});
+
+app.get('/api/reset', function onReset(req, res) {
+    projects.clean(function onComplete(err) {
+        res.writeHead(200);
+        res.end("Done!");
+    });
+});
+
+/*app.get('/preview/:id', function(req, res){
+ res.redirect('/backbone/preview/#' + req.params.id);
+ });
+ */
+
+app.get('*', function (req, res) {
+    res.redirect('/');
+});
+
 io.enable('browser client minification');  // send minified client
 io.enable('browser client etag');          // apply etag caching logic based on version number
 io.enable('browser client gzip');          // gzip the file
@@ -31,14 +54,10 @@ io.set('transports', [                     // enable all transports (optional if
     , 'jsonp-polling'
 ]);
 
-/*app.get('/preview/:id', function(req, res){
- res.redirect('/backbone/preview/#' + req.params.id);
- });
- */
-
 io.sockets.on('connection', function (socket) {
 
     socket.on('create', function (data) {
+        console.log(data.url);
         projects.createProject(data, function onProjectCreated(res) {
             socket.emit('reply', res);
         });
@@ -101,12 +120,6 @@ io.sockets.on('connection', function (socket) {
  */
 
 //DEBUGGING
-app.get('/api/reset', function onReset(req, res) {
-    projects.clean(function onComplete(err) {
-        res.writeHead(200);
-        res.end("Done!");
-    });
-});
 
 app.listen(80);
 

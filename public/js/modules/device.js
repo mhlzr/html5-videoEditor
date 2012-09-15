@@ -9,6 +9,9 @@ define(["modernizr"], function (Modernizr) {
 
     device.capabilities = {};
 
+    device.width = 0;
+    device.height = 0;
+
     device.isMobile = function () {
         //http://detectmobilebrowsers.com/
         var a = (navigator.userAgent || navigator.vendor || window.opera);
@@ -19,6 +22,12 @@ define(["modernizr"], function (Modernizr) {
     device.runBrowserSupportTest = function () {
         return true;
     };
+
+    device.setWindowDimensions = function (w, h) {
+        device.width = w;
+        device.height = h;
+        console.log(w, h);
+    }
 
     return device;
 })

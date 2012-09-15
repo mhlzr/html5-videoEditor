@@ -1,26 +1,33 @@
-define(["backbone", "jquery", "underscore", "handlebars"],
+define(["jquery", "backbone", "hbs!templates/library"],
 
-    function (Backbone, $, _, Handlebars) {
+    function ($, Backbone, Template) {
 
         var LibraryListView = Backbone.View.extend({
 
-            el:$("#library"),
 
-            initialize:function () {
-                this.collection.bind("add", this.render, this);
+            initialize : function () {
+                this.collection.on('add', this.render);
             },
 
-            render:function (e) {
+            comparator : function (asset) {
+                return asset.get("name");
+            },
 
-                $(this.el).empty();
+            events : {
+                "click li" : "elementClickHandler"
+            },
 
-                console.log("RENDERING LIBRARY");
+            elementClickHandler : function (e) {
+                console.log(e.target);
+            },
 
+            render : function () {
 
-                _.each(this.collection, function (model) {
-                    console.log("AH");
-                    this.$el.append("<li>TEST" + model.get("name") + "</li>");
-                });
+                if (!this.collection) return;
+
+                console.log("LIBRARYVIEW.JS::RENDERING");
+
+                this.$el.html(Template({assets : this.collection.toJSON()}));
 
                 return this;
             }
@@ -28,4 +35,5 @@ define(["backbone", "jquery", "underscore", "handlebars"],
 
         return LibraryListView;
 
-    });
+    })
+;

@@ -3,7 +3,7 @@
  * Date: 11.09.12
  * Time: 17:41
  */
-define(["jquery", "lib/noty/jquery.noty", "lib/noty/themes/default", "lib/noty/layouts/topCenter"], function ($, Noty, Theme, Layout) {
+define(["jquery", "lib/noty/jquery.noty", "lib/noty/themes/default", "lib/noty/layouts/topCenter", "lib/jquery.reveal"], function ($, Noty, Theme, Layout) {
 
     //http://needim.github.com/noty/
     $.noty.defaults = {
@@ -36,7 +36,22 @@ define(["jquery", "lib/noty/jquery.noty", "lib/noty/themes/default", "lib/noty/l
         buttons      : false // an array of buttons
     };
 
+    //http://www.zurb.com/playground/reveal-modal-plugin
+
+        var reveal = function ($el) {
+            $el.reveal({
+                animation              : 'fadeAndPop', //fade, fadeAndPop, none
+                animationspeed         : 300, //how fast animtions are
+                closeonbackgroundclick : true, //if you click background will modal close?
+                dismissmodalclass      : 'close-reveal-modal'    //the class of a button or element that will close an open modal
+            });
+
+        }
+
     return {
-        noty : window.noty
+        noty   : window.noty,
+        reveal : reveal
+
+
     }
 });

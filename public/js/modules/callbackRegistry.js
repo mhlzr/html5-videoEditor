@@ -5,6 +5,9 @@
  */
 define(["underscore"], function (_) {
 
+    //configure Backbone to work with socket.io
+    //http://blog.mayflower.de/archives/853-Backbone.Js-und-Socket.IO.html
+
     var reg = {
         lastId    : 0,
         callbacks : [],

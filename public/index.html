@@ -13,7 +13,11 @@
           content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <script src="/js/lib/socket.io.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Gudea:400,700' rel='stylesheet' type='text/css'>
+
+    <link href="css/reveal.css" rel="stylesheet" type="text/css" media="all"/>
+    <link href="css/common.css" rel="stylesheet" type="text/css" media="all"/>
+
 
     <script data-main="js/main" src="js/require.js"></script>
 
@@ -25,44 +29,26 @@
          });
          });
          */
-        function uploadInputChangeHandler(e) {
-
-            $(app.uploader).on("progress complete", function (e, params) {
-                if (e.type === "complete") {
-                    app.info.noty({text : params.fileName + " is complete!" });
-                }
-                console.log(e.type, params);
-            });
-
-            var file;
-            for (var i = 0; i < e.target.files.length; i++) {
-
-                file = e.target.files[i];
-                app.project.get("library").add(
-                        {
-                            "type" : "audio",
-                            "name" : file.name
-                        }
-                );
-                app.uploader.addFile(e.target.files[i], app.project.get("_id"), 0);
-            }
-
-        }
     </script>
 
 </head>
 
 <body>
 
+<header id="projectInfo"></header>
 
+ <div id="libraryControl">Buttons, or Tabs and and and</div>
+<div id="library"></div>
+
+<div style="float:left;width:75%">
 <button id="saveBtn">Save Project</button>
 <button id="fetchBtn">Fetch Project</button>
 <button id="deleteBtn">Delete Project</button>
 <button id="projectSyncBtn">Backbone.sync</button>
 <button id="dumpProject">Dump Project</button>
+<button id="render">Render</button>
 
 <p>
-    <button id="addAssetToLibBtn">Add Asset To Library</button>
     <button id="addSequenceToCompBtn">Add Sequence To Compositions</button>
 </p>
 
@@ -79,11 +65,19 @@
     <button id="stopBtn">Stop</button>
 </p>
 
-<ul id="library" style="border:1px solid red"></ul>
-
-
 <textarea id="output" style="width:600px;height:400px">
 </textarea>
+
+</div>
+
+<div id="timeline" style="clear:both">Timeline</div>
+
+<div id="dialogueTest" class="reveal-modal">
+    <h1>Modal Title</h1>
+
+    <p>Any content could go in here.</p>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
 
 </body>
 </html>

@@ -4,18 +4,6 @@ define(["backbone", "backbone-rel", "model/asset"],
 
         var Sequence = Backbone.RelationalModel.extend({
 
-            relations : [
-                {
-                    type            : Backbone.HasOne,
-                    key             : "asset",
-                    relatedModel    : AssetModel,
-                    createModels    : true,
-                    reverseRelation : {
-                        key           : "sequence",
-                        includeInJSON : "_id"
-                    }
-                }
-            ],
 
             idAttribute : "_id",
 

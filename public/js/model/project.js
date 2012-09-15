@@ -7,26 +7,18 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
 
             relations : [
                 {
-                    type            : Backbone.HasMany,
-                    key             : "library",
-                    relatedModel    : AssetModel,
-                    collectionType  : LibraryCollection,
-                    createModels    : true,
-                    reverseRelation : {
-                        key           : "project",
-                        includeInJSON : "_id"
-                    }
+                    type           : Backbone.HasMany,
+                    key            : "library",
+                    relatedModel   : AssetModel,
+                    collectionType : LibraryCollection,
+                    createModels   : true
                 },
                 {
-                    type            : Backbone.HasMany,
-                    key             : "compositions",
-                    relatedModel    : CompositionModel,
-                    collectionType  : CompositionCollection,
-                    createModels    : true,
-                    reverseRelation : {
-                        key           : "project",
-                        includeInJSON : "_id"
-                    }
+                    type           : Backbone.HasMany,
+                    key            : "compositions",
+                    relatedModel   : CompositionModel,
+                    collectionType : CompositionCollection,
+                    createModels   : true
 
                 }
             ],
@@ -36,7 +28,7 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
 
             defaults : {
                 _id          : null,
-                name         : "Untitled",
+                title        : "Untitled",
                 date         : new Date(),
                 assetFolder  : null,
                 library      : null,
@@ -44,12 +36,17 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
             },
 
             initialize : function () {
-
+                //this.get("library").on("library:update", this.updateHandler, this);
+                // this.get("compositions").on("composition:update", this.updateHandler, this);
             },
 
             validate : function (attrs) {
-            }
+            },
 
+            updateHandler : function (e) {
+                console.log(e);
+                this.save();
+            }
         });
 
         return Project;

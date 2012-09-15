@@ -1,0 +1,112 @@
+$baseColor: #ffffff;
+$textColor: #000000;
+$highlightColor: #59a6e1; /* oder orange*/
+
+$lineColor: #c0c0c0;
+
+@import "progressbar";
+
+* {
+  font-family: 'Gudea', sans-serif;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  display: inline;
+}
+
+header {
+  padding: 0.3em;
+  background: url('../public/img/icon_settings.svg') no-repeat center center;
+  height: 34px;
+  border-bottom: 1px solid $lineColor;
+}
+
+header h1 {
+  font-size: 1.6em;
+  color: $textColor;
+}
+
+header span {
+  padding-left: 2em;
+}
+
+#library {
+  width: 25%;
+  height: 500px;
+  overflow: auto;
+  float:left;
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    width: 100%;
+    border: 1px solid $lineColor;
+
+    li {
+      float: left;
+      height: 4em;
+      width: 100%;
+      display: block;
+      cursor: pointer;
+
+      background-color: $baseColor;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+      margin: 0;
+      padding: 0.5em 3em 1.4em 4em;
+      color: #6d6c6c;
+      border-bottom: 1px solid $lineColor;
+    }
+
+    span.name {
+      float: left;
+      font-size: 1em;
+      width: 100%;
+    }
+
+    span.info {
+      margin-top: 0.2em;
+      font-size: 0.7em;
+      float: left;
+      width: 50%;
+    }
+    span.progressValue {
+      font-size: 0.7em;
+      float: left;
+      text-align: right;
+      width: 50%;
+    }
+
+    progress {
+      float: left;
+      clear: both;
+      height: 2px;
+      width: 100%;
+      margin-top: 0.3em;
+      @include progressbar(#c0c0c0, $highlightColor);
+    }
+  }
+}
+
+/*PSEUDO ELEMENTS*/
+[contenteditable]:hover {
+  outline: 1px dotted #cfcfcf;
+}
+
+[contenteditable]:focus {
+  outline: 1px dotted #cfcfcf;
+}
+
+

@@ -4,37 +4,35 @@ define(["backbone", "backbone-rel", "model/file", "collection/files"],
 
         var Asset = Backbone.RelationalModel.extend({
 
+
             subModelTypes : {
-                "image" : "ImageAsset",
-                "video" : "VideoAsset",
-                "audio" : "AudioAsset"
+                "image" : "image",
+                "video" : "video",
+                "audio" : "audio"
             },
 
             relations : [
                 {
-                    type            : Backbone.HasMany,
-                    key             : "files",
-                    relatedModel    : FileModel,
-                    collectionType  : FileCollection,
-                    createModels    : true,
-                    reverseRelation : {
-                        key           : "asset",
-                        includeInJSON : "_id"
-                    }
+                    type           : Backbone.HasMany,
+                    key            : "files",
+                    relatedModel   : FileModel,
+                    collectionType : FileCollection,
+                    createModels   : true
                 }
             ],
 
-            idAttribute : "_id",
-
             defaults : {
-                name : null,
-                type : null
+                name      : null,
+                type      : "video",
+                width     : 0,
+                height    : 0,
+                ratio     : 0,
+                framerate : 0,
+                duration  : 0
             },
 
             initialize : function () {
-                this.bind("add:file", function (model, coll) {
-                    console.log("ADDED SOMETHIN");
-                });
+
             },
 
             validate : function (attrs) {
@@ -44,4 +42,5 @@ define(["backbone", "backbone-rel", "model/file", "collection/files"],
 
         return Asset;
 
-    });
+    })
+;

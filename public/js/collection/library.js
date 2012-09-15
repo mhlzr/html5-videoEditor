@@ -7,17 +7,16 @@ define(["backbone", "model/asset"],
             model   : AssetModel,
             urlRoot : "/api/",
 
-            url : function (models) {
-                console.log("/api/" + ( models ? 'set/' + _.pluck(models, 'id').join(';') + '/' : '' ));
-                return ( models ? 'set/' + _.pluck(models, 'id').join(';') + '/' : '' );
-            },
 
             initialize : function () {
-                // this.on("add", Backbone.sync);
-                // this.on("change", Backbone.sync);
+               // this.on("add", this.assetRemoveHandler, this);
             },
 
             validate : function (attrs) {
+            }   ,
+
+            assetRemoveHandler : function(e){
+                this.trigger("library:update");
             }
 
 

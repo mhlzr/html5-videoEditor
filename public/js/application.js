@@ -1,44 +1,58 @@
 define([
-    "config", "jquery", "jstorage", "backbone", "modernizr", "router",
-    "modules/device", "modules/uploader.socket", "modules/callbackRegistry",
-    "modules/info",
-    "model/project", "view/libraryView", "model/asset", "model/video", "model/sequence"],
+    "config", "jquery", "jstorage", "backbone", "modernizr", "socket", "router",
+    "modules/controller", "modules/device", "modules/uploader.socket", "modules/callbackRegistry", "info",
+    "model/project", "view/libraryView", "view/projectInfoView", "model/asset", "model/sequence"],
 
-    function (Config, $, jStorage, Backbone, Modernizr, Router, Device, Uploader, CallbackReg, Info, ProjectModel, LibraryView, AssetModel, VideoModel, SequenceModel) {
+    function (Config, $, jStorage, Backbone, Modernizr, Socket, Router, Controller, Device, Uploader, CallbackReg, Info, ProjectModel, LibraryView, ProjectInfoView, AssetModel, SequenceModel) {
 
-        var app = app || {};
+        var app = {};
 
         app.device = Device;
         app.info = Info;
+        app.socket = null;
+        app.uploader = null;
 
         app.project = app.project || {};
-        app.views = app.views || {};
-        app.router = app.router || {};
 
+        app.views = {};
+        app.router = new Router();
+        app.controller = null;
 
         app.initialize = function () {
 
-            app.socket = io.connect("http://" + Config.WEBSOCKET_HOST + ":" + Config.WEBSOCKET_PORT);
-            app.uploader = new Uploader(app.socket);
-
-            console.log("APPLICATION.JS::INIT");
-
-            if (!app.device.runBrowserSupportTest()) {
+            if (!this.device.runBrowserSupportTest()) {
                 console.log("Your browser is not supported");
                 return;
             }
 
-            this.router = new Router({
-                app : this
-            });
+            console.log("APPLICATION.JS::INIT");
 
-            app.info.noty( {text: 'noty - a jquery notification library!' });
+            this.socket = Socket.connect("http://" + Config.WEBSOCKET_HOST + ":" + Config.WEBSOCKET_PORT);
+            this.socket.callbackRegistry = CallbackReg;
 
+            this.setupBackbone();
 
-            //configure Backbone to work with socket.io
-            //http://blog.mayflower.de/archives/853-Backbone.Js-und-Socket.IO.html
-            app.socket.callbackRegistry = CallbackReg;
+            this.uploader = new Uploader(this.socket);
+            this.project = new ProjectModel();
 
+            //this.info.noty({text : 'noty - a jquery notification library!' });
+            //this.info.reveal($("#dialogueTest"));
+
+            this.initViews();
+
+            this.getAvailableProjectsFromLocalStorage();
+
+            this.controller = Controller.init(this);
+
+        };
+
+        app.setupBackbone = function () {
+            /*
+             * Configuring Backbone & Overriding it's syncing method
+             * to use socket.io, callbacks are stored in callbackRegistry
+             *
+             */
+            Backbone.setDomLibrary($);
             Backbone.sync = function (method, model, options) {
 
                 var url = _.isFunction(model.url) ? model.url() : model.url,
@@ -55,40 +69,32 @@ define([
                 app.socket.callbackRegistry.execCallbackById(data);
 
             });
+        };
 
-            Backbone.setDomLibrary($);
-            Backbone.history.start({
-                pushState : true
+        app.initViews = function () {
+
+            app.views.library = new LibraryView({
+                collection : app.project.get("library"),
+                el         : $("#library")
             });
 
-            this.getAvailableProjectsFromLocalStorage();
-            this.project = new ProjectModel();
+            app.views.projectInfo = new ProjectInfoView({
+                model : app.project,
+                el    : $("#projectInfo")
+            });
 
-            /*
+            app.views.library.render();
+            app.views.projectInfo.render();
 
+            app.views.renderAll = function () {
+                console.log("APPLICATION.JS::RENDERING ALL VIEWS");
+                _.each(app.views, function (obj, key) {
+                    if (_.isFunction(obj)) return;
+                    if (_.isObject(obj)) obj.render();
+                });
+            };
 
-             this.views.library = new LibraryView({
-             collection: this.project.get("library"),
-             el: $("#library")
-             });
-
-             */
-
-            //_.bindAll(this.get("project"), this.projectChangeHandler );
-
-            $("button").on("click", this.buttonHandler);
-
-            //TODO ONLY FOR TESTING UPLOAD!!     REMOVE THIS
-            $("#uploadInput").on("change", uploadInputChangeHandler);
-            //no jquery here
-            //window.onbeforeunload = this.controller.windowEventHandler;
-            //window.onunload = this.controller.windowEventHandler;
-
-        };
-
-        app.projectChangeHandler = function (e) {
-            console.log(e);
-        };
+        }
 
         app.getAvailableProjectsFromLocalStorage = function () {
             var localProjects = $.jStorage.index(),
@@ -98,76 +104,10 @@ define([
 
             for (var i = 0; i < localProjects.length; i++) {
                 currentProj = $.jStorage.get(localProjects[i]);
-                outputList.append("<li>" + localProjects[i] + ", " + currentProj.name + ", " + currentProj.date + "</li>");
+                outputList.append("<li><a href='#" + localProjects[i] + "'>" + localProjects[i] + ", " + currentProj.name + ", " + currentProj.date + "</a></li>");
 
             }
         };
-
-        app.buttonHandler = function (e) {
-
-            var project = app.project;
-
-            switch (e.target.id) {
-
-                case "dumpProject" :
-                    console.log(project.toJSON());
-                    $("#output").text(JSON.stringify(project.toJSON()));
-                    break;
-                case "saveLocalBtn":
-                    console.log(project.get("_id"));
-                    $.jStorage.set(project.get("_id"), {
-                        name : project.get("name"),
-                        date : project.get("date")
-                    });
-                    break;
-
-                case "fetchBtn":
-                    project.fetch();
-                    break;
-
-                case "clearLocalBtn":
-                    $.jStorage.flush();
-                    break;
-                case "projectSyncBtn":
-                    Backbone.sync;
-                    break;
-                case "saveBtn":
-                    project.save();
-                    break;
-                case "deleteBtn":
-                    project.destroy();
-                    break;
-
-                case "addAssetToLibBtn":
-                    console.log("ADDING ASSET");
-                    project.get("library").add(new VideoModel());
-                    break;
-
-                case "addSequenceToCompBtn":
-                    console.log("ADDING SEQUENCE");
-                    project.get("compositions").add(new SequenceModel());
-                    break;
-
-                case "startBtn"  :
-                    app.uploader.start();
-                    break;
-                case "stopBtn" :
-                    app.uploader.stop();
-                    break;
-
-            }
-
-        };
-
-        /*
-         controller.windowEventHandler = function(e){
-
-         if(e.type === "beforeunload" || e.type === "unload"){
-         return "There are still some uploads pending ...";
-         }
-
-         }
-         */
 
         return app;
 

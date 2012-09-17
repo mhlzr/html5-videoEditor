@@ -1,103 +1,368 @@
-$baseColor: #ffffff;
-$textColor: #000000;
-$highlightColor: #59a6e1; /* oder orange*/
-
+$baseColor: rgba(255, 255, 255, 1);
+$textColor: rgba(0, 0, 0, 1);
+$highlightColor: rgba(89, 166, 255, 1);
+$videoColor: opacify($highlightColor, 0.6);
+$imageColor: rgba(231, 176, 26, 0.6);
+$audioColor: rgba(168, 197, 50, 0.6);
+$buttonHeight: 36px;
 $lineColor: #c0c0c0;
+$backgroundColor: #f1f1f1;
+
+$headHeight: 6%;
+$controlHeight: 6%;
+$timelineHeight: 30%;
+$mainHeight: 100% - $headHeight - $controlHeight - $timelineHeight;
 
 @import "progressbar";
+@import "buttons";
+@import "prefixpoly";
+
+@function calc-em($target-px, $context) {
+  @return ($target-px / $context) * 1em;
+}
 
 * {
   font-family: 'Gudea', sans-serif;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+  @include selectable(none);
 }
 
 body {
   margin: 0;
   padding: 0;
+  min-height: 100%;
+  height: 100%;
+  max-height: 100%;
+  background-color: $baseColor;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  overflow: hidden;
 }
 
-h1 {
-  display: inline;
+#wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 header {
-  padding: 0.3em;
-  background: url('../public/img/icon_settings.svg') no-repeat center center;
-  height: 34px;
+  height: $headHeight;
   border-bottom: 1px solid $lineColor;
+  overflow: hidden;
+
+  #projectInfo {
+    width: 50%;
+    float: left;
+    min-height: $buttonHeight;
+    height: 100%;
+    h1 {
+      font-size: 1.6em;
+      color: $textColor;
+      display: inline;
+    }
+    span {
+      padding-left: 2em;
+    }
+  }
+
+  #mainControl {
+    width: 50%;
+    float: left;
+    padding: 0;
+    min-height: $buttonHeight;
+    height: 100%;
+
+    button {
+      float: right !important;
+    }
+  }
+
 }
 
-header h1 {
-  font-size: 1.6em;
-  color: $textColor;
+#controlbar {
+  clear: both;
+  height: $controlHeight;
+  overflow: hidden;
+  min-height: $buttonHeight;
+  max-height: 5%;
+
+  #stageControl {
+    float: left;
+    overflow: hidden;
+    button {
+      float: left;
+      height: 100%;
+    }
+  }
 }
 
-header span {
-  padding-left: 2em;
+#navigatorTab {
+  width: 25%;
+  height: 100%;
+  border-right: 1px solid $lineColor;
+  float: left;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    li {
+      float: left;
+      list-style: none;
+      padding: 0.6em;
+      border-right: 1px solid $lineColor;
+      @include selectable(none);
+
+      &:hover {
+        background-color: $highlightColor;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+#navigator {
+  clear: both;
+  height: $mainHeight;
+  max-height: 60%;
+  min-height: 60%;
+  width: 25%;
+  display: block;
+  float: left;
+  border-top: 1px solid $lineColor;
+  border-bottom: 1px solid $lineColor;
+
+}
+
+#compositions {
+  display: none;
+  height: 90%;
+  max-height: 100%;
 }
 
 #library {
-  width: 25%;
-  height: 500px;
-  overflow: auto;
-  float:left;
+  min-height: 90%;
+  height:90%;
+  max-height: 90%;
+  width: 100%;
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: 100%;
+  min-height: 90%;
+  padding: 0;
+  margin: 0;
+  display: block;
+  clip: rect(100, 100, 100, 100);
 
-  ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    height: auto;
+  div.asset {
+    clear: both;
+    height: 4.3em;
+    display: block;
+    cursor: pointer;
     width: 100%;
-    border: 1px solid $lineColor;
+    @include selectable(none);
+    background-color: $baseColor;
+    margin: 0;
+    padding: 0;
+    color: #6d6c6c;
+    border-top: 1px solid $lineColor;
 
-    li {
+    &:first-child {
+      border: none !important;
+    }
+
+    div.info {
+      width: 90%;
       float: left;
-      height: 4em;
-      width: 100%;
-      display: block;
-      cursor: pointer;
+      height: 100%;
+      padding: 0.5em 0em 1.4em 4em;
+      background-repeat: no-repeat;
+      background-position: 0.9em 1.2em;
 
-      background-color: $baseColor;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -o-user-select: none;
-      user-select: none;
+      &.video {
+        background-image: url('../img/icon_video.svg');
+      }
+
+      &.image {
+        background-image: url('../img/icon_image.svg');
+      }
+      &.audio {
+        background-image: url('../img/icon_audio.svg');
+      }
+
+      span.name {
+        float: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 1em;
+        width: 80%;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      span.status {
+        margin-top: 0.2em;
+        font-size: 0.7em;
+        float: left;
+        width: 50%;
+      }
+
+      progress {
+        float: left;
+        clear: both;
+        height: 2px;
+        width: 90%;
+
+        margin-top: 0.3em;
+        @include progressbar(#c0c0c0, $highlightColor);
+
+        &:after {
+          clear: both;
+          color: $textColor;
+          content: attr(value) "%";
+          font-size: 0.6em;
+          position: relative;
+          left: 93%;
+          top: -28px;
+          display: inline;
+
+        }
+      }
+    }
+
+    div.types {
+      width: 10%;
+      float: left;
+      height: 100%;
       margin: 0;
-      padding: 0.5em 3em 1.4em 4em;
-      color: #6d6c6c;
-      border-bottom: 1px solid $lineColor;
+      paddig: 0;
+
+      span {
+        width: 20px;
+        height: 20px;
+        display: block;
+        background-size: 100%;
+
+        &.mp4 {
+          background-image: url('../img/icon_mp4.svg');
+        }
+        &.webm {
+          background-image: url('../img/icon_webm.svg');
+        }
+        &.ogg {
+          background-image: url('../img/icon_ogg.svg');
+        }
+      }
     }
 
-    span.name {
-      float: left;
-      font-size: 1em;
+    &:hover {
+      background-color: $highlightColor;
+      cursor: pointer;
+      color: $textColor;
+    }
+
+  }
+
+}
+
+#navigatorControl {
+  display: block;
+  margin: auto;
+
+  min-height: 14%;
+  height:14%;
+
+
+  overflow: hidden;
+  border-top: 1px solid $lineColor;
+
+  input[type=file], button {
+    @extend button;
+    text-indent: -9999px;
+    overflow: hidden;
+
+    height: 100% !important;
+    /*max-width: 36px !important */
+
+  }
+
+  #fileBrowser {
+    position:absolute;
+    left:-900px;
+    top:-900px;
+  }
+
+}
+
+#stage {
+  float: left;
+  width: 75%;
+  height: 56%;
+  max-height: 60%;
+  min-height: 60%;
+  display: block;
+  border: 1px solid $lineColor;
+  background-color: red;
+  overflow: hidden;
+  background-color: $backgroundColor;
+}
+
+#timeline {
+  clear: both;
+  width: 100%;
+  height: $timelineHeight;
+  min-height: 27%;
+  background-color: $baseColor;
+
+  #layer {
+    width: 25%;
+    display: block;
+    height: 100%;
+    float: left;
+
+    div {
       width: 100%;
-    }
-
-    span.info {
-      margin-top: 0.2em;
-      font-size: 0.7em;
-      float: left;
-      width: 50%;
-    }
-    span.progressValue {
-      font-size: 0.7em;
-      float: left;
-      text-align: right;
-      width: 50%;
-    }
-
-    progress {
-      float: left;
-      clear: both;
-      height: 2px;
-      width: 100%;
-      margin-top: 0.3em;
-      @include progressbar(#c0c0c0, $highlightColor);
+      border: 1px solid $lineColor;
+      height: 10%;
+      margin: 0.2em;
+      padding: 0.2em;
     }
   }
+
+  #bars {
+    width: 75%;
+    height: 100%;
+    float: left;
+    div {
+      height: 10%;
+      display: block;
+      width: 100%;
+      border: 1px solid $lineColor;
+      margin: 0.2em;
+    }
+    .video {
+      background-color: $videoColor;
+
+    }
+    .audio {
+      background-color: $audioColor;
+    }
+    .image {
+      background-color: $imageColor;
+    }
+  }
+
 }
 
 /*PSEUDO ELEMENTS*/
@@ -108,5 +373,4 @@ header span {
 [contenteditable]:focus {
   outline: 1px dotted #cfcfcf;
 }
-
 

@@ -26,6 +26,7 @@ var UploadHandler = function () {
                 if (err) {
                     response = {
                         'isComplete' : false,
+                        'assetId'    : data.assetId,
                         'fileName'   : data.fileName,
                         'byteOffset' : pos + buffer.length,
                         'status'     : 'fail'
@@ -41,6 +42,8 @@ var UploadHandler = function () {
 
                     response = {
                         'isComplete' : isComplete,
+                        'assetId'    : data.assetId,
+                        'projectId'  : projectId,
                         'fileName'   : data.fileName,
                         'byteOffset' : pos + buffer.length,
                         'status'     : isComplete ? 'complete' : 'success'

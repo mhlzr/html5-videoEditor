@@ -1,0 +1,13 @@
+<div class="asset" id="{{this.id}}">
+    <div class="info {{this.type}}">
+        <span class="name"> {{this.name}}, {{this.duration}}</span>
+        <span class="status">{{this.status}}</span>
+        <progress value="0" max="100"></progress>
+    </div>
+    <div class="types">
+        <span class="mp4"></span>
+        <span class="webm"></span>
+        <span class="ogg"></span>
+    </div>
+</div>
+

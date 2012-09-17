@@ -16,6 +16,7 @@ require.config({
         'hbs'                        : 'lib/hbs',
         'handlebars'                 : 'lib/handlebars',
         'i18nprecompile'             : 'lib/i18nprecompile',
+        'uuid'                       : 'lib/uuid',
         'app'                        : 'application',
         'config'                     : 'config',
         'info'                       : 'modules/info'
@@ -40,6 +41,12 @@ require.config({
             'deps' : ['backbone']
         },
 
+        'modernizr' : {
+            'exports' : function () {
+                return window.Modernizr
+            }
+        },
+
         'info' : {
             deps : ['jquery']
         },
@@ -56,9 +63,20 @@ require.config({
             'exports' : function () {
                 return window.io;
             }
+        },
+
+        'uuid' : {
+            'exports' : function () {
+                return {
+                    v4 : function () {
+                        return window.uuid.v4().replace(/-/g, '');
+                    }
+                }
+            }
         }
     }
-});
+})
+;
 
 require(['app'],
 

@@ -1,0 +1,352 @@
+/*http://www.useragentman.com/blog/2012/01/03/cross-browser-html5-progress-bars-in-depth/*/
+button, #navigatorControl input[type=file], #navigatorControl button {
+  -webkit-transition: opacity 0.6s ease-out;
+  -moz-transition: opacity 0.6s ease-out;
+  -ms-transition: opacity 0.6s ease-out;
+  -o-transition: opacity 0.6s ease-out;
+  transition: opacity 0.6s ease-out;
+  -webkit-background-size: 100% 100%;
+  -o-background-size: 100% 100%;
+  -moz-background-size: 100% 100%;
+  background-size: 100% 100%;
+  background-repeat: no-repeat !important;
+  background-color: white;
+  background-position: center center !important;
+  background-origin: content;
+  border: none;
+  display: block;
+  min-height: 36px !important;
+  min-width: 36px !important;
+  height: 100% !important;
+  float: left;
+  opacity: 0.7;
+  overflow: hidden;
+  margin-left: 3px; }
+  button:hover, #navigatorControl input[type=file]:hover, #navigatorControl button:hover {
+    cursor: pointer;
+    opacity: 1;
+    -webkit-transition: all 0.6s ease-out;
+    -moz-transition: all 0.6s ease-out;
+    -ms-transition: all 0.6s ease-out;
+    -o-transition: all 0.6s ease-out;
+    transition: all 0.6s ease-out; }
+  button[disabled], #navigatorControl input[disabled][type=file], #navigatorControl button[disabled] {
+    cursor: default;
+    opacity: 0.4; }
+  button[disabled]:hover, #navigatorControl input[disabled][type=file]:hover, #navigatorControl button[disabled]:hover {
+    cursor: default; }
+
+button.settings, #navigatorControl input.settings[type=file], #navigatorControl button.settings {
+  background: url("../img/icon_settings.svg"); }
+
+button.share, #navigatorControl input.share[type=file], #navigatorControl button.share {
+  background: url("../img/icon_share.svg"); }
+
+button.add, #navigatorControl input.add[type=file], #navigatorControl button.add {
+  background: url("../img/icon_add.svg"); }
+
+button.remove, #navigatorControl input.remove[type=file], #navigatorControl button.remove {
+  background: url("../img/icon_remove.svg"); }
+
+* {
+  font-family: 'Gudea', sans-serif;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none; }
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  height: 100%;
+  max-height: 100%;
+  background-color: white;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  overflow: hidden; }
+
+#wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0; }
+
+header {
+  height: 6%;
+  border-bottom: 1px solid silver;
+  overflow: hidden; }
+  header #projectInfo {
+    width: 50%;
+    float: left;
+    min-height: 36px;
+    height: 100%; }
+    header #projectInfo h1 {
+      font-size: 1.6em;
+      color: black;
+      display: inline; }
+    header #projectInfo span {
+      padding-left: 2em; }
+  header #mainControl {
+    width: 50%;
+    float: left;
+    padding: 0;
+    min-height: 36px;
+    height: 100%; }
+    header #mainControl button, header #mainControl #navigatorControl input[type=file], #navigatorControl header #mainControl input[type=file], header #mainControl #navigatorControl button, #navigatorControl header #mainControl button {
+      float: right !important; }
+
+#controlbar {
+  clear: both;
+  height: 6%;
+  overflow: hidden;
+  min-height: 36px;
+  max-height: 5%; }
+  #controlbar #stageControl {
+    float: left;
+    overflow: hidden; }
+    #controlbar #stageControl button, #controlbar #stageControl #navigatorControl input[type=file], #navigatorControl #controlbar #stageControl input[type=file], #controlbar #stageControl #navigatorControl button, #navigatorControl #controlbar #stageControl button {
+      float: left;
+      height: 100%; }
+
+#navigatorTab {
+  width: 25%;
+  height: 100%;
+  border-right: 1px solid silver;
+  float: left; }
+  #navigatorTab ul {
+    margin: 0;
+    padding: 0; }
+    #navigatorTab ul li {
+      float: left;
+      list-style: none;
+      padding: 0.6em;
+      border-right: 1px solid silver;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none; }
+      #navigatorTab ul li:hover {
+        background-color: #59a6ff;
+        cursor: pointer; }
+
+#navigator {
+  clear: both;
+  height: 58%;
+  max-height: 60%;
+  min-height: 60%;
+  width: 25%;
+  display: block;
+  float: left;
+  border-top: 1px solid silver;
+  border-bottom: 1px solid silver; }
+
+#compositions {
+  display: none;
+  height: 90%;
+  max-height: 100%; }
+
+#library {
+  min-height: 90%;
+  height: 90%;
+  max-height: 90%;
+  width: 100%;
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  max-height: 100%;
+  min-height: 90%;
+  padding: 0;
+  margin: 0;
+  display: block;
+  clip: rect(100, 100, 100, 100); }
+  #library div.asset {
+    clear: both;
+    height: 4.3em;
+    display: block;
+    cursor: pointer;
+    width: 100%;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    color: #6d6c6c;
+    border-top: 1px solid silver; }
+    #library div.asset:first-child {
+      border: none !important; }
+    #library div.asset div.info {
+      width: 90%;
+      float: left;
+      height: 100%;
+      padding: 0.5em 0em 1.4em 4em;
+      background-repeat: no-repeat;
+      background-position: 0.9em 1.2em; }
+      #library div.asset div.info.video {
+        background-image: url("../img/icon_video.svg"); }
+      #library div.asset div.info.image {
+        background-image: url("../img/icon_image.svg"); }
+      #library div.asset div.info.audio {
+        background-image: url("../img/icon_audio.svg"); }
+      #library div.asset div.info span.name {
+        float: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 1em;
+        width: 80%;
+        max-width: 100%;
+        overflow: hidden; }
+      #library div.asset div.info span.status {
+        margin-top: 0.2em;
+        font-size: 0.7em;
+        float: left;
+        width: 50%; }
+      #library div.asset div.info progress {
+        float: left;
+        clear: both;
+        height: 2px;
+        width: 90%;
+        margin-top: 0.3em;
+        appearance: none;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        border: none;
+        background-size: auto;
+        background: silver !important;
+        color: #59a6ff; }
+        #library div.asset div.info progress[role] {
+          appearance: none;
+          -moz-appearance: none;
+          -webkit-appearance: none;
+          border: none;
+          background-size: auto; }
+        #library div.asset div.info progress[role]:after {
+          background-image: none; }
+        #library div.asset div.info progress[role] strong {
+          display: none; }
+        #library div.asset div.info progress[role][aria-valuenow] {
+          background: #59a6ff !important; }
+        #library div.asset div.info progress::-webkit-progress-bar {
+          background: silver; }
+        #library div.asset div.info progress::-moz-progress-bar {
+          background: #59a6ff; }
+        #library div.asset div.info progress::-webkit-progress-value {
+          background: #59a6ff; }
+        #library div.asset div.info progress[aria-valuenow]:before {
+          background: #59a6ff; }
+        #library div.asset div.info progress:after {
+          clear: both;
+          color: black;
+          content: attr(value) "%";
+          font-size: 0.6em;
+          position: relative;
+          left: 93%;
+          top: -28px;
+          display: inline; }
+    #library div.asset div.types {
+      width: 10%;
+      float: left;
+      height: 100%;
+      margin: 0;
+      paddig: 0; }
+      #library div.asset div.types span {
+        width: 20px;
+        height: 20px;
+        display: block;
+        background-size: 100%; }
+        #library div.asset div.types span.mp4 {
+          background-image: url("../img/icon_mp4.svg"); }
+        #library div.asset div.types span.webm {
+          background-image: url("../img/icon_webm.svg"); }
+        #library div.asset div.types span.ogg {
+          background-image: url("../img/icon_ogg.svg"); }
+    #library div.asset:hover {
+      background-color: #59a6ff;
+      cursor: pointer;
+      color: black; }
+
+#navigatorControl {
+  display: block;
+  margin: auto;
+  min-height: 14%;
+  height: 14%;
+  overflow: hidden;
+  border-top: 1px solid silver; }
+  #navigatorControl input[type=file], #navigatorControl button, #navigatorControl input[type=file], #navigatorControl button {
+    text-indent: -9999px;
+    overflow: hidden;
+    height: 100% !important;
+    /*max-width: 36px !important */ }
+  #navigatorControl #fileBrowser {
+    position: absolute;
+    left: -900px;
+    top: -900px; }
+
+#stage {
+  float: left;
+  width: 75%;
+  height: 56%;
+  max-height: 60%;
+  min-height: 60%;
+  display: block;
+  border: 1px solid silver;
+  background-color: red;
+  overflow: hidden;
+  background-color: #f1f1f1; }
+
+#timeline {
+  clear: both;
+  width: 100%;
+  height: 30%;
+  min-height: 27%;
+  background-color: white; }
+  #timeline #layer {
+    width: 25%;
+    display: block;
+    height: 100%;
+    float: left; }
+    #timeline #layer div {
+      width: 100%;
+      border: 1px solid silver;
+      height: 10%;
+      margin: 0.2em;
+      padding: 0.2em; }
+  #timeline #bars {
+    width: 75%;
+    height: 100%;
+    float: left; }
+    #timeline #bars div {
+      height: 10%;
+      display: block;
+      width: 100%;
+      border: 1px solid silver;
+      margin: 0.2em; }
+    #timeline #bars .video {
+      background-color: #59a6ff; }
+    #timeline #bars .audio {
+      background-color: rgba(168, 197, 50, 0.6); }
+    #timeline #bars .image {
+      background-color: rgba(231, 176, 26, 0.6); }
+
+/*PSEUDO ELEMENTS*/
+[contenteditable]:hover {
+  outline: 1px dotted #cfcfcf; }
+
+[contenteditable]:focus {
+  outline: 1px dotted #cfcfcf; }

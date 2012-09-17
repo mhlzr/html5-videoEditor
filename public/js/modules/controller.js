@@ -24,7 +24,11 @@ define(["jquery", "Config"], function ($, Config) {
                 window.onunload = this.windowEventHandler;
             }
 
-            $("#uploadInput").on("change", this.uploadInputChangeHandler);
+            $("#fileBrowserButton").on("click", function () {
+                $("#fileBrowser").click();
+            });
+
+            $("#fileBrowser").on("change", this.uploadInputChangeHandler);
             $("button").on("click", this.buttonHandler);
 
             $(app.uploader).on("progress complete", this.uploadProgressHandler);
@@ -45,15 +49,18 @@ define(["jquery", "Config"], function ($, Config) {
 
         uploadProgressHandler : function (e, params) {
             if (e.type === "complete") {
-                app.info.noty({text : params.fileName + " is complete!" });
+                app.views.library.setAssetProgress(params.assetId, 100);
             }
-            console.log(e.type, params);
+            else {
+
+                app.views.library.setAssetProgress(params.assetId, params.progressRelative);
+            }
+
         },
 
         uploadInputChangeHandler : function (e) {
 
-
-            var file, type, ext, localUrl, name;
+            var file, type, ext, localUrl, name, asset;
             for (var i = 0; i < e.target.files.length; i++) {
 
                 file = e.target.files[i];
@@ -77,8 +84,12 @@ define(["jquery", "Config"], function ($, Config) {
                     }
                 });
 
-                app.uploader.addFile(e.target.files[i], app.project.get("_id"), 0);
+                asset = app.project.get('library').getNewestAsset();
+
+                app.uploader.addFile(asset.get('id'), file, app.project.get("_id"), 0);
             }
+
+            app.uploader.start();
         },
 
         buttonHandler : function (e) {

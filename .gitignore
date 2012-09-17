@@ -1,0 +1,4 @@
+.idea/*
+.sass-cache/*
+node_modules
+public/projects/*

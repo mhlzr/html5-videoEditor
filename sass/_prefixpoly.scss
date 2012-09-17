@@ -1,0 +1,22 @@
+@mixin selectable($val) {
+  -webkit-user-select: $val;
+  -khtml-user-select: $val;
+  -moz-user-select: $val;
+  -o-user-select: $val;
+  user-select: $val;
+}
+
+@mixin transition($property: all, $duration: 0.6s, $easing: ease-out) {
+  -webkit-transition: $property $duration $easing;
+  -moz-transition: $property $duration $easing;
+  -ms-transition: $property $duration $easing;
+  -o-transition: $property $duration $easing;
+  transition: $property $duration $easing;
+}
+
+@mixin background-size($x, $y) {
+  -webkit-background-size: $x $y;
+  -o-background-size: $x $y;
+  -moz-background-size: $x $y;
+  background-size: $x $y;
+}

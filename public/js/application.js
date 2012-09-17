@@ -35,6 +35,7 @@ define([
             this.uploader = new Uploader(this.socket);
             this.project = new ProjectModel();
 
+
             //this.info.noty({text : 'noty - a jquery notification library!' });
             //this.info.reveal($("#dialogueTest"));
 
@@ -43,6 +44,10 @@ define([
             this.getAvailableProjectsFromLocalStorage();
 
             this.controller = Controller.init(this);
+
+            //this.project.get('library').on('add', function onChange(){
+            //    app.views.library.render();
+            //});
 
         };
 

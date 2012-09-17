@@ -1,0 +1,53 @@
+$baseColor: rgba(255, 255, 255, 1);
+$textColor: rgba(0, 0, 0, 1);
+$lineColor: #c0c0c0;
+
+@import "prefixpoly";
+
+button {
+  @include transition(opacity);
+  @include background-size(100%, 100%);
+  background-repeat: no-repeat !important;
+  background-color: $baseColor;
+  background-position: center center !important;
+  background-origin: content;
+  border: none;
+  display: block;
+  min-height: 36px !important;;
+  min-width: 36px !important;
+  height: 100% !important;
+  float: left;
+  opacity: 0.7;
+  overflow: hidden;
+  margin-left: 3px;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+    @include transition();
+  }
+
+  &[disabled] {
+    cursor: default;
+    opacity: 0.4;
+  }
+  &[disabled]:hover {
+    cursor: default;
+  }
+}
+
+button.settings {
+  background: url('../img/icon_settings.svg');
+}
+
+button.share {
+  background: url('../img/icon_share.svg');
+}
+
+button.add {
+  background: url('../img/icon_add.svg');
+}
+
+button.remove {
+  background: url('../img/icon_remove.svg');
+}

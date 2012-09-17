@@ -21,63 +21,82 @@
 
     <script data-main="js/main" src="js/require.js"></script>
 
-    <script>
-
-        /* $(document).ready(function () {
-         $("#fileBrowse").on("click", function () {
-         $("#uploadInput").trigger("click");
-         });
-         });
-         */
-    </script>
 
 </head>
 
 <body>
 
-<header id="projectInfo"></header>
+<div id="wrapper">
+    <header>
+        <div id="projectInfo"></div>
+        <div id="mainControl">
+            <button id="share" class="share"></button>
+            <button id="settings" class="settings"></button>
+        </div>
+    </header>
 
- <div id="libraryControl">Buttons, or Tabs and and and</div>
-<div id="library"></div>
+    <div id="controlbar">
 
-<div style="float:left;width:75%">
-<button id="saveBtn">Save Project</button>
-<button id="fetchBtn">Fetch Project</button>
-<button id="deleteBtn">Delete Project</button>
-<button id="projectSyncBtn">Backbone.sync</button>
-<button id="dumpProject">Dump Project</button>
-<button id="render">Render</button>
+        <div id="navigatorTab">
+            <ul>
+                <li>Assets</li>
+                <li>Compositions</li>
+                <li>Effects</li>
+            </ul>
 
-<p>
-    <button id="addSequenceToCompBtn">Add Sequence To Compositions</button>
-</p>
+        </div>
 
-<p>
-    <button id="saveLocalBtn">Save Project Local</button>
-    <button id="clearLocalBtn">Clear Local Data</button>
-<ul id="availableProjects"></ul>
-</p>
+        <div id="stageControl">
+            <button id="saveBtn">Save Project</button>
+            <button id="fetchBtn">Fetch Project</button>
+            <button id="deleteBtn">Delete Project</button>
+            <button id="dumpProject">Dump Project</button>
+            <button id="render">Render</button>
 
-<p>
-    <input type="file" id="uploadInput" name="uploadInput" multiple/>
-    <button id="fileBrowse">Browse</button>
-    <button id="startBtn">Start</button>
-    <button id="stopBtn">Stop</button>
-</p>
 
-<textarea id="output" style="width:600px;height:400px">
-</textarea>
+            <button id="startBtn">Start</button>
+            <button id="stopBtn">Stop</button>
+        </div>
+    </div>
+
+    <div id="navigator">
+        <div id="library"></div>
+        <div id="compositions"></div>
+
+        <div id="navigatorControl">
+            <input id="fileBrowser" class="add" type="file" id="uploadInput" multiple/>
+            <button id="fileBrowserButton" class="add" enabled></button>
+            <button id="fileDelete" class="remove" disabled></button>
+        </div>
+
+    </div>
+
+    <div id="stage">
+
+    </div>
+
+
+    <div id="timeline">
+        <div id="layer">
+            <div>SomeLayer</div>
+            <div>SomeLayer</div>
+            <div>SomeLayer</div>
+        </div>
+        <div id="bars">
+            <div class="video"></div>
+            <div class="audio"></div>
+            <div class="image"></div>
+        </div>
+
+    </div>
+
+    <!--div id="dialogueTest" class="reveal-modal">
+        <h1>Modal Title</h1>
+
+        <p>Any content could go in here.</p>
+        <a class="close-reveal-modal">&#215;</a>
+    </div-->
 
 </div>
-
-<div id="timeline" style="clear:both">Timeline</div>
-
-<div id="dialogueTest" class="reveal-modal">
-    <h1>Modal Title</h1>
-
-    <p>Any content could go in here.</p>
-    <a class="close-reveal-modal">&#215;</a>
-</div>
-
 </body>
 </html>

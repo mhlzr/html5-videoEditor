@@ -5,7 +5,7 @@ define(["backbone", "backbone-rel", "model/asset"],
         var Sequence = Backbone.RelationalModel.extend({
 
 
-            idAttribute : "_id",
+            idAttribute : "id",
 
             defaults : {
                 scale     : 1,
@@ -17,6 +17,7 @@ define(["backbone", "backbone-rel", "model/asset"],
                 inTime    : 0,
                 outTime   : 0,
                 length    : 0,
+                asset     : null,
                 effects   : null,
                 useAudio  : true
             },

@@ -5,20 +5,27 @@ define(["backbone", "model/asset"],
         var Library = Backbone.Collection.extend({
 
             model   : AssetModel,
-            urlRoot : "/api/",
-
 
             initialize : function () {
-               // this.on("add", this.assetRemoveHandler, this);
+                _.bindAll(this, 'assetAddHandler', 'assetRemoveHandler');
+                this.on("add", this.assetAddHandler, this);
+                this.on("remove", this.assetRemoveHandler, this);
             },
 
             validate : function (attrs) {
-            }   ,
+            },
 
-            assetRemoveHandler : function(e){
-                this.trigger("library:update");
+            assetAddHandler : function (asset) {
+
+            },
+
+            assetRemoveHandler : function (e) {
+
+            },
+
+            getNewestAsset : function (e) {
+                return this.at(this.length-1);
             }
-
 
         });
 

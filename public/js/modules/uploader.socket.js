@@ -14,7 +14,7 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
             isUploading = false,
             blob = null;
 
-        this.addFile = function (file, projectId, byteOffset) {
+        this.addFile = function (assetId, file, projectId, byteOffset) {
 
             byteOffset = byteOffset || 0;
 
@@ -27,6 +27,7 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
                 }
             }
 
+            file.assetId = assetId;
             file.projectId = projectId;
             file.byteOffset = byteOffset;
 
@@ -45,6 +46,7 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
             isUploading = true;
 
             socket.emit("upload", {
+                "assetId"    : file.assetId,
                 "fileName"   : file.name,
                 "byteOffset" : file.byteOffset,
                 "bytesTotal" : file.size,
@@ -69,6 +71,12 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
 
             fileReader.onloadend = function (event) {
                 if (event.target.readyState == FileReader.DONE) {
+
+                    //some videos never get analyzed completly
+                    if (app.project.get('library').get(file.assetId).get('status') !== 'Uploading') {
+                        app.project.get('library').get(file.assetId).set('status', 'Uploading');
+                    }
+
                     //regex to get rid of the data;base stuff
                     self.sendFileChunk(file, event.target.result.match(/,(.*)$/)[1]);
                     fileReader = null;
@@ -93,7 +101,8 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
                 fileQueue.shift();
 
                 $(self).trigger("complete", {
-                    "fileName" : file.name
+                    "fileName" : file.name,
+                    "assetId"  : file.assetId
                 });
 
                 if (fileQueue.length > 0) {
@@ -108,7 +117,8 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
                 if (res.status === "success") {
                     $(self).trigger("progress", {
                         "fileName"         : file.name,
-                        "progressRelative" : file.byteOffset / file.size * 100 | 0,
+                        "assetId"          : file.assetId,
+                        "progressRelative" : Math.round(file.byteOffset / file.size * 100 * Math.pow(10, 2)) / Math.pow(10, 2),
                         "progressBytes"    : file.byteOffset
                     });
                     self.processFile(file);
@@ -152,7 +162,7 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
 
         this.getCleanFileName = function (fileName) {
             if (/(.+?)(\.[^.]*$|$)/.test(fileName)) {
-                return $.trim(/(.+?)(\.[^.]*$|$)/.exec(fileName)[1].substr(0,Config.GUI_MAX_FILENAME_LENGTH));
+                return $.trim(/(.+?)(\.[^.]*$|$)/.exec(fileName)[1].substr(0, Config.GUI_MAX_FILENAME_LENGTH));
             }
             return null;
         };

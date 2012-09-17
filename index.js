@@ -81,6 +81,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('upload', function (data) {
+        if (!data.projectId) return;
         projects.getProjectPathByProjectId(data.projectId, function (path) {
             upload.acceptData(data, data.projectId, path, function dataAccepted(res) {
                 if (res.isComplete) {

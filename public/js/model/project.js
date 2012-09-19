@@ -7,18 +7,26 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
 
             relations : [
                 {
-                    type           : Backbone.HasMany,
-                    key            : "library",
-                    relatedModel   : AssetModel,
-                    collectionType : LibraryCollection,
-                    createModels   : true
+                    type            : Backbone.HasMany,
+                    key             : "library",
+                    relatedModel    : AssetModel,
+                    collectionType  : LibraryCollection,
+                    createModels    : true,
+                    reverseRelation : {
+                        key           : 'projectId',
+                        includeInJSON : '_id'
+                    }
                 },
                 {
-                    type           : Backbone.HasMany,
-                    key            : "compositions",
-                    relatedModel   : CompositionModel,
-                    collectionType : CompositionCollection,
-                    createModels   : true
+                    type            : Backbone.HasMany,
+                    key             : "compositions",
+                    relatedModel    : CompositionModel,
+                    collectionType  : CompositionCollection,
+                    createModels    : true,
+                    reverseRelation : {
+                        key           : 'projectId',
+                        includeInJSON : '_id'
+                    }
 
                 }
             ],
@@ -36,17 +44,22 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
             },
 
             initialize : function () {
-                //this.get("library").on("library:update", this.updateHandler, this);
-                // this.get("compositions").on("composition:update", this.updateHandler, this);
+                this.on('change', this.changeHandler);
+                //this.on('change:library', this.libraryChangeHandler);
+                //this.on('change:compositions', this.compositionsChangeHandler);
+            },
+
+            changeHandler : function () {
+                console.log('PROJECT.JS::CHANGE');
+            },
+
+            compositionsChangeHandler : function () {
+                console.log('PROJECT.JS::COMPOSITIONS CHANGE');
             },
 
             validate : function (attrs) {
-            },
-
-            updateHandler : function (e) {
-                console.log(e);
-                this.save();
             }
+
         });
 
         return Project;

@@ -40,7 +40,8 @@ button.settings, #navigatorControl input.settings[type=file], #navigatorControl 
   background: url("../img/icon_settings.svg"); }
 
 button.share, #navigatorControl input.share[type=file], #navigatorControl button.share {
-  background: url("../img/icon_share.svg"); }
+  background: url("../img/icon_share.svg");
+  margin-right: 5px; }
 
 button.add, #navigatorControl input.add[type=file], #navigatorControl button.add {
   background: url("../img/icon_add.svg"); }
@@ -48,18 +49,50 @@ button.add, #navigatorControl input.add[type=file], #navigatorControl button.add
 button.remove, #navigatorControl input.remove[type=file], #navigatorControl button.remove {
   background: url("../img/icon_remove.svg"); }
 
+button.upload, #navigatorControl input.upload[type=file], #navigatorControl button.upload {
+  @extends .textButton;
+  background-image: url("../img/icon_upload.svg"); }
+
+.textButton {
+  border: 1px solid silver;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background-position: 5% center !important;
+  background-size: contain !important;
+  background-clip: content-box;
+  min-height: 70% !important;
+  height: 70% !important;
+  margin: 0.3%;
+  font-size: 100%;
+  padding: 0.8% 0.9% 0.9% 3%;
+  line-height: 70%;
+  font-weight: bold;
+  -webkit-transition: background 0.15 ease-out;
+  -moz-transition: background 0.15 ease-out;
+  -ms-transition: background 0.15 ease-out;
+  -o-transition: background 0.15 ease-out;
+  transition: background 0.15 ease-out;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf));
+  background: -moz-linear-gradient(center top, #ededed 5%, #dfdfdf 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+  background-color: #ededed;
+  text-shadow: 1px 1px 0px #ffffff; }
+  .textButton:hover {
+    background-color: rgba(89, 166, 255, 0.5);
+    -webkit-transition: background 0.15s ease-out;
+    -moz-transition: background 0.15s ease-out;
+    -ms-transition: background 0.15s ease-out;
+    -o-transition: background 0.15s ease-out;
+    transition: background 0.15s ease-out; }
+
 * {
   font-family: 'Gudea', sans-serif;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   font-size: 100%;
   margin: 0;
-  padding: 0;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
-  user-select: none; }
+  padding: 0; }
 
 body {
   margin: 0;
@@ -103,8 +136,9 @@ header {
     width: 50%;
     float: left;
     padding: 0;
-    min-height: 36px;
-    height: 100%; }
+    min-height: 100%;
+    height: 100%;
+    max-height: 100%; }
     header #mainControl button, header #mainControl #navigatorControl input[type=file], #navigatorControl header #mainControl input[type=file], header #mainControl #navigatorControl button, #navigatorControl header #mainControl button {
       float: right !important; }
 
@@ -112,11 +146,18 @@ header {
   clear: both;
   height: 6%;
   overflow: hidden;
-  min-height: 36px;
+  min-height: 5%;
+  height: 5%;
   max-height: 5%; }
   #controlbar #stageControl {
+    width: 75%;
+    min-width: 75%;
+    max-width: 75;
     float: left;
-    overflow: hidden; }
+    overflow: hidden;
+    height: 100%;
+    min-height: 100%;
+    border-left: 1px solid silver; }
     #controlbar #stageControl button, #controlbar #stageControl #navigatorControl input[type=file], #navigatorControl #controlbar #stageControl input[type=file], #controlbar #stageControl #navigatorControl button, #navigatorControl #controlbar #stageControl button {
       float: left;
       height: 100%; }
@@ -124,16 +165,17 @@ header {
 #navigatorTab {
   width: 25%;
   height: 100%;
-  border-right: 1px solid silver;
   float: left; }
   #navigatorTab ul {
     margin: 0;
-    padding: 0; }
+    padding: 0;
+    height: 100%; }
     #navigatorTab ul li {
       float: left;
       list-style: none;
       padding: 0.6em;
       border-right: 1px solid silver;
+      height: 100%;
       -webkit-user-select: none;
       -khtml-user-select: none;
       -moz-user-select: none;
@@ -172,7 +214,12 @@ header {
   padding: 0;
   margin: 0;
   display: block;
-  clip: rect(100, 100, 100, 100); }
+  clip: rect(100, 100, 100, 100);
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none; }
   #library div.asset {
     clear: both;
     height: 4.3em;
@@ -217,6 +264,11 @@ header {
         font-size: 0.7em;
         float: left;
         width: 50%; }
+      #library div.asset div.info .duration, #library div.asset div.info .dimensions, #library div.asset div.info .ratio {
+        float: left;
+        padding-top: 0.2em;
+        margin-left: 0.2em;
+        font-size: 0.7em; }
       #library div.asset div.info progress {
         float: left;
         clear: both;
@@ -271,15 +323,18 @@ header {
         display: block;
         background-size: 100%; }
         #library div.asset div.types span.mp4 {
+          margin-top: 0.3em;
           background-image: url("../img/icon_mp4.svg"); }
         #library div.asset div.types span.webm {
           background-image: url("../img/icon_webm.svg"); }
         #library div.asset div.types span.ogg {
           background-image: url("../img/icon_ogg.svg"); }
+        #library div.asset div.types span.disabled {
+          opacity: 0.5; }
     #library div.asset:hover {
-      background-color: #59a6ff;
       cursor: pointer;
-      color: black; }
+      color: black;
+      background-color: rgba(89, 166, 255, 0.5); }
 
 #navigatorControl {
   display: block;
@@ -325,7 +380,7 @@ header {
       width: 100%;
       border: 1px solid silver;
       height: 10%;
-      margin: 0.2em;
+      margin: 0.2em 10em 0.2em 0.2em;
       padding: 0.2em; }
   #timeline #bars {
     width: 75%;
@@ -350,3 +405,30 @@ header {
 
 [contenteditable]:focus {
   outline: 1px dotted #cfcfcf; }
+
+#exportDialogue {
+  background-color: white; }
+  #exportDialogue #screen {
+    clear: both;
+    float: left;
+    width: 50%;
+    height: 100%;
+    background-image: url("../img/screen_export.svg");
+    background-repeat: no-repeat;
+    background-size: 80% 80%;
+    min-width: 50%;
+    max-width: 50%;
+    min-height: 100% !important;
+    max-height: 100%;
+    display: block !important;
+    border: 1px solid red; }
+  #exportDialogue #qrcode {
+    float: left;
+    width: 50%;
+    min-width: 50%;
+    max-width: 50%;
+    height: 100%;
+    display: block; }
+    #exportDialogue #qrcode canvas {
+      max-width: 80%;
+      max-height: 80%; }

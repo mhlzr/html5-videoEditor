@@ -17,9 +17,7 @@ define(["jquery", "backbone", "hbs!templates/projectInfo"], function ($, Backbon
         },
 
         titleChangeHandler : function (e) {
-            var $target = $(e.target);
-            this.model.set('title', $target.text());
-            this.model.save();
+            this.model.set('title', $(e.target).text());
         },
 
         render : function () {

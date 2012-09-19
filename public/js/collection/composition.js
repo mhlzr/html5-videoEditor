@@ -6,12 +6,8 @@ define(["backbone", "model/composition"],
 
             model : CompositionModel,
 
-            url : function (models) {
-                return '/animal/' + ( models ? 'set/' + _.pluck(models, 'id').join(';') + '/' : '' );
-            },
-
             initialize : function () {
-
+                console.log('COMPOSITIONS.JS::INIT');
             },
 
             validate : function (attrs) {

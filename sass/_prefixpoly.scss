@@ -20,3 +20,15 @@
   -moz-background-size: $x $y;
   background-size: $x $y;
 }
+
+@mixin box-shadow($dir, $t, $r, $b, $l, $color) {
+  -moz-box-shadow: $dir $t $t $b $l $color;
+  -webkit-box-shadow: $dir $t $t $b $l $color;
+  box-shadow: $dir $t $t $b $l $color;
+}
+
+@mixin border-radius($amount) {
+  -moz-border-radius: $amount;
+  -webkit-border-radius: $amount;
+  border-radius: $amount;
+}

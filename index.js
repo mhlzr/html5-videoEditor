@@ -7,7 +7,7 @@ var express = require('express'),
     mongo = require("mongojs"),
     db = mongo.connect("/videoProjects", ["projects"]),
     projects = require('./projects'),
-    encoder = require('./encoder').Encoder(db),
+    encoder = require('./encoder'),
     events = require('events'),
     upload = require('./upload-socket');
 
@@ -57,10 +57,10 @@ io.set('transports', [                     // enable all transports (optional if
 io.sockets.on('connection', function (socket) {
 
     socket.on('create', function (data) {
-        console.log(data.url);
         projects.createProject(data, function onProjectCreated(res) {
             socket.emit('reply', res);
         });
+
     });
     socket.on('read', function (data) {
         projects.readProject(data, function onProjectRead(res) {
@@ -85,12 +85,35 @@ io.sockets.on('connection', function (socket) {
         projects.getProjectPathByProjectId(data.projectId, function (path) {
             upload.acceptData(data, data.projectId, path, function dataAccepted(res) {
                 if (res.isComplete) {
-                    projects.markAssetFileAsComplete(data.projectId, res.fileName);
+                    //void
                 }
                 socket.emit('upload:progress', res);
             });
         });
-    })
+    });
+
+    socket.on('transcode', function (data) {
+
+        if (!data.projectId || !data.assetId || !data.formats || !data.fileName || !data.assetFolder) return;
+
+        data.path = 'public/projects/' + data.assetFolder + '/assets/';
+
+        delete data.assetFolder;
+
+        data.formats.forEach(function (format) {
+            encoder.addTranscodingJob(data, format, function onTranscodingProgress(progress) {
+                //console.log(progress);
+                //socket.emit
+            });
+        });
+
+        encoder.start();
+
+    });
+
+    encoder.on("transcoding:progress", function onTranscodingProgress(event) {
+        socket.emit("transcoding:progress", event);
+    });
 
 });
 
@@ -102,16 +125,8 @@ io.sockets.on('connection', function (socket) {
  encoder.on("encoding:progress", function onEncodingProgress() {
 
  });
-
- encoder.on("transcoding:progress", function onTranscodingProgress() {
-
- });
-
- encoder.on("transcoding:complete", function onTranscodingComplete() {
-
- });
-
  */
+
 
 /*
  db.projects.find({'compositions.name' : 'krasserSchnitt', 'name' : 'Lorem_254'}, function onFound(err, docs) {
@@ -124,6 +139,3 @@ io.sockets.on('connection', function (socket) {
 
 app.listen(80);
 
-encoder.start();
-
-//encoder.transcode("public/projects/43fe913e-b140-4420-afb1-3dd61cc87334/assets/", "beatsteaks_-_meantime_-_casatt", "mkv");

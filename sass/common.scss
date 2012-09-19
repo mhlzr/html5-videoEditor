@@ -28,7 +28,6 @@ $mainHeight: 100% - $headHeight - $controlHeight - $timelineHeight;
   font-size: 100%;
   margin: 0;
   padding: 0;
-  @include selectable(none);
 }
 
 body {
@@ -80,8 +79,9 @@ header {
     width: 50%;
     float: left;
     padding: 0;
-    min-height: $buttonHeight;
+    min-height: 100%;
     height: 100%;
+    max-height: 100%;
 
     button {
       float: right !important;
@@ -94,12 +94,19 @@ header {
   clear: both;
   height: $controlHeight;
   overflow: hidden;
-  min-height: $buttonHeight;
+  min-height: 5%;
+  height: 5%;
   max-height: 5%;
 
   #stageControl {
+    width: 75%;
+    min-width: 75%;
+    max-width: 75;
     float: left;
     overflow: hidden;
+    height: 100%;
+    min-height: 100%;
+    border-left: 1px solid $lineColor;
     button {
       float: left;
       height: 100%;
@@ -110,17 +117,19 @@ header {
 #navigatorTab {
   width: 25%;
   height: 100%;
-  border-right: 1px solid $lineColor;
   float: left;
 
   ul {
     margin: 0;
     padding: 0;
+    height: 100%;
+
     li {
       float: left;
       list-style: none;
       padding: 0.6em;
       border-right: 1px solid $lineColor;
+      height: 100%;
       @include selectable(none);
 
       &:hover {
@@ -152,7 +161,7 @@ header {
 
 #library {
   min-height: 90%;
-  height:90%;
+  height: 90%;
   max-height: 90%;
   width: 100%;
   overflow: hidden;
@@ -164,6 +173,8 @@ header {
   margin: 0;
   display: block;
   clip: rect(100, 100, 100, 100);
+
+  @include selectable(none);
 
   div.asset {
     clear: both;
@@ -218,6 +229,13 @@ header {
         width: 50%;
       }
 
+      .duration, .dimensions, .ratio {
+        float: left;
+        padding-top: 0.2em;
+        margin-left: 0.2em;
+        font-size: 0.7em;
+      }
+
       progress {
         float: left;
         clear: both;
@@ -255,6 +273,7 @@ header {
         background-size: 100%;
 
         &.mp4 {
+          margin-top: 0.3em;
           background-image: url('../img/icon_mp4.svg');
         }
         &.webm {
@@ -263,13 +282,18 @@ header {
         &.ogg {
           background-image: url('../img/icon_ogg.svg');
         }
+
+        &.disabled {
+          opacity: 0.5;
+        }
       }
     }
 
     &:hover {
-      background-color: $highlightColor;
       cursor: pointer;
       color: $textColor;
+      background-color: transparentize($highlightColor, 0.5);
+
     }
 
   }
@@ -281,8 +305,7 @@ header {
   margin: auto;
 
   min-height: 14%;
-  height:14%;
-
+  height: 14%;
 
   overflow: hidden;
   border-top: 1px solid $lineColor;
@@ -298,9 +321,9 @@ header {
   }
 
   #fileBrowser {
-    position:absolute;
-    left:-900px;
-    top:-900px;
+    position: absolute;
+    left: -900px;
+    top: -900px;
   }
 
 }
@@ -335,7 +358,7 @@ header {
       width: 100%;
       border: 1px solid $lineColor;
       height: 10%;
-      margin: 0.2em;
+      margin: 0.2em 10em 0.2em 0.2em;
       padding: 0.2em;
     }
   }
@@ -344,6 +367,7 @@ header {
     width: 75%;
     height: 100%;
     float: left;
+
     div {
       height: 10%;
       display: block;
@@ -351,9 +375,9 @@ header {
       border: 1px solid $lineColor;
       margin: 0.2em;
     }
+
     .video {
       background-color: $videoColor;
-
     }
     .audio {
       background-color: $audioColor;
@@ -374,3 +398,44 @@ header {
   outline: 1px dotted #cfcfcf;
 }
 
+#exportDialogue {
+  background-color: $baseColor;
+  h1 {
+
+  }
+
+  p {
+
+  }
+
+  #screen {
+    clear: both;
+    float: left;
+    width: 50%;
+    height: 100%;
+    background-image: url('../img/screen_export.svg');
+    background-repeat: no-repeat;
+    background-size: 80% 80%;
+    min-width: 50%;
+    max-width: 50%;
+    min-height: 100% !important;
+    max-height: 100%;
+    display: block !important;;
+    border: 1px solid red;
+  }
+
+  #qrcode {
+    float: left;
+    width: 50%;
+    min-width: 50%;
+    max-width: 50%;
+    height: 100%;
+    display: block;
+
+    canvas {
+      max-width: 80%;
+      max-height: 80%;
+    }
+
+  }
+}

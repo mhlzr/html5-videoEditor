@@ -30,8 +30,8 @@
     <header>
         <div id="projectInfo"></div>
         <div id="mainControl">
-            <button id="share" class="share"></button>
-            <button id="settings" class="settings"></button>
+            <button id="share" class="share" title="Export"></button>
+            <button id="settings" class="settings" title="Settings"></button>
         </div>
     </header>
 
@@ -47,15 +47,12 @@
         </div>
 
         <div id="stageControl">
-            <button id="saveBtn">Save Project</button>
-            <button id="fetchBtn">Fetch Project</button>
-            <button id="deleteBtn">Delete Project</button>
-            <button id="dumpProject">Dump Project</button>
-            <button id="render">Render</button>
-
-
-            <button id="startBtn">Start</button>
-            <button id="stopBtn">Stop</button>
+            <button id="saveBtn" class="textButton">Save Project</button>
+            <button id="fetchBtn" class="textButton">Fetch Project</button>
+            <button id="deleteBtn" class="textButton">Delete Project</button>
+            <button id="dumpProject" class="textButton">Dump Project</button>
+            <button id="render" class="textButton">Render</button>
+            <button id="toggleUpload" class="upload textButton">Stop Upload</button>
         </div>
     </div>
 
@@ -78,9 +75,9 @@
 
     <div id="timeline">
         <div id="layer">
-            <div>SomeLayer</div>
-            <div>SomeLayer</div>
-            <div>SomeLayer</div>
+            <div class="layerInfo">SomeLayer</div>
+            <div class="layerInfo">SomeLayer</div>
+            <div class="layerInfo">SomeLayer</div>
         </div>
         <div id="bars">
             <div class="video"></div>
@@ -90,12 +87,17 @@
 
     </div>
 
-    <!--div id="dialogueTest" class="reveal-modal">
-        <h1>Modal Title</h1>
 
-        <p>Any content could go in here.</p>
+    <div id="exportDialogue" class="reveal-modal">
+        <h1>Export</h1>
+
+        <h2>Private URL</h2>
+        <p>This link gives anybody full control over this project.</p>
+        <p><a href="http://lorem">http://www.lorem.de</a></p>
+        <div id="screen">fff</div>
+        <div id="qrcode"></div>
         <a class="close-reveal-modal">&#215;</a>
-    </div-->
+    </div>
 
 </div>
 </body>

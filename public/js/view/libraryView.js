@@ -5,8 +5,12 @@ define(["jquery", "backbone", "view/assetView", "hbs!templates/library"],
         var LibraryView = Backbone.View.extend({
 
             initialize : function () {
+
                 _.bindAll(this, 'render', 'renderAssetView', 'removeAssetView');
+
+                this.collection.on('analyzed', this.renderAssetView);
                 this.collection.on('add', this.renderAssetView);
+                this.collection.on('change', this.renderAssetView);
                 this.collection.on('remove', this.removeAssetView);
             },
 
@@ -24,11 +28,21 @@ define(["jquery", "backbone", "view/assetView", "hbs!templates/library"],
 
             renderAssetView : function (asset) {
 
-                var assetView = new AssetView({model : asset}),
+                //progress-update does not need a whole rendering
+                if (_.isObject(asset.changedAttributes())) {
+                    var keys = _.keys(asset.changedAttributes());
+                    if (keys.length === 1 && keys[0] == 'progress') return;
+                }
+
+                console.log('LIBRARYVIEW::renderAssetView');
+
+                var assetView = new AssetView({model : asset, el : this.$el}),
                     $assetEl = this.$el.find('#' + asset.id);
 
                 //hasn't been rendered before
                 if (_.isEmpty($assetEl[0])) {
+                    //strange bug in firefox that produces duplicates
+                    $($assetEl[0]).remove();
                     this.$el.append(assetView.render());
                 }
                 //needs update
@@ -36,17 +50,10 @@ define(["jquery", "backbone", "view/assetView", "hbs!templates/library"],
                     $assetEl.replaceWith(assetView.render());
                 }
 
-                asset.on('change', this.renderAssetView);
-
             },
 
-            removeAssetView  : function (asset) {
+            removeAssetView : function (asset) {
                 this.$el.find('#' + asset.id).remove();
-            },
-
-            //there is no need to re-render everytime
-            setAssetProgress : function (assetId, value) {
-                this.$el.find('#' + assetId + ' progress').attr('value', value)
             },
 
             render : function () {

@@ -1,13 +1,41 @@
 <div class="asset" id="{{this.id}}">
     <div class="info {{this.type}}">
-        <span class="name"> {{this.name}}, {{this.duration}}</span>
+        <span class="name"> {{this.name}}</span>
+
         <span class="status">{{this.status}}</span>
-        <progress value="0" max="100"></progress>
+        <progress value="{{this.progress}}" max="100"></progress>
+
+        {{#if hasMetaData}}
+
+            {{#if fps}}
+            <span class="duration">{{roundNumber this.duration/this.fps}}</span>
+            {{/if}}
+
+            {{#unless fps}}
+            <span class="duration">{{roundNumber this.duration}} frames</span>
+            {{/unless}}
+
+            {{#if_eq this.type compare="video"}}
+                <span class="dimensions">{{this.width}}x{{this.height}}</span>
+                <span class="ratio">{{roundNumber this.ratio}}:1</span>
+            {{/if_eq}}
+
+        {{/if}}
+
+
     </div>
     <div class="types">
-        <span class="mp4"></span>
-        <span class="webm"></span>
-        <span class="ogg"></span>
+
+        {{#if_eq this.type compare="video"}}
+        <span class='mp4 {{#has_not this.files attr="ext" value="mp4"}}disabled{{/has_not}}'></span>
+        <span class='webm {{#has_not this.files attr="ext" value="webm"}}disabled{{/has_not}}'></span>
+        <span class='ogg {{#has_not this.files attr="ext" value="ogg"}}disabled{{/has_not}}'></span>
+        {{/if_eq}}
+
+        {{#if_eq this.type compare="audio"}}
+        <span class='ogg {{#has_not this.files attr="ext" value="ogg"}}disabled{{/has_not}}'></span>
+        {{/if_eq}}
+
     </div>
 </div>
 

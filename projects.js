@@ -19,7 +19,7 @@ function createProject(data, callback) {
         model = data.model;
 
     //UUID for asset-folder
-    model.assetFolder = uuid.v4();
+    model.assetFolder = uuid.v4().replace(/-/g, '');
 
     db.projects.save(model, function saveCallback(err, docs) {
 
@@ -79,7 +79,10 @@ function updateProject(data, callback) {
         $set : {
             title        : model.title,
             library      : model.library,
-            compositions : model.compositions
+            compositions : model.compositions,
+            assetFolder  : model.assetFolder,
+            date         : model.date
+
         }
 
     }, {multi : false}, function updateCallback(err, docs) {
@@ -118,18 +121,6 @@ function deleteProject(data, callback) {
     });
 }
 
-function markAssetFileAsComplete(projectId, fileName) {
-
-    db.projects.findOne({_id : db.ObjectId(projectId)}, {library : 1}, function onFound(err, docs) {
-
-        if (err) console.log(err);
-        //var file = docs.library;
-        //TODO   update status of file
-        console.log(util.inspect(docs));
-
-    });
-}
-
 function addComposition() {
 
 }
@@ -142,7 +133,6 @@ function deleteFile(filepath, callback) {
         });
     });
 }
-;
 
 function deleteDirSync(path) {
     wrench.rmdirSyncRecursive(path);
@@ -172,6 +162,5 @@ exports.updateProject = updateProject;
 exports.deleteProject = deleteProject;
 
 exports.isProjectExistent = isProjectExistent;
-exports.markAssetFileAsComplete = markAssetFileAsComplete;
 exports.getProjectPathByProjectId = getProjectPathByProjectId;
 exports.clean = clean;

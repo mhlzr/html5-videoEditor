@@ -11,6 +11,7 @@ require.config({
         'jquery'                     : 'lib/jquery-1.8.1',
         'json2'                      : 'lib/json2',
         'jstorage'                   : 'lib/jstorage',
+        'qrcode'                     : 'lib/jquery.qrcode.min',
         'socket'                     : 'lib/socket.io',
         'modernizr'                  : 'lib/modernizr-2.6.2',
         'hbs'                        : 'lib/hbs',
@@ -55,6 +56,10 @@ require.config({
             deps : ['jquery']
         },
 
+        'qrcode' : {
+            deps : ['jquery']
+        },
+
         'underscore' : {
             'exports' : '_'
         },
@@ -84,9 +89,5 @@ require(['app'],
 
         window.app = Application;
         window.app.initialize();
-
-        Backbone.history.start({
-            pushState : true
-        });
 
     });

@@ -15,7 +15,6 @@ define([
         app.project = app.project || {};
 
         app.views = {};
-        app.router = new Router();
         app.controller = null;
 
         app.initialize = function () {
@@ -30,10 +29,12 @@ define([
             this.socket = Socket.connect("http://" + Config.WEBSOCKET_HOST + ":" + Config.WEBSOCKET_PORT);
             this.socket.callbackRegistry = CallbackReg;
 
+            this.router = new Router();
+            this.project = new ProjectModel();
+
             this.setupBackbone();
 
             this.uploader = new Uploader(this.socket);
-            this.project = new ProjectModel();
 
 
             //this.info.noty({text : 'noty - a jquery notification library!' });
@@ -45,19 +46,20 @@ define([
 
             this.controller = Controller.init(this);
 
-            //this.project.get('library').on('add', function onChange(){
-            //    app.views.library.render();
-            //});
-
         };
 
+        /*
+         * Configuring Backbone & Overriding it's syncing method
+         * to use socket.io, callbacks are stored in callbackRegistry
+         */
         app.setupBackbone = function () {
-            /*
-             * Configuring Backbone & Overriding it's syncing method
-             * to use socket.io, callbacks are stored in callbackRegistry
-             *
-             */
+
+            Backbone.history.start({
+                pushState : true
+            });
+
             Backbone.setDomLibrary($);
+            // Backbone.history.start({pushState : true});
             Backbone.sync = function (method, model, options) {
 
                 var url = _.isFunction(model.url) ? model.url() : model.url,

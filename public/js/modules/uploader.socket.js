@@ -61,6 +61,9 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
             var start = file.byteOffset,
                 end = file.byteOffset + Config.UPLOADER_SOCKET_CHUNK_SIZE;
 
+            //change asset-status
+            app.project.get('library').get(file.assetId).set('status', 'Uploading');
+
             fileReader = new FileReader();
 
             if (file.byteOffset + Config.UPLOADER_SOCKET_CHUNK_SIZE > file.size) {
@@ -71,11 +74,6 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
 
             fileReader.onloadend = function (event) {
                 if (event.target.readyState == FileReader.DONE) {
-
-                    //some videos never get analyzed completly
-                    if (app.project.get('library').get(file.assetId).get('status') !== 'Uploading') {
-                        app.project.get('library').get(file.assetId).set('status', 'Uploading');
-                    }
 
                     //regex to get rid of the data;base stuff
                     self.sendFileChunk(file, event.target.result.match(/,(.*)$/)[1]);
@@ -130,10 +128,8 @@ define(["config", "jquery", "underscore"], function (Config, $, _) {
 
         this.start = function () {
 
-            console.log("UPLOADER.JS :: START");
-
             if (fileQueue.length > 0 && !isUploading) {
-                //this.onload = uploader.onXHRResponse;
+                console.log("UPLOADER.JS :: START");
                 this.processFile(fileQueue[0]);
             }
         };

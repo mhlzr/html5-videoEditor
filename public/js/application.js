@@ -1,56 +1,53 @@
 define([
-    "config", "jquery", "jstorage", "backbone", "modernizr", "socket", "router",
-    "modules/controller", "modules/device", "modules/uploader.socket", "modules/callbackRegistry", "info",
-    "model/project", "view/libraryView", "view/projectInfoView", "model/asset", "model/sequence"],
+    'config', 'jquery', 'jstorage', 'backbone', 'modernizr', 'socket', 'router',
+    'controller', 'model/settings', 'modules/device', 'modules/uploader.socket', 'info',
+    'model/project', 'view/libraryView', 'view/projectInfoView', 'backbone-bind', 'backbone-sync'],
 
-    function (Config, $, jStorage, Backbone, Modernizr, Socket, Router, Controller, Device, Uploader, CallbackReg, Info, ProjectModel, LibraryView, ProjectInfoView, AssetModel, SequenceModel) {
+    function (Config, $, jStorage, Backbone, Modernizr, Socket, Router, Controller, Settings, Device, Uploader, Info, ProjectModel, LibraryView, ProjectInfoView) {
 
         var app = {};
 
         app.device = Device;
         app.info = Info;
-        app.socket = null;
         app.uploader = null;
 
         app.project = app.project || {};
 
         app.views = {};
         app.controller = null;
+        app.socket = null;
 
-        app.initialize = function () {
+        app.initialize = function (socket) {
 
             if (!this.device.runBrowserSupportTest()) {
-                console.log("Your browser is not supported");
+                console.log('Your browser is not supported');
                 return;
             }
 
-            console.log("APPLICATION.JS::INIT");
+            console.log('APPLICATION.JS::INIT');
 
-            this.socket = Socket.connect("http://" + Config.WEBSOCKET_HOST + ":" + Config.WEBSOCKET_PORT);
-            this.socket.callbackRegistry = CallbackReg;
-
-            this.router = new Router();
+            window.socket = this.socket = socket.connect('http://' + Config.WEBSOCKET_HOST + ':' + Config.WEBSOCKET_PORT);
             this.project = new ProjectModel();
 
+            this.router = new Router();
             this.setupBackbone();
 
             this.uploader = new Uploader(this.socket);
 
-
             //this.info.noty({text : 'noty - a jquery notification library!' });
-            //this.info.reveal($("#dialogueTest"));
+            //this.info.reveal($('#dialogueTest'));
 
             this.initViews();
 
             this.getAvailableProjectsFromLocalStorage();
 
             this.controller = Controller.init(this);
+            this.settings = new Settings();
 
         };
 
         /*
-         * Configuring Backbone & Overriding it's syncing method
-         * to use socket.io, callbacks are stored in callbackRegistry
+         * Configuring Backbone
          */
         app.setupBackbone = function () {
 
@@ -59,42 +56,26 @@ define([
             });
 
             Backbone.setDomLibrary($);
-            // Backbone.history.start({pushState : true});
-            Backbone.sync = function (method, model, options) {
 
-                var url = _.isFunction(model.url) ? model.url() : model.url,
-                    payload = {
-                        "model" : model,
-                        "url"   : url,
-                        "id"    : app.socket.callbackRegistry.addCallback(options)
-                    };
-
-                app.socket.emit(method, payload);
-            };
-
-            app.socket.on("reply", function (data) {
-                app.socket.callbackRegistry.execCallbackById(data);
-
-            });
         };
 
         app.initViews = function () {
 
             app.views.library = new LibraryView({
-                collection : app.project.get("library"),
-                el         : $("#library")
+                collection : app.project.get('library'),
+                el         : $('#library')
             });
 
             app.views.projectInfo = new ProjectInfoView({
                 model : app.project,
-                el    : $("#projectInfo")
+                el    : $('#projectInfo')
             });
 
             app.views.library.render();
             app.views.projectInfo.render();
 
             app.views.renderAll = function () {
-                console.log("APPLICATION.JS::RENDERING ALL VIEWS");
+                console.log('APPLICATION.JS::RENDERING ALL VIEWS');
                 _.each(app.views, function (obj, key) {
                     if (_.isFunction(obj)) return;
                     if (_.isObject(obj)) obj.render();
@@ -105,13 +86,12 @@ define([
 
         app.getAvailableProjectsFromLocalStorage = function () {
             var localProjects = $.jStorage.index(),
-                outputList = $("#availableProjects");
+                outputList = $('#availableProjects');
 
             var currentProj;
 
             for (var i = 0; i < localProjects.length; i++) {
                 currentProj = $.jStorage.get(localProjects[i]);
-                outputList.append("<li><a href='#" + localProjects[i] + "'>" + localProjects[i] + ", " + currentProj.name + ", " + currentProj.date + "</a></li>");
 
             }
         };

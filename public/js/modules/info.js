@@ -38,15 +38,15 @@ define(["jquery", "lib/noty/jquery.noty", "lib/noty/themes/default", "lib/noty/l
 
     //http://www.zurb.com/playground/reveal-modal-plugin
 
-        var reveal = function ($el) {
-            $el.reveal({
-                animation              : 'fadeAndPop', //fade, fadeAndPop, none
-                animationspeed         : 300, //how fast animtions are
-                closeonbackgroundclick : true, //if you click background will modal close?
-                dismissmodalclass      : 'close-reveal-modal'    //the class of a button or element that will close an open modal
-            });
+    var reveal = function ($el) {
+        $el.reveal({
+            animation              : 'fadeAndPop', //fade, fadeAndPop, none
+            animationspeed         : 300, //how fast animtions are
+            closeonbackgroundclick : true, //if you click background will modal close?
+            dismissmodalclass      : 'close-reveal-modal'    //the class of a button or element that will close an open modal
+        });
 
-        }
+    };
 
     return {
         noty   : window.noty,

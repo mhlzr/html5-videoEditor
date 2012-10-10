@@ -1,7 +1,7 @@
-define(["jquery", "backbone", "hbs!templates/asset"],
+define(["jquery", "backbone", "hbs!templates/assetList"],
     function ($, Backbone, Template) {
 
-        var AssetView = Backbone.View.extend({
+        var AssetListView = Backbone.View.extend({
 
             tagName   : 'div',
             className : 'asset',
@@ -21,11 +21,11 @@ define(["jquery", "backbone", "hbs!templates/asset"],
 
             progressChangeHandler : function () {
                 //actually this view has no real $el, its the $el of libraryView, fuck me, right? ;)
-                this.$el.find('#' + this.model.get('id') + ' progress').val(this.model.get('progress'));
+                this.$el.find('#' + this.model.id + ' progress').val(this.model.get('progress'));
             }
         });
 
-        return AssetView;
+        return AssetListView;
 
     }
 )

@@ -12,9 +12,6 @@ define(["backbone", "model/asset"],
 
             initialize : function () {
 
-            },
-
-            validate : function (attrs) {
             }
 
         });

@@ -54,9 +54,13 @@ button.remove {
   background: url('../img/icon_remove.svg');
 }
 
+button.play {
+  background: url('../img/icon_play.svg');
+}
+
 button.upload {
-  @extends .textButton;
   background-image: url("../img/icon_upload.svg");
+  @extend .textButton;
 }
 
 .textButton {
@@ -73,11 +77,10 @@ button.upload {
   line-height: 70%;
   font-weight: bold;
   @include transition(background, 0.15);
-  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
-  background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
-  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
-  background-color:#ededed;
-  text-shadow:1px 1px 0px #ffffff;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf));
+  background: -moz-linear-gradient(center top, #ededed 5%, #dfdfdf 100%);
+  background-color: #ededed;
+  text-shadow: 1px 1px 0px #ffffff;
 
   &:hover {
     background-color: transparentize($highlightColor, 0.5);

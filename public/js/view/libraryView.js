@@ -1,4 +1,4 @@
-define(["jquery", "backbone", "view/assetView", "hbs!templates/library"],
+define(["jquery", "backbone", "view/assetListView", "hbs!templates/library"],
 
     function ($, Backbone, AssetView, Template) {
 
@@ -8,10 +8,10 @@ define(["jquery", "backbone", "view/assetView", "hbs!templates/library"],
 
                 _.bindAll(this, 'render', 'renderAssetView', 'removeAssetView');
 
-                this.collection.on('analyzed', this.renderAssetView);
-                this.collection.on('add', this.renderAssetView);
-                this.collection.on('change', this.renderAssetView);
-                this.collection.on('remove', this.removeAssetView);
+               //this.collection.on('analyzed', this.renderAssetView);
+               //this.collection.on('add', this.renderAssetView);
+               this.collection.on('change', this.renderAssetView);
+               //this.collection.on('remove', this.removeAssetView);
             },
 
             events : {
@@ -19,7 +19,10 @@ define(["jquery", "backbone", "view/assetView", "hbs!templates/library"],
             },
 
             assetClickHandler : function (e) {
-                console.log(this.collection.get(e.currentTarget.id).getCompatibleMedia());
+                var asset = this.collection.get(e.currentTarget.id);
+                if (asset.hasCompatibleMedia()) {
+                    app.controller.currentAsset = asset;
+                }
             },
 
             comparator : function (asset) {

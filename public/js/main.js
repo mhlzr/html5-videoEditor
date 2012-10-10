@@ -1,6 +1,6 @@
 require.config({
 
-    'locale' : 'de_de',
+    'locale' : 'en_en',
 
     'paths' : {
         'underscore'                 : 'lib/underscore-min',
@@ -8,6 +8,8 @@ require.config({
         'backbone-rel'               : 'lib/backbone-relational',
         'backbone-model-binder'      : 'lib/Backbone.ModelBinder.min',
         'backbone-collection-binder' : 'lib/Backbone.CollectionBinder.min',
+        'backbone-bind'              : 'lib/backbone.iobind',
+        'backbone-sync'              : 'lib/backbone.iosync',
         'jquery'                     : 'lib/jquery-1.8.1',
         'json2'                      : 'lib/json2',
         'jstorage'                   : 'lib/jstorage',
@@ -17,9 +19,9 @@ require.config({
         'hbs'                        : 'lib/hbs',
         'handlebars'                 : 'lib/handlebars',
         'i18nprecompile'             : 'lib/i18nprecompile',
-        'uuid'                       : 'lib/uuid',
         'app'                        : 'application',
         'config'                     : 'config',
+        'controller'                 : 'controller',
         'info'                       : 'modules/info'
     },
 
@@ -40,6 +42,14 @@ require.config({
 
         'backbone-rel' : {
             'deps' : ['backbone']
+        },
+
+        'backbone-bind' : {
+            'deps' : ['backbone', 'underscore']
+        },
+
+        'backbone-sync' : {
+            'deps' : ['backbone', 'underscore']
         },
 
         'modernizr' : {
@@ -68,26 +78,18 @@ require.config({
             'exports' : function () {
                 return window.io;
             }
-        },
-
-        'uuid' : {
-            'exports' : function () {
-                return {
-                    v4 : function () {
-                        return window.uuid.v4().replace(/-/g, '');
-                    }
-                }
-            }
         }
+
     }
-})
-;
+});
 
-require(['app'],
+require(['app', 'socket'],
 
-    function (Application) {
+    function (Application, Socket) {
+
+        window.socket = Socket;
 
         window.app = Application;
-        window.app.initialize();
+        window.app.initialize(window.socket);
 
     });

@@ -7,20 +7,18 @@ define(["backbone", "model/asset"],
             idAttribute : "_id",
 
             defaults : {
-                width     : 0,
-                height    : 0,
-                ratio     : 0,
-                framerate : 0,
-                duration  : 0,
-                hasAudio  : false
+                _id      : null,
+                width    : 0,
+                height   : 0,
+                ratio    : 0,
+                duration : 0,
+                hasAudio : false
             },
 
             initialize : function () {
 
-            },
-
-            validate : function (attrs) {
             }
+
 
         });
 

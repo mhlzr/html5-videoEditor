@@ -49,11 +49,13 @@ button.add, #navigatorControl input.add[type=file], #navigatorControl button.add
 button.remove, #navigatorControl input.remove[type=file], #navigatorControl button.remove {
   background: url("../img/icon_remove.svg"); }
 
+button.play, #navigatorControl input.play[type=file], #navigatorControl button.play {
+  background: url("../img/icon_play.svg"); }
+
 button.upload, #navigatorControl input.upload[type=file], #navigatorControl button.upload {
-  @extends .textButton;
   background-image: url("../img/icon_upload.svg"); }
 
-.textButton {
+.textButton, button.upload, #navigatorControl input.upload[type=file], #navigatorControl button.upload {
   border: 1px solid silver;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -75,10 +77,9 @@ button.upload, #navigatorControl input.upload[type=file], #navigatorControl butt
   transition: background 0.15 ease-out;
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf));
   background: -moz-linear-gradient(center top, #ededed 5%, #dfdfdf 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
   background-color: #ededed;
   text-shadow: 1px 1px 0px #ffffff; }
-  .textButton:hover {
+  .textButton:hover, button.upload:hover, #navigatorControl input.upload[type=file]:hover, #navigatorControl button.upload:hover {
     background-color: rgba(89, 166, 255, 0.5);
     -webkit-transition: background 0.15s ease-out;
     -moz-transition: background 0.15s ease-out;
@@ -432,3 +433,40 @@ header {
     #exportDialogue #qrcode canvas {
       max-width: 80%;
       max-height: 80%; }
+
+noscript {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fffff; }
+  noscript div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -25%;
+    margin-top: -25%;
+    text-align: left;
+    width: 50%;
+    height: 50%;
+    height: auto;
+    display: block;
+    padding-left: 12em;
+    background-image: url("../img/icon_genius.svg");
+    background-repeat: no-repeat;
+    background-size: 10em 10em; }
+    noscript div h1, noscript div p {
+      color: #ffffff;
+      width: 100%; }
+    noscript div h1 {
+      font-size: 2.5em; }
+    noscript div p {
+      font-size: 1.5em; }
+    noscript div a:link, noscript div a:active, noscript div a:visited {
+      color: #ffffff;
+      font-weight: bold;
+      text-decoration: none !important; }
+    noscript div a:hover {
+      text-decoration: underline !important; }

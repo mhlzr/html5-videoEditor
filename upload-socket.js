@@ -10,7 +10,7 @@ var UploadHandler = function () {
             response;
 
         if (!data.fileName || !data.bytes || isNaN(data.byteOffset) || !data.bytesTotal) {
-            console.log('Missing Parameters');
+            console.log('Missing or false parameters');
         }
 
         fs.open(__dirname + '/public/projects/' + projectPath + '/assets/' + data.fileName, 'a', function (err, fd) {
@@ -26,6 +26,7 @@ var UploadHandler = function () {
                 if (err) {
                     response = {
                         'isComplete' : false,
+                        'id'         : data.id,
                         'assetId'    : data.assetId,
                         'fileName'   : data.fileName,
                         'byteOffset' : pos + buffer.length,
@@ -42,6 +43,7 @@ var UploadHandler = function () {
 
                     response = {
                         'isComplete' : isComplete,
+                        'id'         : data.id,
                         'assetId'    : data.assetId,
                         'projectId'  : projectId,
                         'fileName'   : data.fileName,

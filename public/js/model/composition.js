@@ -6,23 +6,32 @@ define(["backbone", "backbone-rel", "model/sequence", "model/file"],
 
             relations : [
                 {
-                    type         : Backbone.HasMany,
-                    key          : "sequences",
-                    relatedModel : SequenceModel,
-                    createModels : true
+                    type            : Backbone.HasMany,
+                    key             : "sequences",
+                    relatedModel    : SequenceModel,
+                    createModels    : true,
+                    reverseRelation : {
+                        key           : '_id',
+                        includeInJSON : 'compositionId'
+                    }
                 },
                 {
-                    type         : Backbone.HasMany,
-                    key          : "files",
-                    relatedModel : FileModel,
-                    createModels : true
+                    type            : Backbone.HasMany,
+                    key             : "files",
+                    relatedModel    : FileModel,
+                    createModels    : true,
+                    reverseRelation : {
+                        key           : '_id',
+                        includeInJSON : 'compositionId'
+                    }
                 }
             ],
 
-            idAttribute : "id",
+            idAttribute : "_id",
+            url         : 'composition',
 
             defaults : {
-                id      : null,
+                _id      : null,
                 name     : null,
                 width    : 0,
                 height   : 0,
@@ -34,9 +43,6 @@ define(["backbone", "backbone-rel", "model/sequence", "model/file"],
 
             initialize : function () {
 
-            },
-
-            validate : function (attrs) {
             }
 
         });

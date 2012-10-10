@@ -26,7 +26,7 @@ app.get(/^\/([0-9a-fA-F]{24}$)/, function (req, res) {
     });
 });
 
-app.get('/api/reset', function onReset(req, res) {
+app.get('/reset', function onReset(req, res) {
     projects.clean(function onComplete(err) {
         res.writeHead(200);
         res.end("Done!");
@@ -56,34 +56,35 @@ io.set('transports', [                     // enable all transports (optional if
 
 io.sockets.on('connection', function (socket) {
 
-    socket.on('create', function (data) {
-        projects.createProject(data, function onProjectCreated(res) {
-            socket.emit('reply', res);
-        });
+    /*
+     PROJECT CRUD
+     */
+    socket.on('project:create', projects.createProject);
+    socket.on('project:read', projects.readProject);
+    socket.on('project:update', projects.updateProject);
+    socket.on('project:delete', projects.deleteProject);
 
-    });
-    socket.on('read', function (data) {
-        projects.readProject(data, function onProjectRead(res) {
-            socket.emit('reply', res);
-        });
-    });
+    /*
+     ASSET CRUD
+     */
+    socket.on('asset:create', projects.createAsset);
+    socket.on('asset:read', projects.readAsset);
+    socket.on('asset:update', projects.updateAsset);
+    socket.on('asset:delete', projects.deleteAsset);
 
-    socket.on('update', function (data) {
-        projects.updateProject(data, function onProjectUpdated(res) {
-            socket.emit('reply', res);
-        });
-    });
-
-    socket.on('delete', function (data) {
-        projects.deleteProject(data, function onProjectDeleted(res) {
-            socket.emit('reply', res);
-        });
-    });
+    /*
+     File CRUD
+     */
+    socket.on('file:create', projects.createFile);
+    socket.on('file:read', projects.readFile);
+    socket.on('file:update', projects.updateFile);
+    socket.on('file:delete', projects.deleteFile);
 
     socket.on('upload', function (data) {
         if (!data.projectId) return;
         projects.getProjectPathByProjectId(data.projectId, function (path) {
             upload.acceptData(data, data.projectId, path, function dataAccepted(res) {
+                //TODO update DB
                 if (res.isComplete) {
                     //void
                 }
@@ -115,27 +116,16 @@ io.sockets.on('connection', function (socket) {
         socket.emit("transcoding:progress", event);
     });
 
-});
+    /*
+     //ENCODER EVENTS
+     encoder.on("encoding:complete", function onEncodingComplete() {
 
-/*
- //ENCODER EVENTS
- encoder.on("encoding:complete", function onEncodingComplete() {
+     });
+     encoder.on("encoding:progress", function onEncodingProgress() {
+     */
+})
+;
 
- });
- encoder.on("encoding:progress", function onEncodingProgress() {
-
- });
- */
-
-
-/*
- db.projects.find({'compositions.name' : 'krasserSchnitt', 'name' : 'Lorem_254'}, function onFound(err, docs) {
- console.log('FOUND: ' + util.inspect(docs));
- });
-
- */
-
-//DEBUGGING
 
 app.listen(80);
 

@@ -6,15 +6,8 @@ define(["backbone", "model/file"],
 
             model : FileModel,
 
-            url : function (models) {
-                return '/animal/' + ( models ? 'set/' + _.pluck(models, 'id').join(';') + '/' : '' );
-            },
-
-            initialize : function () {
-
-            },
-
-            validate : function (attrs) {
+            initialize : function(){
+                console.log('FILES.JS::INIT');
             }
 
         });

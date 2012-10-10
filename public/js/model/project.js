@@ -12,6 +12,7 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
                     relatedModel    : AssetModel,
                     collectionType  : LibraryCollection,
                     createModels    : true,
+                    includeInJSON   : '_id',
                     reverseRelation : {
                         key           : 'projectId',
                         includeInJSON : '_id'
@@ -22,6 +23,7 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
                     key             : "compositions",
                     relatedModel    : CompositionModel,
                     collectionType  : CompositionCollection,
+                    includeInJSON   : '_id',
                     createModels    : true,
                     reverseRelation : {
                         key           : 'projectId',
@@ -31,7 +33,8 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
                 }
             ],
 
-            urlRoot     : "/api/project/",
+            url : "project",
+
             idAttribute : "_id",
 
             defaults : {
@@ -45,21 +48,11 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
 
             initialize : function () {
                 this.on('change', this.changeHandler);
-                //this.on('change:library', this.libraryChangeHandler);
-                //this.on('change:compositions', this.compositionsChangeHandler);
             },
 
             changeHandler : function () {
                 console.log('PROJECT.JS::CHANGE');
-            },
-
-            compositionsChangeHandler : function () {
-                console.log('PROJECT.JS::COMPOSITIONS CHANGE');
-            },
-
-            validate : function (attrs) {
             }
-
         });
 
         return Project;

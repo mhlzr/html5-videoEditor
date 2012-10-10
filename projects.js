@@ -9,57 +9,15 @@ var PROJECTS_PATH = __dirname + "/public/projects/";
 
 function isProjectExistent(id, callback) {
 
-    db.projects.findOne({_id : db.ObjectId(id)}, function onFound(err, docs) {
-        callback(err === null);
-    });
-}
-
-function createProject(data, callback) {
-    var hasError,
-        model = data.model;
-
-    //UUID for asset-folder
-    model.assetFolder = uuid.v4().replace(/-/g, '');
-
-    db.projects.save(model, function saveCallback(err, docs) {
-
-        console.log("PROJECTS.JS::PROJECT CREATED", docs._id);
-
-        createDir(PROJECTS_PATH + model.assetFolder, function onComplete(err) {
-            createDir(PROJECTS_PATH + model.assetFolder + "/assets", function onComplete(err) {
-                callback({
-                    id      : data.id,
-                    payload : docs,
-                    status  : err ? "error" : "success"
-                });
-            });
-        });
-
-    });
-
-}
-
-function readProject(data, callback) {
-    var model = data.model;
-
-    if (!model._id || model._id.toString().length < 24) {
-        callback({
-            id      : data.id,
-            payload : null,
-            status  : "error"
-        });
+    if (!id || id.length < 24) {
+        //TODO check this
+        //callback(false);
         return;
     }
 
-    db.projects.findOne({_id : db.ObjectId(model._id)}, function onFound(err, docs) {
-        console.log("PROJECTS.JS::PROJECT FOUND", docs._id);
-        callback({
-            id      : data.id,
-            payload : docs,
-            status  : err ? "error" : "success"
-        });
+    db.projects.findOne({_id : db.ObjectId(id)}, function onFound(err, docs) {
+        callback(err === null);
     });
-
 }
 
 function getProjectPathByProjectId(id, callback) {
@@ -71,61 +29,184 @@ function getProjectPathByProjectId(id, callback) {
 
 }
 
+function createProject(data, callback) {
+
+    //UUID for asset-folder
+    data.assetFolder = uuid.v4().replace(/-/g, '');
+
+    db.projects.save(data, function saveCallback(err, docs) {
+
+            console.log("PROJECTS.JS::PROJECT CREATED", docs._id);
+
+            createDir(PROJECTS_PATH + data.assetFolder, function onComplete(err) {
+                createDir(PROJECTS_PATH + data.assetFolder + "/assets", function onComplete(err) {
+                    callback(err, {
+                        _id         : docs._id,
+                        assetFolder : docs.assetFolder
+                    });
+                });
+            });
+        }
+    );
+}
+
+function readProject(data, callback) {
+    isProjectExistent(data._id, function (exists) {
+        if (exists) {
+            db.projects.findOne({_id : db.ObjectId(data._id)}, function onFound(err, docs) {
+                if (docs) {
+                    console.log("PROJECTS.JS::PROJECT FOUND", docs._id);
+                }
+                callback(err, docs);
+            });
+        }
+        else {
+            callback('Does not exist', null);
+        }
+    });
+
+}
+
 function updateProject(data, callback) {
 
-    var model = data.model;
-
-    db.projects.update({_id : db.ObjectId(model._id)}, {
+    db.projects.update({_id : db.ObjectId(data._id)}, {
         $set : {
-            title        : model.title,
-            library      : model.library,
-            compositions : model.compositions,
-            assetFolder  : model.assetFolder,
-            date         : model.date
-
+            title        : data.title,
+            library      : data.library,
+            compositions : data.compositions,
+            assetFolder  : data.assetFolder,
+            date         : data.date
         }
 
     }, {multi : false}, function updateCallback(err, docs) {
-        console.log("PROJECTS.JS::PROJECT UPDATED", model._id);
-        callback({
-            id      : data.id,
-            payload : model,
-            status  : err ? "error" : "success"
-        });
+        console.log("PROJECTS.JS::PROJECT UPDATED", data._id);
+        callback(err, {});
     });
 
 }
 
 function deleteProject(data, callback) {
 
-    var id = db.ObjectId(data.model._id),
+    var id = db.ObjectId(data._id),
         assetFolder = null;
 
+    //to make sure nothing else gets deleted
     db.projects.findOne({_id : id}, {assetFolder : 1}, function onFound(err, docs) {
-
         assetFolder = docs.assetFolder;
-
         db.projects.remove({_id : id}, function deleteCallback(err, docs) {
 
             deleteDirSync(PROJECTS_PATH + assetFolder);
-            console.log("PROJECTS.JS::PROJECT DELETED", id)
+            console.log("PROJECTS.JS::PROJECT DELETED", id);
 
-            callback({
-                id      : data.id,
-                payload : data.model,
-                status  : err ? "error" : "success"
-            });
+            callback(err, docs);
 
         });
 
     });
 }
 
-function addComposition() {
+function createAsset(data, callback) {
+    db.projects.save(data, function saveCallback(err, docs) {
+            console.log("PROJECTS.JS::ASSET CREATED", docs._id);
+            if (err) throw err;
+            callback(err, docs);
+        }
+    );
+}
+
+function readAsset(data, callback) {
+    db.projects.findOne({_id : db.ObjectId(data._id)}, function onFound(err, docs) {
+        console.log("PROJECTS.JS::ASSET FOUND", docs._id);
+        if (err) throw err;
+        callback(err, docs);
+    });
 
 }
 
-function deleteFile(filepath, callback) {
+function updateAsset(data, callback) {
+    var id = data._id;
+    delete data._id;
+    db.projects.update({_id : db.ObjectId(id)}, data, {multi : false},
+        function updateCallback(err, docs) {
+            data._id = id;
+            console.log("PROJECTS.JS::ASSET UPDATED", id);
+            if (err) throw err;
+            callback(err, {});
+        }
+
+    )
+    ;
+
+}
+
+function deleteAsset(data, callback) {
+
+    var id = db.ObjectId(data._id),
+        assetFolder = null;
+
+    //to make sure nothing else gets deleted
+    db.projects.find({_id : id}, {files : 1}, function onFound(err, docs) {
+        //TODO delete all files and remove from db
+        //assetFolder = docs.assetFolder;
+        db.projects.remove({_id : id}, function deleteCallback(err, docs) {
+            console.log("PROJECTS.JS::ASSET DELETED", id);
+            if (err) throw err;
+            callback(err, docs);
+
+        });
+
+    });
+}
+
+function createFile(data, callback) {
+    db.projects.save(data, function saveCallback(err, docs) {
+            console.log("PROJECTS.JS::FILE CREATED", docs._id);
+            if (err) throw err;
+            callback(err, docs);
+        }
+    );
+}
+
+function readFile(data, callback) {
+    db.projects.findOne({_id : db.ObjectId(data._id)}, function onFound(err, docs) {
+        console.log("PROJECTS.JS::FILE FOUND", docs._id);
+        if (err) throw err;
+        callback(err, docs);
+    });
+
+}
+
+function updateFile(data, callback) {
+    var id = data._id;
+    delete data._id;
+
+    db.projects.update({_id : db.ObjectId(data._id)}, data, {multi : false},
+        function updateCallback(err, docs) {
+            console.log("PROJECTS.JS::FILE UPDATED", id);
+            if (err) throw err;
+            callback(err, {});
+        });
+}
+
+function deleteFile(data, callback) {
+
+    var id = db.ObjectId(data._id),
+        assetFolder = null;
+
+    //to make sure nothing else gets deleted
+    db.projects.find({_id : id}, {files : 1}, function onFound(err, docs) {
+        //TODO delete all files and remove from db
+        //assetFolder = docs.assetFolder;
+        db.projects.remove({_id : id}, function deleteCallback(err, docs) {
+            console.log("PROJECTS.JS::FILE DELETED", id);
+            callback(err, docs);
+
+        });
+
+    });
+}
+
+function removeFile(filepath, callback) {
     fs.exists(filepath, function onFileExists(exists) {
         if (!exists) fs.unlink(filepath, function onFileUnlink(err) {
             if (err) throw err;
@@ -134,7 +215,7 @@ function deleteFile(filepath, callback) {
     });
 }
 
-function deleteDirSync(path) {
+function removeDirSync(path) {
     wrench.rmdirSyncRecursive(path);
 }
 
@@ -160,6 +241,16 @@ exports.createProject = createProject;
 exports.readProject = readProject;
 exports.updateProject = updateProject;
 exports.deleteProject = deleteProject;
+
+exports.createAsset = createAsset;
+exports.readAsset = readAsset;
+exports.updateAsset = updateAsset;
+exports.deleteAsset = deleteAsset;
+
+exports.createFile = createFile;
+exports.readFile = readFile;
+exports.updateFile = updateFile;
+exports.deleteFile = deleteFile;
 
 exports.isProjectExistent = isProjectExistent;
 exports.getProjectPathByProjectId = getProjectPathByProjectId;

@@ -3,7 +3,7 @@
  * Date: 12.09.12
  * Time: 17:10
  */
-define(["jquery", "Config", 'info', 'qrcode'], function ($, Config, Info) {
+define(["jquery", "Config", 'info', 'model/asset', 'model/file', 'qrcode'], function ($, Config, Info, AssetModel, FileModel) {
 
     var controller = {
 
@@ -110,33 +110,30 @@ define(["jquery", "Config", 'info', 'qrcode'], function ($, Config, Info) {
 
         uploadInputChangeHandler : function (e) {
 
-            var file, type, ext, localUrl, name, asset;
             for (var i = 0; i < e.target.files.length; i++) {
-
-                file = e.target.files[i];
-                type = app.uploader.getAssetTypeByFile(file);
-                ext = app.uploader.getFileExtension(file.name);
-                name = app.uploader.getCleanFileName(file.name);
-                localUrl = app.uploader.createLocalFileUrl(file);
-
-                if (!type || !file || !ext || !name || !localUrl) continue;
-
-                app.project.get("library").add({
-                    "type"  : type,
-                    "name"  : name,
-                    "files" : {
-                        ext        : ext,
-                        url        : file.name,
-                        localFile  : file,
-                        localUrl   : localUrl,
-                        size       : file.size,
-                        isComplete : false,
-                        isOriginal : true
-                    }
-                });
-
+                app.controller.createAssetRelation(e.target.files[i]);
             }
 
+        },
+
+        createAssetRelation : function (fileObject) {
+            var asset = new AssetModel(),
+                file = new FileModel({
+                    localFile  : fileObject,
+                    isComplete : false,
+                    isOriginal : true
+                });
+
+            //quit complicated but the only solution i found
+            asset.save({}, {success : function () {
+                file.set('assetId', asset.id);
+                file.save({}, {success : function () {
+                    asset.get('files').add(file);
+                    app.project.get('library').add(asset);
+                    console.log(asset.id, file.id);
+                }});
+
+            }});
         },
 
         buttonHandler : function (e) {
@@ -204,3 +201,8 @@ define(["jquery", "Config", 'info', 'qrcode'], function ($, Config, Info) {
 
 })
 ;
+/**
+ * User: Matthieu Holzer
+ * Date: 21.09.12
+ * Time: 10:21
+ */

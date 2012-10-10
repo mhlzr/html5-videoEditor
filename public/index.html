@@ -64,12 +64,13 @@
             <input id="fileBrowser" class="add" type="file" id="uploadInput" multiple/>
             <button id="fileBrowserButton" class="add" enabled></button>
             <button id="fileDelete" class="remove" disabled></button>
+            <button id="play" class="play" enabled></button>
         </div>
 
     </div>
 
     <div id="stage">
-
+        <video id="testPlayer" controls style="width:100%;height:100%"></video>
     </div>
 
 
@@ -88,17 +89,32 @@
     </div>
 
 
-    <div id="exportDialogue" class="reveal-modal">
-        <h1>Export</h1>
+    <noscript>
+        <div>
+            <h1>Seriously?!</h1>
 
-        <h2>Private URL</h2>
-        <p>This link gives anybody full control over this project.</p>
-        <p><a href="http://lorem">http://www.lorem.de</a></p>
-        <div id="screen">fff</div>
-        <div id="qrcode"></div>
-        <a class="close-reveal-modal">&#215;</a>
-    </div>
+            <p>You are really trying to use a JavaScript-application with disabled JavaScript?
+                <br/>Think about it ... meanwhile have a look at <a href="http://www.activatejavascript.org/">http://www.activatejavascript.org</a>
+            </p>
+        </div>
+    </noscript>
 
 </div>
+
+<div id="exportDialogue" class="reveal-modal">
+    <h1>Export</h1>
+
+    <h2>Private URL</h2>
+
+    <p>This link gives anybody full control over this project.</p>
+
+    <p><a href="http://lorem">http://www.lorem.de</a></p>
+
+    <div id="screen">fff</div>
+    <div id="qrcode"></div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
 </body>
+
+
 </html>

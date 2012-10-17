@@ -3,7 +3,7 @@ $textColor: rgba(0, 0, 0, 1);
 $lineColor: #c0c0c0;
 $highlightColor: rgba(89, 166, 255, 1);
 
-@import "prefixpoly";
+@import "_prefixpoly.scss";
 
 button {
   @include transition(opacity);

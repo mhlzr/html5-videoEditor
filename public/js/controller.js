@@ -3,7 +3,7 @@
  * Date: 12.09.12
  * Time: 17:10
  */
-define(["jquery", "Config", 'info', 'model/asset', 'model/file', 'qrcode'], function ($, Config, Info, AssetModel, FileModel) {
+define(["jquery", "config", 'info', 'model/asset', 'model/file', 'qrcode'], function ($, Config, Info, AssetModel, FileModel) {
 
     var controller = {
 

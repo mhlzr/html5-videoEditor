@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>hammer.js</title>
+	
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+		
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	
+	
+    <script src="jquery.min.js"></script>
+    <script src="hammer.js"></script>
+	<script src="shake.js"></script>
+	<script src="jquery.mousewheel.js"></script>
+    <script src="jquery.hammer.js"></script>
+    <style>
+        .draggable {
+            border: 1px solid #a0a0a0;
+            height: 300px;
+            width: 400px;
+			box-shadow: 3px 3px 10px #999;
+			position: absolute;
+
+            -webkit-transform-origin: 50% 50% 0;
+            -moz-transform-origin:50% 50% 0;
+            -o-transform-origin:50% 50% 0;;
+            -ms-transform-origin:50% 50% 0;
+            transform-origin:50% 50% 0;
+
+            -webkit-transition: webkit-transform 0.1s;
+			-webkit-transition: left 0.01s;
+			-webkit-transition: top 0.01s;
+			
+		
+		}
+		
+		#object1{
+			background-color: #d0d0d0;
+			left: 200px;
+			top: 200px;
+		}
+		
+		#object2{
+			background-color: #222;
+			left: 400px;
+			top: 200px;
+		}
+		
+    </style>
+	
+	<script>
+		
+		var rotation = 0,
+			scale = 1;
+		
+		$(document).ready(function(){
+		
+
+				$(".draggable")
+					.hammer({
+						drag_min_distance: 10,
+						drag_horizontal: true,
+						drag_vertical: true,
+						transform: true,
+						hold: true,
+						prevent_default: true
+					})
+					.bind("tap doubletap dragstart drag dragend hold transform swipe", gestureHandler)
+					.bind("mousewheel", mouseWheelHandler);
+					
+				window.addEventListener("shake", reset, false);
+	
+			}
+		);
+		
+
+	function gestureHandler(e){
+			
+			
+			if(e.type == "transform"){
+				$(this).css("transform", "scale("+e.scale+") rotate("+e.rotation+"deg)");
+			}
+			else if(e.type == "drag"){
+				//console.log(e, "Touches: ", e.touches[0].x, e.touches[0].y);
+				//console.log(e, "Position: ", e.position.x, e.position.y);
+				var x = e.touches[0].x - e.position.x + e.distanceX,
+					y = e.touches[0].y - e.position.y + e.distanceY;
+					
+				$(this).css("left", x).css("top", y);
+			}
+			
+			
+			else if(e.type == "doubletap"){
+				reset(e);
+			}
+	}
+	
+	function reset(e){
+		$("#object1").css("left", 200).css("top", 200).css("transform","none");	
+		$("#object2").css("left", 400).css("top", 200).css("transform","none");	
+	}
+	
+	function mouseWheelHandler(e, delta, deltaX, deltaY){
+		console.log(delta);
+		//$(this).css("transform", "rotate("+(rotation++)+"deg)");
+		if(delta>0){
+			$(this).css("transform", "scale("+(scale+=0.1)+")");
+		}
+		else{
+			$(this).css("transform", "scale("+(scale-=0.1)+")");
+		}
+	}
+
+		
+		
+	</script>
+</head>
+
+<body>
+    <div id="object1" class="draggable"></div>
+	 <div id="object2" class="draggable"></div>
+
+
+</body>
+</html>

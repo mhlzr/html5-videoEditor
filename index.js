@@ -39,7 +39,9 @@ app.get('/reset', function onReset(req, res) {
  */
 
 app.get('*', function (req, res) {
-    res.redirect('/');
+    res.writeHead(404);
+    res.end();
+    //res.redirect('/');
 });
 
 io.enable('browser client minification');  // send minified client

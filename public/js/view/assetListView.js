@@ -1,4 +1,4 @@
-define(["jquery", "backbone", "hbs!templates/assetList"],
+define(['jquery', 'backbone', 'hbs!templates/assetList'],
     function ($, Backbone, Template) {
 
         var AssetListView = Backbone.View.extend({

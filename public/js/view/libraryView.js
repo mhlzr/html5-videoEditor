@@ -1,6 +1,6 @@
-define(["jquery", "backbone", "view/assetListView", "hbs!templates/library"],
+define(['jquery', 'backbone', 'view/assetListView'],
 
-    function ($, Backbone, AssetView, Template) {
+    function ($, Backbone, AssetView) {
 
         var LibraryView = Backbone.View.extend({
 
@@ -8,14 +8,14 @@ define(["jquery", "backbone", "view/assetListView", "hbs!templates/library"],
 
                 _.bindAll(this, 'render', 'renderAssetView', 'removeAssetView');
 
-               //this.collection.on('analyzed', this.renderAssetView);
-               //this.collection.on('add', this.renderAssetView);
-               this.collection.on('change', this.renderAssetView);
-               //this.collection.on('remove', this.removeAssetView);
+                //this.collection.on('analyzed', this.renderAssetView);
+                //this.collection.on('add', this.renderAssetView);
+                this.collection.on('change', this.renderAssetView);
+                //this.collection.on('remove', this.removeAssetView);
             },
 
             events : {
-                "click div.asset" : "assetClickHandler"
+                'click div.asset' : 'assetClickHandler'
             },
 
             assetClickHandler : function (e) {
@@ -26,7 +26,7 @@ define(["jquery", "backbone", "view/assetListView", "hbs!templates/library"],
             },
 
             comparator : function (asset) {
-                //return asset.get("name");
+                //return asset.get('name');
             },
 
             renderAssetView : function (asset) {
@@ -63,7 +63,7 @@ define(["jquery", "backbone", "view/assetListView", "hbs!templates/library"],
 
                 if (!this.collection) return;
 
-                console.log("LIBRARYVIEW.JS::RENDERING");
+                console.log('LIBRARYVIEW.JS::RENDERING');
 
                 this.$el.empty();
 

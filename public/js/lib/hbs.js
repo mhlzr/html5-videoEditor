@@ -8,7 +8,7 @@
 /* Yes, deliciously evil. */
 /*jslint evil: true, strict: false, plusplus: false, regexp: false */
 /*global require: false, XMLHttpRequest: false, ActiveXObject: false,
-define: false, process: false, window: false */  
+define: false, process: false, window: false */
 define([
 //>>excludeStart('excludeHbs', pragmas.excludeHbs)
 'handlebars', 'underscore', 'i18nprecompile', 'json2'
@@ -28,7 +28,7 @@ define([
         filecode = "w+",
         templateExtension = "hbs",
         customNameExtension = "@hbs",
-        devStyleDirectory = "/demo/styles/",
+        devStyleDirectory = "/styles/",
         buildStyleDirectory = "/demo-build/styles/",
         helperDirectory = "templates/helpers/",
         i18nDirectory = "templates/i18n/",
@@ -80,8 +80,11 @@ define([
                !!process.versions.node) {
         //Using special require.nodeRequire, something added by r.js.
         fs = require.nodeRequire('fs');
-        fetchText = function (path, callback) {
-            callback(fs.readFileSync(path, 'utf8'));
+        fetchText = function ( path, callback ) {
+            var body = fs.readFileSync(path, 'utf8') || "";
+            // we need to remove BOM stuff from the file content
+            body = body.replace(/^\uFEFF/, '');
+            callback(body);
         };
     } else if (typeof java !== "undefined" && typeof java.io !== "undefined") {
         fetchText = function(path, callback) {
@@ -165,7 +168,7 @@ define([
               var statement, res, test;
               if ( nodes && nodes.statements ) {
                 statement = nodes.statements[0];
-                if ( statement.type === "comment" ) {
+                if ( statement && statement.type === "comment" ) {
                   try {
                     res = ( statement.comment ).replace(new RegExp('^[\\s]+|[\\s]+$', 'g'), '');
                     test = JSON.parse(res);
@@ -219,7 +222,7 @@ define([
                     res.push(prefix + statement.id.string);
                   }
 
-                  var paramsWithoutParts = ['this', '.', '..'];
+                  var paramsWithoutParts = ['this', '.', '..', './..', '../..', '../../..'];
 
                   // grab the params
                   if ( statement.params ) {
@@ -249,6 +252,9 @@ define([
                 // if it's a whole new program
                 if ( statement && statement.program && statement.program.statements ) {
                   sideways = recursiveVarSearch([statement.mustache],[], "", helpersres)[0] || "";
+                  if ( statement.program.inverse && statement.program.inverse.statements ) {
+                    recursiveVarSearch( statement.program.inverse.statements, res, prefix + newprefix + (sideways ? (prefix+newprefix) ? "."+sideways : sideways : ""), helpersres);
+                  }
                   recursiveVarSearch( statement.program.statements, res, prefix + newprefix + (sideways ? (prefix+newprefix) ? "."+sideways : sideways : ""), helpersres);
                 }
               });
@@ -256,7 +262,7 @@ define([
             }
 
             // This finds the Helper dependencies since it's soooo similar
-            function getExternalDeps( nodes ) { 
+            function getExternalDeps( nodes ) {
               var res   = [];
               var helpersres = [];
 
@@ -346,7 +352,7 @@ define([
                                 str = _(metaObj.styles).map(function (style) {
                                   if (!styleMap[style]) {
                                     styleMap[style] = true;
-                                    return "@import url("+buildStyleDirectory+style+".css);\n";
+                                    return "@import url("+style+".css);\n";
                                   }
                                   return "";
                                 }).join("\n");
@@ -364,7 +370,7 @@ define([
                     }
                     catch(e){
                       console.log('error injecting styles');
-                    } 
+                    }
                   }
 
                   if ( ! config.isBuild && ! config.serverRender ) {
@@ -428,6 +434,10 @@ define([
                     parentRequire([compiledName], function (value) {
                       load(value);
                     });
+                  }
+
+                  if ( config.removeCombined ) {
+                    fs.unlinkSync(path);
                   }
               });
             }

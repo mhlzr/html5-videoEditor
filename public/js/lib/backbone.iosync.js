@@ -46,6 +46,11 @@ define(['backbone', 'underscore'],
 
             params.data = model.toJSON() || {};
 
+            //fixed this to work with backbone-relational fetch
+            if (_.isEmpty(params.data)) {
+                params.data = options.data;
+            }
+
             // If your socket.io connection exists on a different var, change here:
             var io = model.socket || window.socket || Backbone.socket;
 

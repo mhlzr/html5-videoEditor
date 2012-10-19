@@ -2,19 +2,17 @@ define(["backbone", "model/composition"],
 
     function (Backbone, CompositionModel) {
 
-        var Compositions = Backbone.Collection.extend({
+        return Backbone.Collection.extend({
 
             model : CompositionModel,
 
+            url : 'compositions',
+
             initialize : function () {
                 console.log('COMPOSITIONS.JS::INIT');
-            },
-
-            validate : function (attrs) {
             }
 
         });
 
-        return Compositions;
 
     });

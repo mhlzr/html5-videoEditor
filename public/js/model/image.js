@@ -1,10 +1,10 @@
-define(["backbone", "model/asset"],
+define(['backbone', 'model/asset'],
 
     function (Backbone, AssetModel) {
 
-        var ImageAsset = AssetModel.extend({
+        return AssetModel.extend({
 
-            idAttribute : "_id",
+            idAttribute : '_id',
 
             defaults : {
                 width  : 0,
@@ -14,13 +14,9 @@ define(["backbone", "model/asset"],
 
             initialize : function () {
 
-            },
-
-            validate : function (attrs) {
             }
 
-        });
 
-        return ImageAsset;
+        });
 
     });

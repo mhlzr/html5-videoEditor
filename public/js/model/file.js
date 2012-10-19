@@ -1,39 +1,26 @@
-define(["backbone", "backbone-rel"],
+define(['backbone', 'backbone-rel'],
 
     function (Backbone, BackboneRelational) {
 
-        var File = Backbone.RelationalModel.extend({
+        return Backbone.RelationalModel.extend({
+
+            //somehow using _id attribute didn't work out at all,
+            // _id was and still is always (re)set to null, don't know where and why
+            idAttribute : 'id',
+            url         : 'file',
 
             defaults : {
-                _id              : null,
-                ext              : null,
-                remoteUrl        : null,
-                localUrl         : null,
-                localFile        : null,
-                size             : 0,
-                transmittedBytes : 0,
-                isComplete       : false,
-                isOriginal       : true
+                id         : null,
+                ext        : null,
+                remoteUrl  : null,
+                localUrl   : null,
+                localFile  : null,
+                size       : 0,
+                byteOffset : 0,
+                isComplete : false,
+                isOriginal : false
             },
 
-            idAttribute : "_id",
-
-            url    : 'file',
-
-            //Overwrite, because we don't need the
-            //localURL or localFile-Object saved
-            toJSON : function () {
-                return{
-                    '_id'              : this.get('_id'),
-                    'assetId'          : this.assetId || this.get('assetId'),
-                    'ext'              : this.get('ext'),
-                    'remoteUrl'        : this.get('remoteUrl'),
-                    'size'             : this.get('size'),
-                    'isComplete'       : this.get('isComplete'),
-                    'isOriginal'       : this.get('isOriginal'),
-                    'transmittedBytes' : this.get('transmittedBytes')
-                }
-            },
 
             initialize : function () {
 
@@ -42,18 +29,18 @@ define(["backbone", "backbone-rel"],
                 this.on('destroy', this.destroyHandler);
                 this.on('change', this.changeHandler);
 
-                if (this.isNew()) {
+
+                if (this.isNew() && this.has('localFile')) {
                     var file = this.get('localFile');
                     this.set('ext', this.getFileExtensionByName(file.name), {silent : true});
                     this.set('size', file.size, {silent : true});
                     this.set('remoteUrl', file.name, {silent : true});
-                    this.set('localUrl', this.createLocalFileUrl(file), {silent : true});
+
+                    if (this.get('isOriginal')) {
+                        this.set('localUrl', this.createLocalFileUrl(file), {silent : true});
+                    }
                 }
 
-            },
-
-            changeHandler : function (data) {
-                console.log('FILE.JS::CHANGE');
             },
 
             destroyHandler : function () {
@@ -74,8 +61,6 @@ define(["backbone", "backbone-rel"],
             }
 
         });
-
-        return File;
 
     })
 ;

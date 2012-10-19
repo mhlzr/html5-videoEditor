@@ -3,9 +3,9 @@
  * Date: 12.09.12
  * Time: 17:10
  */
-define(["jquery", "config", 'info', 'model/asset', 'model/file', 'qrcode'], function ($, Config, Info, AssetModel, FileModel) {
+define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], function ($, Config, Info, AssetModel, FileModel) {
 
-    var controller = {
+    return  {
 
         app : null,
 
@@ -17,23 +17,23 @@ define(["jquery", "config", 'info', 'model/asset', 'model/file', 'qrcode'], func
 
         addListeners : function () {
 
-            $(window).on("resize", this.onWindowResize);
+            $(window).on('resize', this.onWindowResize);
 
             if (!Config.DEBUG) {
                 window.onbeforeunload = this.windowEventHandler;
                 window.onunload = this.windowEventHandler;
             }
 
-            $("#fileBrowserButton").on("click", function () {
-                $("#fileBrowser").click();
+            $('#fileBrowserButton').on('click', function () {
+                $('#fileBrowser').click();
             });
 
-            $("#fileBrowser").on("change", this.uploadInputChangeHandler);
-            $("button").on("click", this.buttonHandler);
+            $('#fileBrowser').on('change', this.uploadInputChangeHandler);
+            $('button').on('click', this.buttonHandler);
 
-            $(app.uploader).on("progress complete", this.uploadProgressHandler);
+            $(app.uploader).on('progress complete', this.uploadProgressHandler);
 
-            app.socket.on("transcoding:progress", this.transcodingProgressHandler);
+            app.socket.on('transcoding:progress', this.transcodingProgressHandler);
 
         },
 
@@ -72,16 +72,18 @@ define(["jquery", "config", 'info', 'model/asset', 'model/file', 'qrcode'], func
 
         windowEventHandler : function (e) {
 
-            if (e.type === "beforeunload" || e.type === "unload") {
+            if (e.type === 'beforeunload' || e.type === 'unload') {
                 app.project.save();
-                return "There are still some uploads pending ...";
+                return 'There are still some uploads pending ...';
             }
+
+            else return null;
 
         },
 
         uploadProgressHandler : function (e, params) {
 
-            if (e.type === "complete") {
+            if (e.type === 'complete') {
                 app.project.get('library').get(params.assetId).set('progress', 0)
                     .set('status', 'Queued for Transcoding').get('files').at(0).set('isComplete', true);
                 app.controller.sendTranscodingJob(params.assetId);
@@ -117,23 +119,26 @@ define(["jquery", "config", 'info', 'model/asset', 'model/file', 'qrcode'], func
         },
 
         createAssetRelation : function (fileObject) {
-            var asset = new AssetModel(),
-                file = new FileModel({
-                    localFile  : fileObject,
-                    isComplete : false,
-                    isOriginal : true
+
+            //quite complicated but the only solution i found
+            var asset = new AssetModel({
+                'projectId' : app.project.id
+            });
+
+            asset.save(null, {'success' : function () {
+
+                var file = new FileModel({
+                    'localFile'  : fileObject,
+                    'isComplete' : false,
+                    'isOriginal' : true,
+                    'assetId'    : asset.id
                 });
 
-            //quit complicated but the only solution i found
-            asset.save({}, {success : function () {
-                file.set('assetId', asset.id);
-                file.save({}, {success : function () {
-                    asset.get('files').add(file);
-                    app.project.get('library').add(asset);
-                    console.log(asset.id, file.id);
+                file.save(null, {success : function () {
+                    asset.save(null, {success : asset.analyze()});
                 }});
-
             }});
+
         },
 
         buttonHandler : function (e) {
@@ -142,52 +147,53 @@ define(["jquery", "config", 'info', 'model/asset', 'model/file', 'qrcode'], func
 
             switch (e.target.id) {
 
-                case "dumpProject" :
-                    console.log(project.toJSON());
+                case 'dumpProject' :
+                    console.log(project.toJSON(), project.get('library').toJSON());
+                    console.log(project.get('library').at(0).get('files').toJSON());
                     break;
-                case "saveLocalBtn":
+                case 'saveLocalBtn':
 
-                    $.jStorage.set(project.get("_id"), {
-                        name : project.get("name"),
-                        date : project.get("date")
+                    $.jStorage.set(project.id, {
+                        name : project.get('name'),
+                        date : project.get('date')
                     });
                     break;
 
-                case "fetchBtn":
+                case 'fetchBtn':
                     project.fetch();
                     break;
 
-                case "render" :
+                case 'render' :
                     app.views.renderAll();
-
-                case "clearLocalBtn":
+                    break;
+                case 'clearLocalBtn':
                     $.jStorage.flush();
                     break;
-                case "projectSyncBtn":
+                case 'sync':
                     Backbone.sync;
                     break;
-                case "saveBtn":
+                case 'saveBtn':
                     project.save({}, {'success' : function onSuccess() {
-                        app.router.navigate('' + app.project.get('_id'), {trigger : true, replace : true});
+                        app.router.navigate('' + app.project.id, {trigger : true, replace : true});
                     }});
 
                     break;
-                case "deleteBtn":
+                case 'deleteBtn':
                     project.destroy();
                     break;
-                case "addSequenceToCompBtn":
-                    console.log("ADDING SEQUENCE");
-                    project.get("compositions").add(new SequenceModel());
+                case 'addSequenceToCompBtn':
+                    console.log('ADDING SEQUENCE');
+                    project.get('compositions').add(new SequenceModel());
                     break;
 
                 case 'share' :
                     Info.reveal($('#exportDialogue'));
                     $('#qrcode').empty().qrcode(window.location.href);
                     break;
-                case "startBtn"  :
+                case 'startBtn'  :
                     app.uploader.start();
                     break;
-                case "stopBtn" :
+                case 'stopBtn' :
                     app.uploader.stop();
                     break;
 
@@ -195,14 +201,9 @@ define(["jquery", "config", 'info', 'model/asset', 'model/file', 'qrcode'], func
 
         }
 
-    };
+    }
+        ;
 
-    return controller;
 
 })
 ;
-/**
- * User: Matthieu Holzer
- * Date: 21.09.12
- * Time: 10:21
- */

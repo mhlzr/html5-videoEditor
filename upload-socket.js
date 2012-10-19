@@ -4,16 +4,15 @@ var BufferedWriter = require('buffered-writer'),
 
 var UploadHandler = function () {
 
-    this.acceptData = function (data, projectId, projectPath, callback) {
+    this.acceptData = function (data, projectDir, callback) {
 
-        var self = this,
-            response;
+        var response;
 
         if (!data.fileName || !data.bytes || isNaN(data.byteOffset) || !data.bytesTotal) {
-            console.log('Missing or false parameters');
+            throw new Error('Missing or false parameters');
         }
 
-        fs.open(__dirname + '/public/projects/' + projectPath + '/assets/' + data.fileName, 'a', function (err, fd) {
+        fs.open(__dirname + '/public/projects/' + projectDir + '/assets/' + data.fileName, 'a', function (err, fd) {
 
             if (err) throw err;
 
@@ -45,8 +44,7 @@ var UploadHandler = function () {
                         'isComplete' : isComplete,
                         'id'         : data.id,
                         'assetId'    : data.assetId,
-                        'projectId'  : projectId,
-                        'fileName'   : data.fileName,
+                        'projectId'  : data.projectId,
                         'byteOffset' : pos + buffer.length,
                         'status'     : isComplete ? 'complete' : 'success'
                     };

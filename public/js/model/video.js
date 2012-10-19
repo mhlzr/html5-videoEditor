@@ -1,10 +1,10 @@
-define(["backbone", "model/asset"],
+define(['backbone', 'model/asset'],
 
     function (Backbone, AssetModel) {
 
-        var VideoAsset = AssetModel.extend({
+        return AssetModel.extend({
 
-            idAttribute : "_id",
+            idAttribute : '_id',
 
             defaults : {
                 _id      : null,
@@ -21,7 +21,5 @@ define(["backbone", "model/asset"],
 
 
         });
-
-        return VideoAsset;
 
     });

@@ -82,15 +82,34 @@ io.sockets.on('connection', function (socket) {
     socket.on('file:update', projects.updateFile);
     socket.on('file:delete', projects.deleteFile);
 
+    /*
+     COLLECTIONS FETCH
+     */
+    socket.on('library:read', projects.getLibraryByProjectId);
+    socket.on('compositions:read', projects.getCompositionsByProjectId);
+    socket.on('files:read', projects.getFilesByAssetId);
+
+
+    /*
+     UPLOADER
+     */
     socket.on('upload', function (data) {
-        if (!data.projectId) return;
+
+        if (!data.projectId || !data.id || !data.assetId) {
+            throw new Error('Missing IDs');
+        }
+        //will be removed during update-process
+        var fileId = data.id,
+            status;
+
         projects.getProjectPathByProjectId(data.projectId, function (path) {
-            upload.acceptData(data, data.projectId, path, function dataAccepted(res) {
-                //TODO update DB
-                if (res.isComplete) {
-                    //void
-                }
-                socket.emit('upload:progress', res);
+            upload.acceptData(data, path, function dataAccepted(res) {
+                status = res.status;
+                projects.updateFile(res, function onUpdated(err) {
+                    res.id = fileId;
+                    res.status = status;
+                    socket.emit('upload:progress', res);
+                });
             });
         });
     });

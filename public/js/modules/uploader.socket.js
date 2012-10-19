@@ -3,12 +3,12 @@
  * Date: 09.09.12
  * Time: 14:21
  */
+
 define(['config', 'jquery', 'underscore'], function (Config, $, _) {
 
-    var uploader = function (socket) {
+    return function (socket) {
 
         var self = this,
-            socket = socket,
             fileQueue = [],
             fileReader = null,
             isUploading = false,
@@ -17,6 +17,7 @@ define(['config', 'jquery', 'underscore'], function (Config, $, _) {
         this.addFile = function (projectId, assetId, fileId, file, byteOffset) {
 
             byteOffset = byteOffset || 0;
+
 
             //check to see if file isn't already in queue
             if (fileQueue.length > 0) {
@@ -31,8 +32,6 @@ define(['config', 'jquery', 'underscore'], function (Config, $, _) {
             file.assetId = assetId;
             file.id = fileId;
             file.byteOffset = byteOffset;
-
-            console.log(file);
 
             fileQueue.push(file);
         };
@@ -57,6 +56,7 @@ define(['config', 'jquery', 'underscore'], function (Config, $, _) {
             socket.emit('upload', {
                 'projectId'  : file.projectId,
                 'id'         : file.id,
+                'assetId'    : file.assetId,
                 'fileName'   : file.name,
                 'byteOffset' : file.byteOffset,
                 'bytesTotal' : file.size,
@@ -72,6 +72,7 @@ define(['config', 'jquery', 'underscore'], function (Config, $, _) {
 
             //change asset-status
             app.project.get('library').get(file.assetId).set('status', 'Uploading');
+
 
             fileReader = new FileReader();
 
@@ -165,7 +166,5 @@ define(['config', 'jquery', 'underscore'], function (Config, $, _) {
         socket.on('upload:progress', this.onResponse);
     };
 
-    return uploader;
 
-})
-;
+});

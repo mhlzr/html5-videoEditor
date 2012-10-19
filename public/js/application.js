@@ -82,7 +82,7 @@ define([
                 });
             };
 
-        }
+        };
 
         app.getAvailableProjectsFromLocalStorage = function () {
             var localProjects = $.jStorage.index(),
@@ -98,4 +98,4 @@ define([
 
         return app;
 
-    })
+    });

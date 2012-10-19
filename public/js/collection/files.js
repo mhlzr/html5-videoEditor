@@ -1,17 +1,17 @@
-define(["backbone", "model/file"],
+define(['backbone', 'model/file'],
 
     function (Backbone, FileModel) {
 
-        var Files = Backbone.Collection.extend({
+        return Backbone.Collection.extend({
 
             model : FileModel,
+            url   : 'files',
 
-            initialize : function(){
+            initialize : function () {
                 console.log('FILES.JS::INIT');
             }
 
         });
 
-        return Files;
 
     });

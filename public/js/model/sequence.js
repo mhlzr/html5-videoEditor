@@ -1,11 +1,11 @@
-define(["backbone", "backbone-rel", "model/asset"],
+define(['backbone', 'backbone-rel', 'model/asset'],
 
     function (Backbone, BackboneRelational, AssetModel) {
 
-        var Sequence = Backbone.RelationalModel.extend({
+        return Backbone.RelationalModel.extend({
 
 
-            idAttribute : "_id",
+            idAttribute : '_id',
 
             defaults : {
                 _id       : null,
@@ -31,6 +31,5 @@ define(["backbone", "backbone-rel", "model/asset"],
 
         });
 
-        return Sequence;
 
     });

@@ -1,4 +1,4 @@
-<div class="asset" id="{{this.id}}">
+<div class="asset" id="{{this._id}}">
     <div class="info {{this.type}}">
         <span class="name"> {{this.name}}</span>
 

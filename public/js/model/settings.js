@@ -2,7 +2,7 @@ define(['backbone', 'underscore', 'jstorage'],
 
     function (Backbone, _) {
 
-        var Settings = Backbone.Model.extend({
+        return Backbone.Model.extend({
 
             defaults : {
                 useExternalPreview : true,
@@ -25,12 +25,10 @@ define(['backbone', 'underscore', 'jstorage'],
             },
 
             saveSettingsToLocalStorage : function () {
-               //TODO saveSettingsToLocalStorage
+                //TODO saveSettingsToLocalStorage
             }
 
         });
-
-        return Settings;
 
     })
 ;

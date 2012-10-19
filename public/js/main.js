@@ -3,8 +3,8 @@ require.config({
     'locale' : 'en_us',
 
     'paths' : {
-        'underscore'        : 'lib/underscore-min',
-        'backbone'          : 'lib/backbone-min',
+        'underscore'        : 'lib/underscore',
+        'backbone'          : 'lib/backbone',
         'backbone-rel'      : 'lib/backbone-relational',
         'backbone-m-binder' : 'lib/Backbone.ModelBinder.min',
         'backbone-c-binder' : 'lib/Backbone.CollectionBinder.min',

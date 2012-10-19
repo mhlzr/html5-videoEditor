@@ -1,14 +1,14 @@
-define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/composition", "collection/composition"],
+define(['backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/composition', 'collection/composition'],
 
     function (Backbone, BackboneRelational, AssetModel, LibraryCollection, CompositionModel, CompositionCollection) {
 
-        var Project = Backbone.RelationalModel.extend({
+        return Backbone.RelationalModel.extend({
 
 
             relations : [
                 {
                     type            : Backbone.HasMany,
-                    key             : "library",
+                    key             : 'library',
                     relatedModel    : AssetModel,
                     collectionType  : LibraryCollection,
                     createModels    : true,
@@ -20,7 +20,7 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
                 },
                 {
                     type            : Backbone.HasMany,
-                    key             : "compositions",
+                    key             : 'compositions',
                     relatedModel    : CompositionModel,
                     collectionType  : CompositionCollection,
                     includeInJSON   : '_id',
@@ -33,13 +33,13 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
                 }
             ],
 
-            url : "project",
+            url : 'project',
 
-            idAttribute : "_id",
+            idAttribute : '_id',
 
             defaults : {
                 _id          : null,
-                title        : "Untitled",
+                title        : 'Untitled',
                 date         : new Date(),
                 assetFolder  : null,
                 library      : null,
@@ -54,7 +54,4 @@ define(["backbone", "backbone-rel", "model/asset", "collection/library", "model/
                 console.log('PROJECT.JS::CHANGE');
             }
         });
-
-        return Project;
-
     });

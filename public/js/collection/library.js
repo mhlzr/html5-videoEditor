@@ -2,30 +2,25 @@ define(["backbone", "model/asset"],
 
     function (Backbone, AssetModel) {
 
-        var Library = Backbone.Collection.extend({
+        return Backbone.Collection.extend({
 
             model : AssetModel,
-
-            url : 'library',
+            url   : 'library',
 
             initialize : function () {
                 console.log('LIBRARY.JS::INIT');
 
-                _.bindAll(this, 'changeHandler', 'onAssetAnalyzed', 'sendAssetToUploader');
+                _.bindAll(this, 'onAssetAnalyzed', 'sendAssetToUploader');
 
-                // this.on('change', this.changeHandler);
                 this.on('analyzed', this.onAssetAnalyzed);
             },
+
 
             onAssetAnalyzed : function (asset) {
                 console.log('LIBRARY.JS::ASSET_ANALYZED', asset.id);
                 if (!asset.getOriginalFile().get('isComplete')) {
                     this.sendAssetToUploader(asset);
                 }
-            },
-
-            changeHandler : function () {
-                //console.log('LIBRARY.JS::CHANGE');
             },
 
             sendAssetToUploader : function (asset) {
@@ -36,7 +31,7 @@ define(["backbone", "model/asset"],
                     asset.id,
                     file.id,
                     file.get('localFile'),
-                    file.get('transmittedBytes')
+                    file.get('byteOffset')
                 );
 
                 app.uploader.start();
@@ -45,7 +40,4 @@ define(["backbone", "model/asset"],
 
         });
 
-        return Library;
-
-    })
-;
+    });

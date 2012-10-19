@@ -1,13 +1,13 @@
-define(["backbone", "backbone-rel", "model/sequence", "model/file"],
+define(['backbone', 'backbone-rel', 'model/sequence', 'model/file'],
 
     function (Backbone, BackboneRelational, SequenceModel, FileModel) {
 
-        var Composition = Backbone.RelationalModel.extend({
+        return Backbone.RelationalModel.extend({
 
             relations : [
                 {
                     type            : Backbone.HasMany,
-                    key             : "sequences",
+                    key             : 'sequences',
                     relatedModel    : SequenceModel,
                     createModels    : true,
                     reverseRelation : {
@@ -17,7 +17,7 @@ define(["backbone", "backbone-rel", "model/sequence", "model/file"],
                 },
                 {
                     type            : Backbone.HasMany,
-                    key             : "files",
+                    key             : 'files',
                     relatedModel    : FileModel,
                     createModels    : true,
                     reverseRelation : {
@@ -27,7 +27,7 @@ define(["backbone", "backbone-rel", "model/sequence", "model/file"],
                 }
             ],
 
-            idAttribute : "_id",
+            idAttribute : '_id',
             url         : 'composition',
 
             defaults : {
@@ -47,6 +47,5 @@ define(["backbone", "backbone-rel", "model/sequence", "model/file"],
 
         });
 
-        return Composition;
 
     });

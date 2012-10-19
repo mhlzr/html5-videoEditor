@@ -2,16 +2,16 @@ define(['jquery', 'backbone', 'view/assetListView'],
 
     function ($, Backbone, AssetView) {
 
-        var LibraryView = Backbone.View.extend({
+        return Backbone.View.extend({
 
             initialize : function () {
 
                 _.bindAll(this, 'render', 'renderAssetView', 'removeAssetView');
 
-                //this.collection.on('analyzed', this.renderAssetView);
-                //this.collection.on('add', this.renderAssetView);
+                this.collection.on('analyzed', this.renderAssetView);
+                this.collection.on('add', this.renderAssetView);
                 this.collection.on('change', this.renderAssetView);
-                //this.collection.on('remove', this.removeAssetView);
+                this.collection.on('remove', this.removeAssetView);
             },
 
             events : {
@@ -31,13 +31,16 @@ define(['jquery', 'backbone', 'view/assetListView'],
 
             renderAssetView : function (asset) {
 
+                //without an id the asset shouldn't be rendered
+                if(!asset.id) return;
+
                 //progress-update does not need a whole rendering
                 if (_.isObject(asset.changedAttributes())) {
                     var keys = _.keys(asset.changedAttributes());
                     if (keys.length === 1 && keys[0] == 'progress') return;
                 }
 
-                console.log('LIBRARYVIEW::renderAssetView');
+                console.log('LIBRARYVIEW.JS::RENDERING ASSETVIEW');
 
                 var assetView = new AssetView({model : asset, el : this.$el}),
                     $assetEl = this.$el.find('#' + asset.id);
@@ -61,7 +64,7 @@ define(['jquery', 'backbone', 'view/assetListView'],
 
             render : function () {
 
-                if (!this.collection) return;
+                if (!this.collection) return null;
 
                 console.log('LIBRARYVIEW.JS::RENDERING');
 
@@ -75,7 +78,6 @@ define(['jquery', 'backbone', 'view/assetListView'],
             }
         });
 
-        return LibraryView;
 
     })
 ;

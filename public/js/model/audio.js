@@ -1,10 +1,10 @@
-define(["backbone", "model/asset"],
+define(['backbone', 'model/asset'],
 
     function (Backbone, AssetModel) {
 
-        var AudioAsset = AssetModel.extend({
+        return AssetModel.extend({
 
-            idAttribute : "_id",
+            idAttribute : '_id',
 
             defaults : {
                 duration : 0
@@ -16,6 +16,5 @@ define(["backbone", "model/asset"],
 
         });
 
-        return AudioAsset;
 
     });

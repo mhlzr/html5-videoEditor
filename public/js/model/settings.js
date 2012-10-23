@@ -5,9 +5,10 @@ define(['backbone', 'underscore', 'jstorage'],
         return Backbone.Model.extend({
 
             defaults : {
-                useExternalPreview : true,
-                autoUpload         : true,
-                autoTranscode      : false
+                useExternalPreview      : true,
+                autoUpload              : true,
+                autoTranscode           : true,
+                serverMetaDataExclusive : false
             },
 
             initialize : function () {

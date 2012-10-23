@@ -1,4 +1,5 @@
-var ffmpeg = require("fluent-ffmpeg"),
+var ffmpeg = require('fluent-ffmpeg'),
+    Metalib = require('fluent-ffmpeg').Metadata,
     util = require('util'),
     events = require('events'),
     _ = require('underscore');
@@ -38,7 +39,9 @@ var Encoder = function () {
     this.addTranscodingJob = function (settings, format, callback) {
 
         console.log('ENCODER.JS :: TRANSCODING JOB ADDED');
-
+        console.log(settings, format);
+//TODO remove return
+        return;
         var job = {};
         job.assetId = settings.assetId;
         job.path = settings.path;
@@ -54,6 +57,11 @@ var Encoder = function () {
 
     this.encode = function (job) {
 
+    };
+
+    this.getMetaDataFromFile = function (filePath, callback) {
+        var metaObject = new Metalib(filePath);
+        metaObject.get(callback);
     };
 
     this.transcode = function (job) {

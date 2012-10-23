@@ -22,19 +22,7 @@ var UploadHandler = function () {
 
             fs.write(fd, buffer, 0, buffer.length, pos, function (err, written, buffer) {
 
-                if (err) {
-                    response = {
-                        'isComplete' : false,
-                        'id'         : data.id,
-                        'assetId'    : data.assetId,
-                        'fileName'   : data.fileName,
-                        'byteOffset' : pos + buffer.length,
-                        'status'     : 'fail'
-                    };
-                    callback(response);
-                    return;
-
-                }
+                if (err) throw err;
 
                 fs.close(fd, function (err) {
 
@@ -43,10 +31,8 @@ var UploadHandler = function () {
                     response = {
                         'isComplete' : isComplete,
                         'id'         : data.id,
-                        'assetId'    : data.assetId,
                         'projectId'  : data.projectId,
-                        'byteOffset' : pos + buffer.length,
-                        'status'     : isComplete ? 'complete' : 'success'
+                        'byteOffset' : pos + buffer.length
                     };
 
                     if (isComplete) {

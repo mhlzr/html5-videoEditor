@@ -166,6 +166,7 @@ function createFile(data, callback) {
     //this shouldn't be stored on the server
     delete data.localUrl;
     delete data.localFile;
+    delete data.id;
 
     db.files.save(data, function saveCallback(err, docs) {
             console.log('PROJECTS.JS::FILE CREATED', docs._id);
@@ -190,17 +191,22 @@ function readFile(data, callback) {
 }
 
 function updateFile(data, callback) {
-    var id = data.id;
-    delete data._id;
-    delete data.id;
+    var id = data.id,
+        dataUpdate = {};
 
-    //this shouldn't be stored on the server
-    delete data.localUrl;
-    delete data.localFile;
-    delete data.status;
+    //necessary because update could replace existing values
+    if (data.assetId) dataUpdate.assetId = data.assetId;
+    if (data.size) dataUpdate.size = data.size;
+    if (data.ext) dataUpdate.ext = data.ext;
+    if (data.remoteFileName) dataUpdate.remoteFileName = data.remoteFileName;
+    if (data.isOriginal) dataUpdate.isOriginal = data.isOriginal;
+    if (data.isComplete) dataUpdate.isComplete = data.isComplete;
+    if (data.byteOffset) dataUpdate.byteOffset = data.byteOffset;
+    if (data.encodingProgress) dataUpdate.encodingProgress = data.encodingProgress;
 
-    db.files.update({_id : db.ObjectId(id)}, data, {multi : false},
-        function updateCallback(err, docs) {
+
+    db.files.update({_id : db.ObjectId(id)}, {$set : dataUpdate}, {multi : false},
+        function updateCallback(err) {
             console.log('PROJECTS.JS::FILE UPDATED', id);
             if (err) throw err;
             callback(err, {});
@@ -278,7 +284,21 @@ function getFilesByAssetId(data, callback) {
     db.files.find({assetId : data.id}, function onFound(err, docs) {
         console.log('PROJECTS.JS::FILES SERVED WITH', docs.length, 'FILES');
         if (err) throw err;
+
+        //the whole _id/id thing created a mess in the file-Model
+        for (var i = 0; i < docs.length; i++) {
+            docs[i].id = docs[i]._id;
+            delete docs[i]._id;
+        }
+
         callback(err, docs);
+    });
+}
+
+function getAssetIdByFileId(fileId, callback) {
+    db.files.findOne({_id : db.ObjectId(fileId)}, function onFound(err, docs) {
+        if (err) throw err;
+        callback(docs.assetId);
     });
 }
 
@@ -303,6 +323,7 @@ exports.getLibraryByProjectId = getLibraryByProjectId;
 exports.getCompositionsByProjectId = getCompositionsByProjectId;
 exports.getFilesByAssetId = getFilesByAssetId;
 
+exports.getAssetIdByFileId = getAssetIdByFileId;
 exports.isProjectExistent = isProjectExistent;
 exports.getProjectPathByProjectId = getProjectPathByProjectId;
 exports.clean = clean;

@@ -26,7 +26,6 @@ define(['backbone', 'model/project'],
                                     'success' : function () {
                                         app.project.get('library').fetch({'data' : { 'id' : app.project.id }, 'success' : function () {
                                             app.project.get('compositions').fetch({'data' : { 'id' : app.project.id }, 'success' : function () {
-
                                                 app.views.renderAll();
 
                                             }});

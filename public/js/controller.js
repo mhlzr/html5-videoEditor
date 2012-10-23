@@ -31,39 +31,6 @@ define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], func
             $('#fileBrowser').on('change', this.uploadInputChangeHandler);
             $('button').on('click', this.buttonHandler);
 
-            $(app.uploader).on('progress complete', this.uploadProgressHandler);
-
-            app.socket.on('transcoding:progress', this.transcodingProgressHandler);
-
-        },
-
-        transcodingProgressHandler : function (data) {
-
-            var lib = app.project.get('library'),
-                asset = lib.get(data.assetId);
-
-            if (data.isComplete) {
-                asset.set('progress', 100);
-                asset.get('files').add({
-                    'ext'        : data.format,
-                    'size'       : data.size,
-                    'isComplete' : true,
-                    'isOriginal' : false,
-                    'url'        : data.url
-                });
-
-                asset.checkStatus();
-
-            }
-            else {
-                if (asset.get('status') != 'Transcoding') {
-                    asset.set('status', 'Transcoding');
-                }
-                //if there are multiple transcoding jobs, this will keep the progressbar from jumping
-                if ((asset.get('progress') < data.progress || asset.get('progress') === 100) && data.progress <= 100) {
-                    asset.set('progress', data.progress);
-                }
-            }
         },
 
         onWindowResize : function () {
@@ -81,44 +48,16 @@ define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], func
 
         },
 
-        uploadProgressHandler : function (e, params) {
-
-            if (e.type === 'complete') {
-                app.project.get('library').get(params.assetId).set('progress', 0)
-                    .set('status', 'Queued for Transcoding').get('files').at(0).set('isComplete', true);
-                app.controller.sendTranscodingJob(params.assetId);
-
-            }
-            else {
-                app.project.get('library').get(params.assetId).set('progress', params.progressRelative);
-            }
-
-        },
-
-        sendTranscodingJob : function (assetId) {
-            var asset = app.project.get('library').get(assetId),
-                formats = asset.getMissingFileFormats();
-
-            if (formats.length > 0) {
-                app.socket.emit('transcode', {
-                    'projectId'   : app.project.get('_id'),
-                    'assetId'     : assetId,
-                    'formats'     : formats,
-                    'fileName'    : asset.get('files').at(0).get('url'),
-                    'assetFolder' : app.project.get('assetFolder')
-                })
-            }
-        },
 
         uploadInputChangeHandler : function (e) {
 
             for (var i = 0; i < e.target.files.length; i++) {
-                app.controller.createAssetRelation(e.target.files[i]);
+                app.controller.createFileAssetRelation(e.target.files[i]);
             }
 
         },
 
-        createAssetRelation : function (fileObject) {
+        createFileAssetRelation : function (fileObject) {
 
             //quite complicated but the only solution i found
             var asset = new AssetModel({
@@ -127,14 +66,20 @@ define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], func
 
             asset.save(null, {'success' : function () {
 
+                asset.initServerUpdateListener();
+
                 var file = new FileModel({
-                    'localFile'  : fileObject,
-                    'isComplete' : false,
-                    'isOriginal' : true,
-                    'assetId'    : asset.id
+                    'localFile'        : fileObject,
+                    'isComplete'       : false,
+                    'isOriginal'       : true,
+                    'encodingProgress' : 100,
+                    'assetId'          : asset.id
                 });
 
+                console.log(file.get('assetId'));
+
                 file.save(null, {success : function () {
+                    file.initServerUpdateListener();
                     asset.save(null, {success : asset.analyze()});
                 }});
             }});

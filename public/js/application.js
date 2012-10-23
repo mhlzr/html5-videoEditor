@@ -27,6 +27,8 @@ define([
             console.log('APPLICATION.JS::INIT');
 
             window.socket = this.socket = socket.connect('http://' + Config.WEBSOCKET_HOST + ':' + Config.WEBSOCKET_PORT);
+
+
             this.project = new ProjectModel();
 
             this.router = new Router();

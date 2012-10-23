@@ -22,7 +22,8 @@ require.config({
         'app'               : 'application',
         'config'            : 'config',
         'controller'        : 'controller',
-        'info'              : 'modules/info'
+        'info'              : 'modules/info',
+        'utils'             : 'modules/utils'
     },
 
     'hbs' : {
@@ -83,7 +84,7 @@ require.config({
     }
 });
 
-require(['app', 'socket'],
+require(['app', 'socket', 'utils'],
 
     function (Application, Socket) {
 

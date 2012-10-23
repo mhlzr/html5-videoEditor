@@ -83,6 +83,11 @@ io.sockets.on('connection', function (socket) {
     socket.on('file:delete', projects.deleteFile);
 
     /*
+     COMPOSITION CRUD
+     */
+    //TODO implement CRUD, create needs publicID
+
+    /*
      COLLECTIONS FETCH
      */
     socket.on('library:read', projects.getLibraryByProjectId);
@@ -95,41 +100,72 @@ io.sockets.on('connection', function (socket) {
      */
     socket.on('upload', function (data) {
 
-        if (!data.projectId || !data.id || !data.assetId) {
+        if (!data.projectId || !data.id) {
             throw new Error('Missing IDs');
         }
         //will be removed during update-process
-        var fileId = data.id,
-            status;
+        var fileId = data.id;
 
-        projects.getProjectPathByProjectId(data.projectId, function (path) {
-            upload.acceptData(data, path, function dataAccepted(res) {
-                status = res.status;
+        projects.getProjectPathByProjectId(data.projectId, function onPathFound(path) {
+            upload.acceptData(data, path, function onDataAccepted(res) {
                 projects.updateFile(res, function onUpdated(err) {
+
+                    if (err) throw err;
                     res.id = fileId;
-                    res.status = status;
-                    socket.emit('upload:progress', res);
+
+                    //inform about progress
+                    socket.emit('file/' + res.id + ':update', res);
+
+                    //read metaData if file is complete (more accurate than clients meta)
+                    if (res.isComplete) {
+                        var filePath = (__dirname + '/public/projects/' + path + '/assets/' + data.fileName);
+
+                        projects.getAssetIdByFileId(fileId, function onReceived(assetId) {
+                            console.log(assetId);
+                            encoder.getMetaDataFromFile(filePath, function onMetaDataRead(metaData, err) {
+                                if (err) throw err;
+                                var res = {
+                                    fps              : metaData.video.fps,
+                                    duration         : metaData.durationsec,
+                                    timecodeDuration : metaData.durationraw,
+                                    width            : metaData.video.resolution.w,
+                                    height           : metaData.video.resolution.h,
+                                    ratio            : metaData.video.ratio,
+                                    ratioString      : metaData.video.aspectString,
+                                    isAnalyzed       : true
+                                };
+                                socket.emit('asset/' + assetId + ':update', res);
+                            });
+                        });
+
+                    }
+
                 });
             });
         });
     });
 
+    /*
+     TRANSCODER
+     */
     socket.on('transcode', function (data) {
 
-        if (!data.projectId || !data.assetId || !data.formats || !data.fileName || !data.assetFolder) return;
+        if (!data.projectId || !data.formats || !data.id) {
+            throw new Error('Missing IDs', data);
+        }
 
-        data.path = 'public/projects/' + data.assetFolder + '/assets/';
+        projects.getProjectPathByProjectId(data.projectId, function onPathFound(path) {
+            data.path = 'public/projects/' + path + '/assets/';
 
-        delete data.assetFolder;
-
-        data.formats.forEach(function (format) {
-            encoder.addTranscodingJob(data, format, function onTranscodingProgress(progress) {
-                //console.log(progress);
-                //socket.emit
+            data.formats.forEach(function (format) {
+                encoder.addTranscodingJob(data, format, function onTranscodingProgress(progress) {
+                    console.log(progress);
+                    socket.emit('file/' + res.id + ':update', res);
+                });
             });
+            encoder.start();
         });
 
-        encoder.start();
 
     });
 

@@ -51,7 +51,5 @@ define(["jquery", "lib/noty/jquery.noty", "lib/noty/themes/default", "lib/noty/l
     return {
         noty   : window.noty,
         reveal : reveal
-
-
     }
 });

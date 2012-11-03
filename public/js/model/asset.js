@@ -202,10 +202,10 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                         path = window.location.protocol + '//' + window.location.host + '/projects/' + app.project.get('assetFolder') + '/assets/',
                         i, ext, localUrl, url;
 
-                    for (i = 0; i < files.length; i++) {
+                    for (i = 0; i < l; i++) {
 
                         ext = files.at(i).get('ext');
-                        url = path + files.at(i).get('url');
+                        url = path + files.at(i).getRemoteFileUrl();
                         localUrl = files.at(i).get('localUrl');
 
                         if (type === 'image') {

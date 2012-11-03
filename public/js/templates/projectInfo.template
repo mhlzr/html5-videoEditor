@@ -1,6 +1,3 @@
-<h1 contenteditable>{{title}}</h1>
-
-
-<span>
-    {{_id}}
-</span>
+<div>
+    <h1 contenteditable>{{title}}</h1>
+</div>

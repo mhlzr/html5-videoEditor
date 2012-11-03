@@ -1,9 +1,13 @@
 define([
     'config', 'jquery', 'jstorage', 'backbone', 'modernizr', 'socket', 'router',
     'controller', 'model/settings', 'modules/device', 'modules/uploader.socket', 'info',
-    'model/project', 'view/libraryView', 'view/projectInfoView', 'backbone-bind', 'backbone-sync'],
+    'model/project',
+    'view/libraryListView', 'view/compositionListView', 'view/projectInfoView',
+    'backbone-bind', 'backbone-sync'],
 
-    function (Config, $, jStorage, Backbone, Modernizr, Socket, Router, Controller, Settings, Device, Uploader, Info, ProjectModel, LibraryView, ProjectInfoView) {
+    function (Config, $, jStorage, Backbone, Modernizr, Socket, Router, Controller, Settings, Device, Uploader, Info, ProjectModel, LibraryListView, CompositionListView, ProjectInfoView) {
+
+        'use strict';
 
         var app = {};
 
@@ -61,11 +65,19 @@ define([
 
         };
 
+        /*
+         * Initializing all Main-Views
+         */
         app.initViews = function () {
 
-            app.views.library = new LibraryView({
+            app.views.library = new LibraryListView({
                 collection : app.project.get('library'),
                 el         : $('#library')
+            });
+
+            app.views.compositions = new CompositionListView({
+                collection : app.project.get('compositions'),
+                el         : $('#compositions')
             });
 
             app.views.projectInfo = new ProjectInfoView({
@@ -74,6 +86,7 @@ define([
             });
 
             app.views.library.render();
+            //app.views.compositions.render();
             app.views.projectInfo.render();
 
             app.views.renderAll = function () {

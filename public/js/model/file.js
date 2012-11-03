@@ -64,6 +64,9 @@ define(['backbone', 'underscore', 'backbone-rel', 'backbone-bind'],
 
             },
 
+            getRemoteFileUrl : function () {
+                return this.get('remoteFileName') + '.' + this.get('ext')
+            },
 
             destroyHandler : function () {
                 this.revokeLocalFileUrl(this.get('localUrl'));

@@ -1,0 +1,43 @@
+@import "../globals";
+
+#stageContainer {
+  height: 100%;
+  overflow: hidden;
+
+  div {
+    width: 100%;
+    display: block;
+  }
+}
+
+#stageControl {
+  @include toolbar;
+  border-bottom: 1px solid $lineColor;
+  overflow: hidden;
+
+  div {
+
+    display: table;
+    margin: 0 auto;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    padding-top: 2px;
+
+    button {
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
+
+}
+
+#stage {
+  overflow: hidden;
+  background-color: $stageBackgroundColor;
+}
+
+#stageCommands {
+  @include toolbar;
+  border-top: 1px solid $lineColor;
+}

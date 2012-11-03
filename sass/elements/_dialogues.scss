@@ -1,0 +1,46 @@
+
+#exportDialogue {
+  h1 {
+
+  }
+
+  p {
+
+  }
+
+  #screen {
+    clear: both;
+    float: left;
+    width: 50%;
+    height: 100%;
+    background-image: url('../img/screen_export.svg');
+    background-repeat: no-repeat;
+    background-size: 80% 80%;
+    min-width: 50%;
+    max-width: 50%;
+    min-height: 100% !important;
+    max-height: 100%;
+    display: block !important;;
+    border: 1px solid red;
+  }
+
+  #qrcode {
+    float: left;
+    width: 50%;
+    min-width: 50%;
+    max-width: 50%;
+    height: 100%;
+    display: block;
+
+    canvas {
+      max-width: 80%;
+      max-height: 80%;
+    }
+
+  }
+}
+
+
+#compositionDialogue{
+
+}

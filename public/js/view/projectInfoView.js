@@ -5,10 +5,10 @@
  */
 define(["jquery", "backbone", "hbs!templates/projectInfo"], function ($, Backbone, Template) {
 
-    var ProjectInfoView = Backbone.View.extend({
+    return Backbone.View.extend({
 
         initialize : function () {
-            this.model.on('change', this.render);
+            this.model.on('change:title', this.render);
         },
 
         events : {
@@ -22,8 +22,7 @@ define(["jquery", "backbone", "hbs!templates/projectInfo"], function ($, Backbon
 
         render : function () {
 
-            if (!this.model)
-                return;
+            if (!this.model) return this;
 
             this.$el.html(Template(this.model.toJSON()));
 
@@ -32,6 +31,5 @@ define(["jquery", "backbone", "hbs!templates/projectInfo"], function ($, Backbon
 
     });
 
-    return ProjectInfoView;
 
 });

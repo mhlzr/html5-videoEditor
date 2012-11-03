@@ -11,6 +11,7 @@ require.config({
         'backbone-bind'     : 'lib/backbone.iobind',
         'backbone-sync'     : 'lib/backbone.iosync',
         'jquery'            : 'lib/jquery-1.8.1',
+        'jquery-hammer'     : 'lib/jquery.hammer',
         'json2'             : 'lib/json2',
         'jstorage'          : 'lib/jstorage',
         'qrcode'            : 'lib/jquery.qrcode.min',
@@ -63,6 +64,10 @@ require.config({
             deps : ['jquery']
         },
 
+        'jquery-hammer' : {
+            deps : ['jquery', 'lib/hammer']
+        },
+
         'jstorage' : {
             deps : ['jquery']
         },
@@ -89,7 +94,6 @@ require(['app', 'socket', 'utils'],
     function (Application, Socket) {
 
         window.socket = Socket;
-
         window.app = Application;
         window.app.initialize(window.socket);
 

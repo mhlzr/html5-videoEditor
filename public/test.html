@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="js/lib/jquery-1.8.1.js"></script>
+    <script src="js/lib/underscore.js"></script>
+    <script src="js/lib/backbone.js"></script>
+    <script src="js/lib/backbone-relational.js"></script>
+    <script src="js/lib/socket.io.js"></script>
+
+
+</head>
+<body>
+<script>
+
+
+    var socket = window.io.connect('http://localhost:3000');
+
+
+    Backbone.sync = function (method, model, options) {
+        var getUrl = function (object) {
+            if (!(object && object.url)) return null;
+            return _.isFunction(object.url) ? object.url() : object.url;
+        };
+
+        var cmd = getUrl(model).split('/')
+                , namespace = (cmd[0] !== '') ? cmd[0] : cmd[1]; // if leading slash, ignore
+
+        var params = _.extend({
+            req : namespace + ':' + method
+        }, options);
+
+        params.data = model.toJSON() || {};
+
+        //fixed this to work with backbone-relational fetch
+        if (_.isEmpty(params.data)) {
+            params.data = options.data;
+        }
+
+
+        socket.emit(namespace + ':' + method, params.data, function (err, data) {
+            if (err) {
+                options.error(err);
+            } else {
+                options.success(data);
+            }
+        });
+    };
+
+
+    var File = Backbone.RelationalModel.extend({
+        idAttribute : '_id',
+        url         : 'file'
+
+    });
+
+    var FileCollection = Backbone.Collection.extend({
+
+        model : File
+    });
+
+    var Asset = Backbone.RelationalModel.extend({
+
+                idAttribute : '_id',
+                url         : 'asset',
+
+
+                relations : [
+                    {
+                        type            : Backbone.HasMany,
+                        key             : 'files',
+                        relatedModel    : File,
+                        collectionType  : FileCollection,
+                        createModels    : true,
+                        includeInJSON   : '_id',
+                        reverseRelation : {
+                            key           : 'assetId',
+                            includeInJSON : '_id'
+                        }
+                    }
+                ]
+
+            })
+            ;
+
+    var Library = Backbone.Collection.extend({
+
+        model : Asset,
+        url   : 'library'
+
+    });
+
+
+    var Project = Backbone.RelationalModel.extend({
+
+
+        relations : [
+            {
+                type            : Backbone.HasMany,
+                key             : 'library',
+                relatedModel    : Asset,
+                collectionType  : Library,
+                createModels    : true,
+                includeInJSON   : '_id',
+                reverseRelation : {
+                    key           : 'projectId',
+                    includeInJSON : '_id'
+                }
+            }
+        ],
+
+        url : 'project',
+
+        idAttribute : '_id',
+
+        defaults : {
+            _id          : null,
+            title        : 'Untitled',
+            date         : new Date(),
+            assetFolder  : null,
+            library      : null,
+            compositions : null
+        }
+
+
+    });
+
+
+    var project = new Project();
+
+
+    project.save(null, {success : function (m, r) {
+
+        var asset = new Asset({
+            'projectId' : project.id
+        });
+
+        asset.save(null, {'success' : function () {
+
+            var file = new File({'assetId' : asset.id});
+
+            file.save(null, {success : function (m, r) {
+                console.log(file.toJSON(), asset.toJSON(), project.toJSON());
+            }});
+        }});
+
+
+    }});
+
+</script>
+
+</body>
+</html>

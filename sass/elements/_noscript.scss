@@ -1,0 +1,51 @@
+noscript {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fffff;
+
+  div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -25%;
+    margin-top: -25%;
+    text-align: left;
+    width: 50%;
+    height: 50%;
+    height: auto;
+    display: block;
+    padding-left: 12em;
+    background-image: url('../img/icon_genius.svg');
+    background-repeat: no-repeat;
+    background-size: 10em 10em;
+
+    h1, p {
+      color: #ffffff;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2.5em;
+
+    }
+    p {
+      font-size: 1.5em
+    }
+    a {
+      &:link, &:active, &:visited {
+        color: #ffffff;
+        font-weight: bold;
+        text-decoration: none !important;
+      }
+      &:hover {
+        text-decoration: underline !important;
+      }
+    }
+
+  }
+
+}

@@ -1,0 +1,31 @@
+/* FLEX BOX POLYFILLS AND FUNCTIONS*/
+
+@mixin display-box {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+}
+
+@mixin box-orient($val) {
+  box-orient: $val;
+  -webkit-box-orient: $val;
+  -moz-box-orient: $val;
+}
+
+@mixin box-pack($val) {
+  box-pack: $val;
+  -webkit-box-pack: $val;
+  -moz-box-pack: $val;
+}
+
+@mixin box-align($val) {
+  box-align: $val;
+  -webkit-box-align: $val;
+  -moz-box-align: $val;
+}
+
+@mixin box-flex($val) {
+  -webkit-box-flex: $val;
+  -moz-box-flex: $val;
+  box-flex: $val;
+}

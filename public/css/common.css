@@ -1,438 +1,516 @@
-/*http://www.useragentman.com/blog/2012/01/03/cross-browser-html5-progress-bars-in-depth/*/
-button, #navigatorControl input[type=file], #navigatorControl button {
-  -webkit-transition: opacity 0.6s ease-out;
-  -moz-transition: opacity 0.6s ease-out;
-  -ms-transition: opacity 0.6s ease-out;
-  -o-transition: opacity 0.6s ease-out;
-  transition: opacity 0.6s ease-out;
-  -webkit-background-size: 100% 100%;
-  -o-background-size: 100% 100%;
-  -moz-background-size: 100% 100%;
-  background-size: 100% 100%;
+/**
+VARIABLES
+**/
+/* MIXINS */
+/**
+VARIABLES
+**/
+/* MIXINS */
+button {
+  -webkit-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+  -moz-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+  -ms-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+  -o-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+  transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+  -webkit-background-size: compact(100%, 100%, false, false, false, false, false, false, false);
+  -moz-background-size: compact(100%, 100%, false, false, false, false, false, false, false);
+  -ms-background-size: compact(100%, 100%, false, false, false, false, false, false, false);
+  -o-background-size: compact(100%, 100%, false, false, false, false, false, false, false);
+  background-size: compact(100%, 100%, false, false, false, false, false, false, false);
+  display: block;
+  height: 100%;
+  min-height: 40px;
+  min-width: 40px;
+  line-height: 100%;
+  border: none;
   background-repeat: no-repeat !important;
-  background-color: white;
   background-position: center center !important;
   background-origin: content;
-  border: none;
-  display: block;
-  min-height: 36px !important;
-  min-width: 36px !important;
-  height: 100% !important;
-  float: left;
   opacity: 0.7;
-  overflow: hidden;
   margin-left: 3px; }
-  button:hover, #navigatorControl input[type=file]:hover, #navigatorControl button:hover {
+  button:hover {
     cursor: pointer;
     opacity: 1;
-    -webkit-transition: all 0.6s ease-out;
-    -moz-transition: all 0.6s ease-out;
-    -ms-transition: all 0.6s ease-out;
-    -o-transition: all 0.6s ease-out;
-    transition: all 0.6s ease-out; }
-  button[disabled], #navigatorControl input[disabled][type=file], #navigatorControl button[disabled] {
+    -webkit-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+    -moz-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+    -ms-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+    -o-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
+    transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false); }
+  button[disabled] {
     cursor: default;
     opacity: 0.4; }
-  button[disabled]:hover, #navigatorControl input[disabled][type=file]:hover, #navigatorControl button[disabled]:hover {
+  button[disabled]:hover {
     cursor: default; }
 
-button.settings, #navigatorControl input.settings[type=file], #navigatorControl button.settings {
+button.settings {
   background: url("../img/icon_settings.svg"); }
 
-button.share, #navigatorControl input.share[type=file], #navigatorControl button.share {
+button.share {
   background: url("../img/icon_share.svg");
   margin-right: 5px; }
 
-button.add, #navigatorControl input.add[type=file], #navigatorControl button.add {
+button.add {
   background: url("../img/icon_add.svg"); }
 
-button.remove, #navigatorControl input.remove[type=file], #navigatorControl button.remove {
+button.remove {
   background: url("../img/icon_remove.svg"); }
 
-button.play, #navigatorControl input.play[type=file], #navigatorControl button.play {
+button.play {
   background: url("../img/icon_play.svg"); }
 
-button.upload, #navigatorControl input.upload[type=file], #navigatorControl button.upload {
+button.upload {
   background-image: url("../img/icon_upload.svg"); }
 
-.textButton, button.upload, #navigatorControl input.upload[type=file], #navigatorControl button.upload {
-  border: 1px solid silver;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  background-position: 5% center !important;
-  background-size: contain !important;
-  background-clip: content-box;
-  min-height: 70% !important;
-  height: 70% !important;
-  margin: 0.3%;
-  font-size: 100%;
-  padding: 0.8% 0.9% 0.9% 3%;
-  line-height: 70%;
-  font-weight: bold;
-  -webkit-transition: background 0.15 ease-out;
-  -moz-transition: background 0.15 ease-out;
-  -ms-transition: background 0.15 ease-out;
-  -o-transition: background 0.15 ease-out;
-  transition: background 0.15 ease-out;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf));
-  background: -moz-linear-gradient(center top, #ededed 5%, #dfdfdf 100%);
-  background-color: #ededed;
-  text-shadow: 1px 1px 0px #ffffff; }
-  .textButton:hover, button.upload:hover, #navigatorControl input.upload[type=file]:hover, #navigatorControl button.upload:hover {
-    background-color: rgba(89, 166, 255, 0.5);
-    -webkit-transition: background 0.15s ease-out;
-    -moz-transition: background 0.15s ease-out;
-    -ms-transition: background 0.15s ease-out;
-    -o-transition: background 0.15s ease-out;
-    transition: background 0.15s ease-out; }
-
-* {
-  font-family: 'Gudea', sans-serif;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  font-size: 100%;
-  margin: 0;
-  padding: 0; }
-
+/**
+VARIABLES
+**/
+/* MIXINS */
 body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  height: 100%;
-  max-height: 100%;
-  background-color: white;
   width: 100%;
-  max-width: 100%;
   min-width: 100%;
-  overflow: hidden; }
-
-#wrapper {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
   max-width: 100%;
   height: 100%;
-  max-height: 100%;
-  margin: 0;
-  padding: 0; }
-
-header {
-  height: 6%;
-  border-bottom: 1px solid silver;
-  overflow: hidden; }
-  header #projectInfo {
-    width: 50%;
-    float: left;
-    min-height: 36px;
-    height: 100%; }
-    header #projectInfo h1 {
-      font-size: 1.6em;
-      color: black;
-      display: inline; }
-    header #projectInfo span {
-      padding-left: 2em; }
-  header #mainControl {
-    width: 50%;
-    float: left;
-    padding: 0;
-    min-height: 100%;
-    height: 100%;
-    max-height: 100%; }
-    header #mainControl button, header #mainControl #navigatorControl input[type=file], #navigatorControl header #mainControl input[type=file], header #mainControl #navigatorControl button, #navigatorControl header #mainControl button {
-      float: right !important; }
-
-#controlbar {
-  clear: both;
-  height: 6%;
-  overflow: hidden;
-  min-height: 5%;
-  height: 5%;
-  max-height: 5%; }
-  #controlbar #stageControl {
-    width: 75%;
-    min-width: 75%;
-    max-width: 75;
-    float: left;
-    overflow: hidden;
-    height: 100%;
-    min-height: 100%;
-    border-left: 1px solid silver; }
-    #controlbar #stageControl button, #controlbar #stageControl #navigatorControl input[type=file], #navigatorControl #controlbar #stageControl input[type=file], #controlbar #stageControl #navigatorControl button, #navigatorControl #controlbar #stageControl button {
-      float: left;
-      height: 100%; }
-
-#navigatorTab {
-  width: 25%;
-  height: 100%;
-  float: left; }
-  #navigatorTab ul {
-    margin: 0;
-    padding: 0;
-    height: 100%; }
-    #navigatorTab ul li {
-      float: left;
-      list-style: none;
-      padding: 0.6em;
-      border-right: 1px solid silver;
-      height: 100%;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -o-user-select: none;
-      user-select: none; }
-      #navigatorTab ul li:hover {
-        background-color: #59a6ff;
-        cursor: pointer; }
-
-#navigator {
-  clear: both;
-  height: 58%;
-  max-height: 60%;
-  min-height: 60%;
-  width: 25%;
-  display: block;
-  float: left;
-  border-top: 1px solid silver;
-  border-bottom: 1px solid silver; }
-
-#compositions {
-  display: none;
-  height: 90%;
+  min-height: 100%;
   max-height: 100%; }
+  body #wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 100%;
+    min-height: 100%;
+    max-height: 100%; }
+    body #wrapper header {
+      width: 100%;
+      height: 5%;
+      min-height: 40px;
+      overflow: hidden; }
+      body #wrapper header div {
+        height: 100%;
+        width: 50%; }
+      body #wrapper header #projectInfo {
+        float: left; }
+      body #wrapper header #projectControl {
+        float: right; }
+    body #wrapper #mainContainer {
+      clear: both;
+      display: block;
+      height: 65%;
+      width: 100%; }
+      body #wrapper #mainContainer #navigator {
+        height: 100%;
+        width: 25%;
+        float: left;
+        display: block; }
+        body #wrapper #mainContainer #navigator #navigatorControl {
+          height: 7%;
+          min-height: 40px; }
+        body #wrapper #mainContainer #navigator #library, body #wrapper #mainContainer #navigator #compositions, body #wrapper #mainContainer #navigator #effects {
+          height: 86%; }
+        body #wrapper #mainContainer #navigator #navigatorCommands {
+          height: 7%;
+          min-height: 40px; }
+      body #wrapper #mainContainer #stageContainer {
+        display: block;
+        float: left;
+        width: 75%; }
+        body #wrapper #mainContainer #stageContainer #stageControl {
+          height: 7%;
+          min-height: 40px; }
+        body #wrapper #mainContainer #stageContainer #stage {
+          height: 86%; }
+        body #wrapper #mainContainer #stageContainer #stageCommands {
+          height: 7%;
+          min-height: 40px; }
+    body #wrapper #timeline {
+      clear: both;
+      height: 30%; }
+      body #wrapper #timeline #slider {
+        height: 10%; }
 
-#library {
-  min-height: 90%;
-  height: 90%;
-  max-height: 90%;
-  width: 100%;
+/**
+VARIABLES
+**/
+/* MIXINS */
+header {
+  border-bottom: 1px solid silver;
+  background-color: #f0f0f0; }
+
+#projectInfo {
+  display: table; }
+  #projectInfo div {
+    display: table-cell;
+    vertical-align: middle;
+    height: 100%; }
+  #projectInfo h1 {
+    display: inline;
+    font-size: 1.3em;
+    color: black;
+    text-overflow: ellipsis;
+    margin-left: 0.5em; }
+
+#projectControl button {
+  display: table-cell;
+  vertical-align: middle;
+  float: right; }
+
+/**
+VARIABLES
+**/
+/* MIXINS */
+/*http://www.useragentman.com/blog/2012/01/03/cross-browser-html5-progress-bars-in-depth/*/
+#navigator {
+  border-right: 1px solid silver;
+  margin-right: -1px;
+  background-color: #f0f0f0; }
+
+#library, #compositions, #effects {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: block;
   overflow: hidden;
   overflow-x: hidden;
-  overflow-y: scroll;
-  max-height: 100%;
-  min-height: 90%;
-  padding: 0;
-  margin: 0;
-  display: block;
-  clip: rect(100, 100, 100, 100);
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
-  user-select: none; }
-  #library div.asset {
-    clear: both;
-    height: 4.3em;
-    display: block;
-    cursor: pointer;
+  overflow-y: scroll; }
+
+#navigatorControl {
+  background: #e0e0e0;
+  /* Old browsers */
+  background: -moz-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e0e0e0), color-stop(100%, #c6c6c6));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* IE10+ */
+  background: linear, compact(to bottom, #e0e0e0 0%, #c6c6c6 100%, false, false, false, false, false, false, false, false);
+  /* W3C */
+  border-bottom: 1px solid silver; }
+  #navigatorControl ul {
     width: 100%;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-    background-color: white;
-    margin: 0;
-    padding: 0;
-    color: #6d6c6c;
-    border-top: 1px solid silver; }
-    #library div.asset:first-child {
-      border: none !important; }
-    #library div.asset div.info {
-      width: 90%;
+    height: 100%;
+    display: table; }
+    #navigatorControl ul li {
+      display: table-cell;
+      vertical-align: middle;
+      width: 33.33333%;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      list-style: none;
+      text-align: center;
+      border-right: 1px solid silver; }
+      #navigatorControl ul li .active {
+        background: #bfbfbf;
+        /* Old browsers */
+        background: -moz-linear-gradient(top, #bfbfbf 0%, #878787 100%);
+        /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #bfbfbf), color-stop(100%, #878787));
+        /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #bfbfbf 0%, #878787 100%);
+        /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #bfbfbf 0%, #878787 100%);
+        /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #bfbfbf 0%, #878787 100%);
+        /* IE10+ */
+        background: linear, compact(top bottom, #bfbfbf 0%, #878787 100%, false, false, false, false, false, false, false, false);
+        /* W3C */ }
+      #navigatorControl ul li:hover {
+        background: #bfbfbf;
+        /* Old browsers */
+        background: -moz-linear-gradient(top, #bfbfbf 0%, #878787 100%);
+        /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #bfbfbf), color-stop(100%, #878787));
+        /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #bfbfbf 0%, #878787 100%);
+        /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #bfbfbf 0%, #878787 100%);
+        /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #bfbfbf 0%, #878787 100%);
+        /* IE10+ */
+        background: linear, compact(top bottom, #bfbfbf 0%, #878787 100%, false, false, false, false, false, false, false, false);
+        /* W3C */
+        cursor: pointer; }
+      #navigatorControl ul li:last-child {
+        border-right: none; }
+
+#navigatorCommands {
+  background: #e0e0e0;
+  /* Old browsers */
+  background: -moz-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e0e0e0), color-stop(100%, #c6c6c6));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* IE10+ */
+  background: linear, compact(to bottom, #e0e0e0 0%, #c6c6c6 100%, false, false, false, false, false, false, false, false);
+  /* W3C */
+  width: 100%;
+  min-height: 40px;
+  border-top: 1px solid silver;
+  padding: 0; }
+  #navigatorCommands div {
+    margin: 0 auto;
+    display: table; }
+    #navigatorCommands div button {
+      display: table-cell;
+      vertical-align: middle; }
+    #navigatorCommands div #fileBrowser {
+      position: absolute;
+      left: -900px;
+      top: -900px;
+      text-indent: -9999px;
+      overflow: hidden; }
+
+#library div.asset {
+  padding: 0.5em 0em 0em 4em;
+  background-color: white;
+  color: #6d6c6c;
+  border-bottom: 1px solid silver;
+  background-repeat: no-repeat;
+  background-position: 0.9em 1.2em; }
+  #library div.asset.video {
+    background-image: url("../img/icon_video.svg"); }
+  #library div.asset.image {
+    background-image: url("../img/icon_image.svg"); }
+  #library div.asset.audio {
+    background-image: url("../img/icon_audio.svg"); }
+  #library div.asset div.info {
+    display: block;
+    width: 77%;
+    float: left;
+    height: 100%; }
+    #library div.asset div.info span.name {
       float: left;
-      height: 100%;
-      padding: 0.5em 0em 1.4em 4em;
-      background-repeat: no-repeat;
-      background-position: 0.9em 1.2em; }
-      #library div.asset div.info.video {
-        background-image: url("../img/icon_video.svg"); }
-      #library div.asset div.info.image {
-        background-image: url("../img/icon_image.svg"); }
-      #library div.asset div.info.audio {
-        background-image: url("../img/icon_audio.svg"); }
-      #library div.asset div.info span.name {
-        float: left;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 1em;
-        width: 80%;
-        max-width: 100%;
-        overflow: hidden; }
-      #library div.asset div.info span.status {
-        margin-top: 0.2em;
-        font-size: 0.7em;
-        float: left;
-        width: 50%; }
-      #library div.asset div.info .duration, #library div.asset div.info .dimensions, #library div.asset div.info .ratio {
-        float: left;
-        padding-top: 0.2em;
-        margin-left: 0.2em;
-        font-size: 0.7em; }
-      #library div.asset div.info progress {
-        float: left;
-        clear: both;
-        height: 2px;
-        width: 90%;
-        margin-top: 0.3em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 1em;
+      width: 80%;
+      max-width: 100%;
+      overflow: hidden; }
+    #library div.asset div.info span.status {
+      margin-top: 0.2em;
+      font-size: 0.7em;
+      float: left;
+      width: 50%; }
+    #library div.asset div.info .duration, #library div.asset div.info .dimensions, #library div.asset div.info .ratio {
+      float: left;
+      margin-top: 0.3em;
+      font-size: 0.7em; }
+    #library div.asset div.info .duration {
+      margin-left: 0; }
+    #library div.asset div.info progress {
+      appearance: none;
+      -moz-appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      background-size: auto;
+      background: silver !important;
+      color: rgba(89, 166, 255, 0.2);
+      float: left;
+      clear: both;
+      height: 2px;
+      width: 97%;
+      margin-top: 0.3em; }
+      #library div.asset div.info progress[role] {
         appearance: none;
         -moz-appearance: none;
         -webkit-appearance: none;
         border: none;
-        background-size: auto;
-        background: silver !important;
-        color: #59a6ff; }
-        #library div.asset div.info progress[role] {
-          appearance: none;
-          -moz-appearance: none;
-          -webkit-appearance: none;
-          border: none;
-          background-size: auto; }
-        #library div.asset div.info progress[role]:after {
-          background-image: none; }
-        #library div.asset div.info progress[role] strong {
-          display: none; }
-        #library div.asset div.info progress[role][aria-valuenow] {
-          background: #59a6ff !important; }
-        #library div.asset div.info progress::-webkit-progress-bar {
-          background: silver; }
-        #library div.asset div.info progress::-moz-progress-bar {
-          background: #59a6ff; }
-        #library div.asset div.info progress::-webkit-progress-value {
-          background: #59a6ff; }
-        #library div.asset div.info progress[aria-valuenow]:before {
-          background: #59a6ff; }
-        #library div.asset div.info progress:after {
-          clear: both;
-          color: black;
-          content: attr(value) "%";
-          font-size: 0.6em;
-          position: relative;
-          left: 93%;
-          top: -28px;
-          display: inline; }
-    #library div.asset div.types {
-      width: 10%;
-      float: left;
-      height: 100%;
-      margin: 0;
-      paddig: 0; }
-      #library div.asset div.types span {
-        width: 20px;
-        height: 20px;
-        display: block;
-        background-size: 100%; }
-        #library div.asset div.types span.mp4 {
-          margin-top: 0.3em;
-          background-image: url("../img/icon_mp4.svg"); }
-        #library div.asset div.types span.webm {
-          background-image: url("../img/icon_webm.svg"); }
-        #library div.asset div.types span.ogg {
-          background-image: url("../img/icon_ogg.svg"); }
-        #library div.asset div.types span.disabled {
-          opacity: 0.5; }
-    #library div.asset:hover {
-      cursor: pointer;
-      color: black;
-      background-color: rgba(89, 166, 255, 0.5); }
+        background-size: auto; }
+      #library div.asset div.info progress[role]:after {
+        background-image: none; }
+      #library div.asset div.info progress[role] strong {
+        display: none; }
+      #library div.asset div.info progress[role][aria-valuenow] {
+        background: rgba(89, 166, 255, 0.2) !important; }
+      #library div.asset div.info progress::-webkit-progress-bar {
+        background: silver; }
+      #library div.asset div.info progress::-moz-progress-bar {
+        background: rgba(89, 166, 255, 0.2); }
+      #library div.asset div.info progress::-webkit-progress-value {
+        background: rgba(89, 166, 255, 0.2); }
+      #library div.asset div.info progress[aria-valuenow]:before {
+        background: rgba(89, 166, 255, 0.2); }
+      #library div.asset div.info progress:after {
+        clear: both;
+        color: black;
+        content: attr(value) "%";
+        text-align: right;
+        font-size: 0.6em;
+        position: relative;
+        left: 91%;
+        top: -24px;
+        display: inline; }
+  #library div.asset div.types {
+    width: 4%;
+    float: left;
+    height: 100%;
+    margin: 0;
+    paddig: 0; }
+    #library div.asset div.types span {
+      width: 20px;
+      height: 20px;
+      display: block;
+      background-size: 100%; }
+      #library div.asset div.types span.mp4 {
+        margin-top: 0.3em;
+        background-image: url("../img/icon_mp4.svg"); }
+      #library div.asset div.types span.webm {
+        background-image: url("../img/icon_webm.svg"); }
+      #library div.asset div.types span.ogg {
+        background-image: url("../img/icon_ogg.svg"); }
+      #library div.asset div.types span.disabled {
+        opacity: 0.5; }
+  #library div.asset:hover {
+    cursor: pointer;
+    color: black;
+    background-color: rgba(89, 166, 255, 0.2); }
 
-#navigatorControl {
+#compositions {
+  display: none; }
+
+#effects {
+  display: none; }
+
+div.asset, div.composition, div.effect {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  clear: both;
+  height: 80px;
   display: block;
-  margin: auto;
-  min-height: 14%;
-  height: 14%;
-  overflow: hidden;
-  border-top: 1px solid silver; }
-  #navigatorControl input[type=file], #navigatorControl button, #navigatorControl input[type=file], #navigatorControl button {
-    text-indent: -9999px;
-    overflow: hidden;
-    height: 100% !important;
-    /*max-width: 36px !important */ }
-  #navigatorControl #fileBrowser {
-    position: absolute;
-    left: -900px;
-    top: -900px; }
+  cursor: pointer;
+  width: 100%; }
+
+/**
+VARIABLES
+**/
+/* MIXINS */
+#stageContainer {
+  height: 100%;
+  overflow: hidden; }
+  #stageContainer div {
+    width: 100%;
+    display: block; }
+
+#stageControl {
+  background: #e0e0e0;
+  /* Old browsers */
+  background: -moz-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e0e0e0), color-stop(100%, #c6c6c6));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* IE10+ */
+  background: linear, compact(to bottom, #e0e0e0 0%, #c6c6c6 100%, false, false, false, false, false, false, false, false);
+  /* W3C */
+  border-bottom: 1px solid silver;
+  overflow: hidden; }
+  #stageControl div {
+    display: table;
+    margin: 0 auto;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    padding-top: 2px; }
+    #stageControl div button {
+      display: table-cell;
+      vertical-align: middle; }
 
 #stage {
-  float: left;
+  overflow: hidden;
+  background-color: #272822; }
+
+#stageCommands {
+  background: #e0e0e0;
+  /* Old browsers */
+  background: -moz-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e0e0e0), color-stop(100%, #c6c6c6));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
+  /* IE10+ */
+  background: linear, compact(to bottom, #e0e0e0 0%, #c6c6c6 100%, false, false, false, false, false, false, false, false);
+  /* W3C */
+  border-top: 1px solid silver; }
+
+/**
+VARIABLES
+**/
+/* MIXINS */
+#timeline {
+  background-color: #969696;
+  border-top: 1px solid silver;
+  overflow: none; }
+
+#slider {
+  width: 100%;
+  height: 30px;
+  display: block;
+  border-bottom: 1px solid silver; }
+
+#picker {
+  position: relative;
+  left: 200px;
+  top: 0;
+  z-index: 2;
+  width: 3px;
+  background-color: red;
+  height: 100%;
+  display: block; }
+
+#layerInfoContainer,
+#layerContainer {
+  margin-top: 5px; }
+
+#layerInfoContainer {
+  width: 25%;
+  float: left; }
+
+#layerContainer {
   width: 75%;
-  height: 56%;
-  max-height: 60%;
-  min-height: 60%;
+  overflow: none;
+  float: left; }
+
+.layerInfo,
+.layer {
+  width: 100%;
   display: block;
   border: 1px solid silver;
-  background-color: red;
-  overflow: hidden;
-  background-color: #f1f1f1; }
+  background-color: #f0f0f0;
+  margin: 3px 0; }
 
-#timeline {
-  clear: both;
-  width: 100%;
-  height: 30%;
-  min-height: 27%;
-  background-color: white; }
-  #timeline #layer {
-    width: 25%;
-    display: block;
-    height: 100%;
-    float: left; }
-    #timeline #layer div {
-      width: 100%;
-      border: 1px solid silver;
-      height: 10%;
-      margin: 0.2em 10em 0.2em 0.2em;
-      padding: 0.2em; }
-  #timeline #bars {
-    width: 75%;
-    height: 100%;
-    float: left; }
-    #timeline #bars div {
-      height: 10%;
-      display: block;
-      width: 100%;
-      border: 1px solid silver;
-      margin: 0.2em; }
-    #timeline #bars .video {
-      background-color: #59a6ff; }
-    #timeline #bars .audio {
-      background-color: rgba(168, 197, 50, 0.6); }
-    #timeline #bars .image {
-      background-color: rgba(231, 176, 26, 0.6); }
+.layerInfo {
+  height: 25px;
+  padding: 5px 0px 0px 0px;
+  border-right: none; }
+  .layerInfo span {
+    text-overflow: ellipsis;
+    padding-left: 5px; }
 
-/*PSEUDO ELEMENTS*/
-[contenteditable]:hover {
-  outline: 1px dotted #cfcfcf; }
-
-[contenteditable]:focus {
-  outline: 1px dotted #cfcfcf; }
-
-#exportDialogue {
-  background-color: white; }
-  #exportDialogue #screen {
-    clear: both;
-    float: left;
-    width: 50%;
-    height: 100%;
-    background-image: url("../img/screen_export.svg");
-    background-repeat: no-repeat;
-    background-size: 80% 80%;
-    min-width: 50%;
-    max-width: 50%;
-    min-height: 100% !important;
-    max-height: 100%;
-    display: block !important;
-    border: 1px solid red; }
-  #exportDialogue #qrcode {
-    float: left;
-    width: 50%;
-    min-width: 50%;
-    max-width: 50%;
-    height: 100%;
-    display: block; }
-    #exportDialogue #qrcode canvas {
-      max-width: 80%;
-      max-height: 80%; }
+.layer {
+  height: 30px; }
 
 noscript {
   width: 100%;
@@ -470,3 +548,46 @@ noscript {
       text-decoration: none !important; }
     noscript div a:hover {
       text-decoration: underline !important; }
+
+#exportDialogue #screen {
+  clear: both;
+  float: left;
+  width: 50%;
+  height: 100%;
+  background-image: url("../img/screen_export.svg");
+  background-repeat: no-repeat;
+  background-size: 80% 80%;
+  min-width: 50%;
+  max-width: 50%;
+  min-height: 100% !important;
+  max-height: 100%;
+  display: block !important;
+  border: 1px solid red; }
+#exportDialogue #qrcode {
+  float: left;
+  width: 50%;
+  min-width: 50%;
+  max-width: 50%;
+  height: 100%;
+  display: block; }
+  #exportDialogue #qrcode canvas {
+    max-width: 80%;
+    max-height: 80%; }
+
+/* GLOBALS */
+* {
+  -webkit-box-sizing: "border-box";
+  -moz-box-sizing: "border-box";
+  box-sizing: "border-box";
+  font-family: 'Gudea', sans-serif;
+  margin: 0;
+  padding: 0; }
+
+body {
+  overflow: hidden;
+  font-size: 100%;
+  background-color: #f0f0f0; }
+
+[contenteditable]:hover,
+[contenteditable]:focus {
+  outline: 1px dotted silver; }

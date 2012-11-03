@@ -1,0 +1,221 @@
+@import '../bourbon/bourbon';
+@import '../globals';
+@import '../progressbar';
+
+#navigator {
+  border-right: 1px solid $lineColor;
+  margin-right: -1px;
+  //fix for the 1px border
+  background-color: $navigatorBackgroundColor;
+}
+
+#library, #compositions, #effects {
+  @include user-select(none);
+
+  display: block;
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+}
+
+#navigatorControl {
+  @include toolbar;
+  border-bottom: 1px solid $lineColor;
+
+  ul {
+    width: 100%;
+    height: 100%;
+    display: table;
+
+    li {
+      display: table-cell;
+      vertical-align: middle;
+      width: (100%/3);
+      @include user-select(none);
+
+      list-style: none;
+      text-align: center;
+
+      border-right: 1px solid $lineColor;
+
+      .active {
+        @include toolbarHover;
+      }
+      &:hover {
+        @include toolbarHover;
+        cursor: pointer;
+      }
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+
+}
+
+#navigatorCommands {
+  @include toolbar;
+  width: 100%;
+  min-height: 40px;
+  border-top: 1px solid $lineColor;
+  padding: 0;
+
+  div {
+    margin: 0 auto;
+    display: table;
+
+    button {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    #fileBrowser {
+      position: absolute;
+      left: -900px;
+      top: -900px;
+      text-indent: -9999px;
+      overflow: hidden;
+    }
+  }
+
+}
+
+#library {
+
+  div.asset {
+    padding: 0.5em 0em 0em 4em;
+
+    background-color: $assetBackgrouncColor;
+    color: #6d6c6c;
+    border-bottom: 1px solid $lineColor;
+
+    background-repeat: no-repeat;
+    background-position: 0.9em 1.2em;
+
+    &.video {
+      background-image: url('../img/icon_video.svg');
+    }
+
+    &.image {
+      background-image: url('../img/icon_image.svg');
+    }
+    &.audio {
+      background-image: url('../img/icon_audio.svg');
+    }
+
+    div.info {
+      display: block;
+      width: 77%;
+      float: left;
+      height: 100%;
+
+      span.name {
+        float: left;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 1em;
+        width: 80%;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      span.status {
+        margin-top: 0.2em;
+        font-size: 0.7em;
+        float: left;
+        width: 50%;
+      }
+
+      .duration, .dimensions, .ratio {
+        float: left;
+        margin-top: 0.3em;
+        font-size: 0.7em;
+      }
+
+      .duration {
+        margin-left: 0;
+      }
+
+      progress {
+        @include progressbar(#c0c0c0, $highlightColor);
+        float: left;
+        clear: both;
+        height: 2px;
+        width: 97%;
+
+        margin-top: 0.3em;
+
+        &:after {
+          clear: both;
+          color: $textColor;
+          content: attr(value) "%";
+          text-align: right;
+          font-size: 0.6em;
+          position: relative;
+          left: 91%;
+          top: -24px;
+          display: inline;
+
+        }
+      }
+    }
+
+    div.types {
+      width: 4%;
+      float: left;
+      height: 100%;
+      margin: 0;
+      paddig: 0;
+
+      span {
+        width: 20px;
+        height: 20px;
+        display: block;
+        background-size: 100%;
+
+        &.mp4 {
+          margin-top: 0.3em;
+          background-image: url('../img/icon_mp4.svg');
+        }
+        &.webm {
+          background-image: url('../img/icon_webm.svg');
+        }
+        &.ogg {
+          background-image: url('../img/icon_ogg.svg');
+        }
+
+        &.disabled {
+          opacity: 0.5;
+        }
+      }
+    }
+
+    &:hover {
+      cursor: pointer;
+      color: $textColor;
+      background-color: $highlightColor;
+
+    }
+
+  }
+
+}
+
+#compositions {
+  display: none;
+}
+
+#effects {
+  display: none;
+}
+
+div.asset, div.composition, div.effect {
+  @include user-select(none);
+  clear: both;
+  height: 80px;
+  display: block;
+  cursor: pointer;
+  width: 100%;
+}

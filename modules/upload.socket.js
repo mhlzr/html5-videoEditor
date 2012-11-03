@@ -3,6 +3,7 @@ var BufferedWriter = require('buffered-writer'),
     util = require('util');
 
 var UploadHandler = function () {
+    'use strict';
 
     this.acceptData = function (data, projectDir, callback) {
 
@@ -12,9 +13,11 @@ var UploadHandler = function () {
             throw new Error('Missing or false parameters');
         }
 
-        fs.open(__dirname + '/public/projects/' + projectDir + '/assets/' + data.fileName, 'a', function (err, fd) {
+        fs.open(__dirname + '/../public/projects/' + projectDir + '/assets/' + data.fileName, 'a', function (err, fd) {
 
-            if (err) throw err;
+            if (err) {
+                throw err;
+            }
 
             var buffer = new Buffer(data.bytes, 'base64'),
                 pos = parseInt(data.byteOffset),
@@ -22,7 +25,9 @@ var UploadHandler = function () {
 
             fs.write(fd, buffer, 0, buffer.length, pos, function (err, written, buffer) {
 
-                if (err) throw err;
+                if (err) {
+                    throw err;
+                }
 
                 fs.close(fd, function (err) {
 

@@ -29,64 +29,72 @@
 <div id="wrapper">
     <header>
         <div id="projectInfo"></div>
-        <div id="mainControl">
-            <button id="share" class="share" title="Export"></button>
+        <div id="projectControl">
             <button id="settings" class="settings" title="Settings"></button>
+            <button id="share" class="share" title="Export"></button>
         </div>
     </header>
 
-    <div id="controlbar">
 
-        <div id="navigatorTab">
-            <ul>
-                <li>Assets</li>
-                <li>Compositions</li>
-                <li>Effects</li>
-            </ul>
+    <div id="mainContainer">
+        <div id="navigator">
 
+            <nav id="navigatorControl">
+                <ul>
+                    <li data-nav="library" class="active">Assets</li>
+                    <li data-nav="compositions">Compositions</li>
+                    <li data-nav="effects">Effects</li>
+                </ul>
+
+            </nav>
+
+            <div class="list" id="library"></div>
+            <div class="list" id="compositions"></div>
+            <div class="list" id="effects">Effects</div>
+
+            <div id="navigatorCommands">
+                <div>
+                    <input id="fileBrowser" class="add" type="file" multiple/>
+                    <button id="addButton" class="add" enabled></button>
+                    <button id="removeButton" class="remove" disabled></button>
+                    <button id="playButton" class="play" enabled></button>
+                </div>
+            </div>
         </div>
 
-        <div id="stageControl">
-            <button id="saveBtn" class="textButton">Save Project</button>
-            <button id="fetchBtn" class="textButton">Fetch Project</button>
-            <button id="deleteBtn" class="textButton">Delete Project</button>
-            <button id="dumpProject" class="textButton">Dump Project</button>
-            <button id="render" class="textButton">Render</button>
-            <button id="sync" class="textButton">Sync</button>
-            <button id="toggleUpload" class="upload textButton">Stop Upload</button>
+
+        <div id="stageContainer">
+            <nav id="stageControl">
+                <div>
+                    <a href="javascript:void(0)" id="saveBtn">Save Project</a>
+                    <a href="javascript:void(0)" id="fetchBtn">Fetch Project</a>
+                    <a href="javascript:void(0)" id="deleteBtn">Delete Project</a>
+                    <a href="javascript:void(0)" id="dumpProject">Dump Project</a>
+                    <a href="javascript:void(0)" id="render">Render</a>
+                    <a href="javascript:void(0)" id="sync">Sync</a>
+                </div>
+            </nav>
+            <div id="stage"></div>
+            <div id="stageCommands"></div>
+
         </div>
-    </div>
-
-    <div id="navigator">
-        <div id="library"></div>
-        <div id="compositions"></div>
-
-        <div id="navigatorControl">
-            <input id="fileBrowser" class="add" type="file" id="uploadInput" multiple/>
-            <button id="fileBrowserButton" class="add" enabled></button>
-            <button id="fileDelete" class="remove" disabled></button>
-            <button id="play" class="play" enabled></button>
-        </div>
-
-    </div>
-
-    <div id="stage">
-        <video id="testPlayer" controls style="width:100%;height:100%"></video>
     </div>
 
 
     <div id="timeline">
-        <div id="layer">
-            <div class="layerInfo">SomeLayer</div>
-            <div class="layerInfo">SomeLayer</div>
-            <div class="layerInfo">SomeLayer</div>
+        <div id="slider"></div>
+        <div id="layerInfoContainer">
+            <div class="layerInfo"><span>Title</span></div>
+            <div class="layerInfo"><span>SomeLayer</span></div>
+            <div class="layerInfo"><span>SomeLayer</span></div>
         </div>
-        <div id="bars">
-            <div class="video"></div>
-            <div class="audio"></div>
-            <div class="image"></div>
-        </div>
+        <div id="layerContainer">
+            <!--div id="picker"></div-->
+            <div class="layer video"></div>
+            <div class="layer audio"></div>
+            <div class="layer image"></div>
 
+        </div>
     </div>
 
 
@@ -100,20 +108,72 @@
         </div>
     </noscript>
 
-</div>
+    <div id="exportDialogue" class="reveal-modal">
+        <h1>Export</h1>
 
-<div id="exportDialogue" class="reveal-modal">
-    <h1>Export</h1>
+        <h2>Private URL</h2>
 
-    <h2>Private URL</h2>
+        <p>This link gives anybody full control over this project.</p>
 
-    <p>This link gives anybody full control over this project.</p>
+        <p><a href="http://lorem">http://www.lorem.de</a></p>
 
-    <p><a href="http://lorem">http://www.lorem.de</a></p>
+        <div id="screen">fff</div>
+        <div id="qrcode"></div>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
 
-    <div id="screen">fff</div>
-    <div id="qrcode"></div>
-    <a class="close-reveal-modal">&#215;</a>
+    <div id="compositionDialogue" class="reveal-modal">
+        <h1>New Composition</h1>
+        <label for="compositionName">Name</label>
+        <input id="compositionName" type="text" required maxlength="128"/>
+
+        <fieldset>
+            <legend>Resolution</legend>
+            <label for="compositionPresets">Presets</label>
+            <select id="compositionPresets" required>
+                <option value="720x576">720x576 (DVD)</option>
+                <option value="1280x720">1280x720 (HD)</option>
+                <option value="1920x1080">1920x1080 (Full HD)</option>
+            </select>
+
+            <label for="compositionWidth">Width</label>
+            <input id="compositionWidth" type="number" required/>
+
+            <label for="compositionHeight">Height</label>
+            <input id="compositionHeight" type="number" required/>
+        </fieldset>
+
+        <label for="compositionFps">Framerate</label>
+        <input id="compositionFps" type="number" list="compositionFpsDefaults" value="25" required/>
+
+        <datalist id="compositionFpsDefaults">
+            <option value="60">
+            <option value="31">
+            <option value="30">
+            <option value="25">
+            <option value="24">
+        </datalist>
+
+        <fieldset>
+            <legend>Duration</legend>
+            <label for="compositionDurationHour">Hours</label>
+            <input id="compositionDurationHour" type="number" value="00" min="0" max="24" required/>
+
+            <label for="compositionDurationMin">Min</label>
+            <input id="compositionDurationMin" type="number" value="00" min="0" max="59" required/>
+
+            <label for="compositionDurationSec">Seconds</label>
+            <input id="compositionDurationSec" type="number" value="00" min="0" max="59" required/>
+        </fieldset>
+
+
+        <fieldset>
+            <legend>Encoding Settings</legend>
+        </fieldset>
+        <button id="createCompositionBtn">Okay</button>
+
+    </div>
+
 </div>
 </body>
 

@@ -37,12 +37,15 @@ define(['backbone', 'backbone-rel', 'model/sequence', 'model/file'],
                 height   : 0,
                 fps      : 0,
                 duration : 0,
-                bitrate  : 0,
                 publicId : null
             },
 
             initialize : function () {
 
+            },
+
+            initServerUpdateListener : function () {
+                //TODO
             }
 
         });

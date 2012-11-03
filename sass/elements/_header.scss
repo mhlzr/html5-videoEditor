@@ -1,0 +1,36 @@
+@import '../globals';
+
+header {
+  border-bottom: 1px solid $lineColor;
+  background-color: $headerBackgroundColor;
+}
+
+#projectInfo {
+  display: table;
+
+  div {
+    display: table-cell;
+    vertical-align: middle;
+    height: 100%;
+  }
+
+  h1 {
+    display: inline;
+    font-size: 1.3em;
+    color: $textColor;
+    text-overflow: ellipsis;
+    margin-left: 0.5em;
+
+  }
+
+}
+
+#projectControl {
+
+  button {
+    display: table-cell;
+    vertical-align: middle;
+    float: right;
+  }
+
+}

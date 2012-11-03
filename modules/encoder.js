@@ -1,5 +1,4 @@
 var ffmpeg = require('fluent-ffmpeg'),
-    Metalib = require('fluent-ffmpeg').Metadata,
     util = require('util'),
     events = require('events'),
     _ = require('underscore');
@@ -57,11 +56,6 @@ var Encoder = function () {
 
     this.encode = function (job) {
 
-    };
-
-    this.getMetaDataFromFile = function (filePath, callback) {
-        var metaObject = new Metalib(filePath);
-        metaObject.get(callback);
     };
 
     this.transcode = function (job) {

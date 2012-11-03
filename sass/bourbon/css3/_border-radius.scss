@@ -1,0 +1,39 @@
+@mixin border-radius ($radii) {
+  @include prefixer(border-radius, $radii, webkit, not moz);
+}
+
+@mixin border-top-left-radius($radii) {
+  @include prefixer(border-top-left-radius, $radii, webkit, not moz);
+}
+
+@mixin border-top-right-radius($radii) {
+  @include prefixer(border-top-right-radius, $radii, webkit, not moz);
+}
+
+@mixin border-bottom-left-radius($radii) {
+  @include prefixer(border-bottom-left-radius, $radii, webkit, not moz);
+}
+
+@mixin border-bottom-right-radius($radii) {
+  @include prefixer(border-bottom-right-radius, $radii, webkit, not moz);
+}
+
+@mixin border-top-radius($radii) {
+  @include border-top-left-radius($radii);
+  @include border-top-right-radius($radii);
+}
+
+@mixin border-right-radius($radii) {
+  @include border-top-right-radius($radii);
+  @include border-bottom-right-radius($radii);
+}
+
+@mixin border-bottom-radius($radii) {
+  @include border-bottom-left-radius($radii);
+  @include border-bottom-right-radius($radii);
+}
+
+@mixin border-left-radius($radii) {
+  @include border-top-left-radius($radii);
+  @include border-bottom-left-radius($radii);
+}

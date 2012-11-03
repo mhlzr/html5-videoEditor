@@ -1,24 +1,23 @@
-<div class="asset" id="{{this._id}}">
-    <div class="info {{this.type}}">
+<div class="asset {{this.type}}" id="{{this._id}}" draggable="true">
+    <div class="info">
         <span class="name"> {{this.name}}</span>
-
         <span class="status">{{this.status}}</span>
         <progress value="{{this.progress}}" max="100"></progress>
 
         {{#if hasMetaData}}
 
-            {{#if fps}}
-            <span class="duration">{{roundNumber this.duration/this.fps}}</span>
-            {{/if}}
+        {{#if fps}}
+        <span class="duration">{{roundNumber this.duration/this.fps}}</span>
+        {{/if}}
 
-            {{#unless fps}}
-            <span class="duration">{{roundNumber this.duration}} frames</span>
-            {{/unless}}
+        {{#unless fps}}
+        <span class="duration">{{roundNumber this.duration}} frames</span>
+        {{/unless}}
 
-            {{#if_eq this.type compare="video"}}
-                <span class="dimensions">{{this.width}}x{{this.height}}</span>
-                <span class="ratio">{{roundNumber this.ratio}}:1</span>
-            {{/if_eq}}
+        {{#if_eq this.type compare="video"}}
+        <span class="dimensions">&nbsp;[{{this.width}}x{{this.height}}]</span>
+        <span class="ratio">&nbsp;{{roundNumber this.ratio}}&nbsp;:&nbsp;1</span>
+        {{/if_eq}}
 
         {{/if}}
 

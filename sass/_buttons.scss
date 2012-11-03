@@ -1,31 +1,27 @@
-$baseColor: rgba(255, 255, 255, 1);
-$textColor: rgba(0, 0, 0, 1);
-$lineColor: #c0c0c0;
-$highlightColor: rgba(89, 166, 255, 1);
-
-@import "_prefixpoly.scss";
+@import 'bourbon/bourbon';
+@import 'globals';
 
 button {
-  @include transition(opacity);
+
+  @include transition(opacity 2.0s ease-in-out);
   @include background-size(100%, 100%);
+
+  display: block;
+  height: 100%;
+  min-height: 40px;
+  min-width: 40px;
+  line-height: 100%;
+  border: none;
   background-repeat: no-repeat !important;
-  background-color: $baseColor;
   background-position: center center !important;
   background-origin: content;
-  border: none;
-  display: block;
-  min-height: 36px !important;;
-  min-width: 36px !important;
-  height: 100% !important;
-  float: left;
   opacity: 0.7;
-  overflow: hidden;
   margin-left: 3px;
 
   &:hover {
     cursor: pointer;
     opacity: 1;
-    @include transition();
+    @include transition(opacity 2.0s ease-in-out);
   }
 
   &[disabled] {
@@ -60,33 +56,6 @@ button.play {
 
 button.upload {
   background-image: url("../img/icon_upload.svg");
-  @extend .textButton;
-}
-
-.textButton {
-  border: 1px solid $lineColor;
-  @include border-radius(5px);
-  background-position: 5% center !important;
-  background-size: contain !important;
-  background-clip: content-box;
-  min-height: 70% !important;
-  height: 70% !important;
-  margin: 0.3%;
-  font-size: 100%;
-  padding: 0.8% 0.9% 0.9% 3%;
-  line-height: 70%;
-  font-weight: bold;
-  @include transition(background, 0.15);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf));
-  background: -moz-linear-gradient(center top, #ededed 5%, #dfdfdf 100%);
-  background-color: #ededed;
-  text-shadow: 1px 1px 0px #ffffff;
-
-  &:hover {
-    background-color: transparentize($highlightColor, 0.5);
-    @include transition(background, 0.15s);
-
-  }
 }
 
 

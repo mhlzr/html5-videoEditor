@@ -1,12 +1,12 @@
-define(['jquery', 'backbone', 'view/assetListView'],
+define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'jquery-hammer'],
 
-    function ($, Backbone, AssetView) {
+    function ($, _, Backbone, AssetView) {
 
         return Backbone.View.extend({
 
             initialize : function () {
 
-                _.bindAll(this, 'render', 'renderAssetView', 'removeAssetView');
+                _.bindAll(this, 'render', 'renderAssetView', 'removeAssetView', 'assetClickHandler', 'assetDragStartHandler');
 
                 this.collection.on('analyzed', this.renderAssetView);
                 this.collection.on('add', this.renderAssetView);
@@ -15,14 +15,26 @@ define(['jquery', 'backbone', 'view/assetListView'],
             },
 
             events : {
-                'click div.asset' : 'assetClickHandler'
+                'click div.asset'     : 'assetClickHandler',
+                'dragstart div.asset' : 'assetDragStartHandler',
+
+                //mobile
+                'drag'                : 'assetDragStartHandler'
             },
 
             assetClickHandler : function (e) {
                 var asset = this.collection.get(e.currentTarget.id);
                 if (asset.hasCompatibleMedia()) {
+                    console.log(asset.getCompatibleMedia());
                     app.controller.currentAsset = asset;
                 }
+            },
+
+            assetDragStartHandler : function (e) {
+                e.originalEvent.dataTransfer.effectAllowed = 'link';
+                e.originalEvent.dataTransfer.setData('type', 'asset');
+                e.originalEvent.dataTransfer.setData('id', e.currentTarget.id);
+
             },
 
             comparator : function (asset) {
@@ -32,7 +44,7 @@ define(['jquery', 'backbone', 'view/assetListView'],
             renderAssetView : function (asset) {
 
                 //without an id the asset shouldn't be rendered
-                if(!asset.id) return;
+                if (!asset.id) return;
 
                 //progress-update does not need a whole rendering
                 if (_.isObject(asset.changedAttributes())) {

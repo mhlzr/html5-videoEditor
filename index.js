@@ -3,13 +3,16 @@ var express = require('express'),
     server = require('http').createServer(app),
     io = require('socket.io').listen(3000),
     util = require('util'),
-    fs = require('fs'),
-    mongo = require("mongojs"),
-    db = mongo.connect("/videoProjects", ["projects"]),
-    projects = require('./projects'),
-    encoder = require('./encoder'),
     events = require('events'),
-    upload = require('./upload-socket');
+    fs = require('fs'),
+    projects = require('./models/projects'),
+    assets = require('./models/assets'),
+    files = require('./models/files'),
+    compositions = require('./models/compositions'),
+    sequences = require('./models/sequences'),
+    encoder = require('./modules/encoder'),
+    metadata = require('./modules/metadata'),
+    upload = require('./modules/upload.socket');
 
 app.use(express.bodyParser());
 
@@ -61,38 +64,50 @@ io.sockets.on('connection', function (socket) {
     /*
      PROJECT CRUD
      */
-    socket.on('project:create', projects.createProject);
-    socket.on('project:read', projects.readProject);
-    socket.on('project:update', projects.updateProject);
-    socket.on('project:delete', projects.deleteProject);
+    socket.on('project:create', projects.create);
+    socket.on('project:read', projects.read);
+    socket.on('project:update', projects.update);
+    socket.on('project:delete', projects.remove);
 
     /*
      ASSET CRUD
      */
-    socket.on('asset:create', projects.createAsset);
-    socket.on('asset:read', projects.readAsset);
-    socket.on('asset:update', projects.updateAsset);
-    socket.on('asset:delete', projects.deleteAsset);
+    socket.on('asset:create', assets.create);
+    socket.on('asset:read', assets.read);
+    socket.on('asset:update', assets.update);
+    socket.on('asset:delete', assets.remove);
 
     /*
      File CRUD
      */
-    socket.on('file:create', projects.createFile);
-    socket.on('file:read', projects.readFile);
-    socket.on('file:update', projects.updateFile);
-    socket.on('file:delete', projects.deleteFile);
+    socket.on('file:create', files.create);
+    socket.on('file:read', files.read);
+    socket.on('file:update', files.update);
+    socket.on('file:delete', files.remove);
 
     /*
      COMPOSITION CRUD
      */
-    //TODO implement CRUD, create needs publicID
+    socket.on('composition:create', compositions.create);
+    socket.on('composition:read', compositions.read);
+    socket.on('composition:update', compositions.update);
+    socket.on('composition:delete', compositions.remove);
+
+    /*
+     SEQUENCE CRUD
+     */
+    socket.on('sequence:create', sequences.create);
+    socket.on('sequence:read', sequences.read);
+    socket.on('sequence:update', sequences.update);
+    socket.on('sequence:delete', sequences.remove);
+
 
     /*
      COLLECTIONS FETCH
      */
-    socket.on('library:read', projects.getLibraryByProjectId);
-    socket.on('compositions:read', projects.getCompositionsByProjectId);
-    socket.on('files:read', projects.getFilesByAssetId);
+    socket.on('library:read', assets.getLibraryByProjectId);
+    socket.on('compositions:read', compositions.getCompositionsByProjectId);
+    socket.on('files:read', files.getFilesByAssetId);
 
 
     /*
@@ -103,12 +118,14 @@ io.sockets.on('connection', function (socket) {
         if (!data.projectId || !data.id) {
             throw new Error('Missing IDs');
         }
+
+
         //will be removed during update-process
         var fileId = data.id;
 
         projects.getProjectPathByProjectId(data.projectId, function onPathFound(path) {
             upload.acceptData(data, path, function onDataAccepted(res) {
-                projects.updateFile(res, function onUpdated(err) {
+                files.update(res, function onUpdated(err) {
 
                     if (err) throw err;
                     res.id = fileId;
@@ -120,26 +137,12 @@ io.sockets.on('connection', function (socket) {
                     if (res.isComplete) {
                         var filePath = (__dirname + '/public/projects/' + path + '/assets/' + data.fileName);
 
-                        projects.getAssetIdByFileId(fileId, function onReceived(assetId) {
-                            console.log(assetId);
-                            encoder.getMetaDataFromFile(filePath, function onMetaDataRead(metaData, err) {
-                                if (err) throw err;
-                                var res = {
-                                    fps              : metaData.video.fps,
-                                    duration         : metaData.durationsec,
-                                    timecodeDuration : metaData.durationraw,
-                                    width            : metaData.video.resolution.w,
-                                    height           : metaData.video.resolution.h,
-                                    ratio            : metaData.video.ratio,
-                                    ratioString      : metaData.video.aspectString,
-                                    isAnalyzed       : true
-                                };
-                                socket.emit('asset/' + assetId + ':update', res);
+                        assets.getAssetByFileId(fileId, function onReceived(asset) {
+                            metadata.getMetaData(asset.type, filePath, function onMetaDataRead(info) {
+                                socket.emit('asset/' + asset.id + ':update', info);
                             });
                         });
-
                     }
-
                 });
             });
         });
@@ -185,4 +188,3 @@ io.sockets.on('connection', function (socket) {
 
 
 app.listen(80);
-

@@ -3,14 +3,17 @@
  * Date: 12.09.12
  * Time: 17:10
  */
-define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], function ($, Config, Info, AssetModel, FileModel) {
+define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', 'model/sequence', 'model/composition', 'qrcode'], function ($, _, Config, Info, AssetModel, FileModel, SequenceModel, CompositionModel) {
 
     return  {
 
-        app : null,
+        app                  : null,
+        currentComposition   : null,
+        currentNavigatorView : 'library',
 
         init : function (app) {
             this.app = app;
+            self = this;
             this.addListeners();
             return this;
         },
@@ -24,13 +27,36 @@ define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], func
                 window.onunload = this.windowEventHandler;
             }
 
-            $('#fileBrowserButton').on('click', function () {
-                $('#fileBrowser').click();
+            $('#addButton').on('click', function () {
+                if (self.currentNavigatorView === 'library') {
+                    $('#fileBrowser').click();
+                }
+                else if (self.currentNavigatorView === 'compositions') {
+                    Info.reveal($('#compositionDialogue'));
+                }
+
             });
 
             $('#fileBrowser').on('change', this.uploadInputChangeHandler);
-            $('button').on('click', this.buttonHandler);
+            $('button, a').on('click', this.buttonHandler);
 
+            //Drag And Drop Events
+            $('#library').on('dragover drop', this.libraryFileDragHandler);
+            $('#stage').on('dragover drop', this.stageFileDropHandler);
+
+            $('#navigatorControl li').on('click', this.navigatorControlClickHandler);
+
+            //Dialog-Buttons
+            $('#createCompositionBtn').on('click', this.createComposition);
+
+            return this;
+        },
+
+        navigatorControlClickHandler : function (e) {
+            self.currentNavigatorView = $(this).data('nav');
+            var el = $('#navigator').find('#' + self.currentNavigatorView);
+            $('#navigator .list').hide();
+            el.show();
         },
 
         onWindowResize : function () {
@@ -48,12 +74,78 @@ define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], func
 
         },
 
+        libraryFileDragHandler : function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (e.type === 'dragover') return;
+
+            var files = e.originalEvent.dataTransfer.files;
+            _.each(files, function (file) {
+                app.controller.createFileAssetRelation(file);
+            })
+
+        },
+
+
+        stageFileDropHandler : function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (e.type === 'dragover') return;
+
+            var id = e.originalEvent.dataTransfer.getData('id'),
+                type = e.originalEvent.dataTransfer.getData('type'),
+                sequence;
+
+            if (self.currentComposition) {
+                //generate new sequence and add it to current composition if existent
+                sequence = new SequenceModel({
+                    assetId : id
+                });
+
+                console.log(id, type, sequence.toJSON());
+                sequence.save();
+            }
+
+            else {
+                if(window.confirm('You need to create a composition first. \nDo you want to do that right now?')){
+                    Info.reveal($('#compositionDialogue'));
+                }
+            }
+
+        },
+
 
         uploadInputChangeHandler : function (e) {
 
             for (var i = 0; i < e.target.files.length; i++) {
                 app.controller.createFileAssetRelation(e.target.files[i]);
             }
+
+        },
+
+        createComposition : function (e) {
+
+            //Close Reveal Modal
+            $(this).trigger('reveal:close');
+            var durationInSecs = parseInt($('#compositionDurationHour').val(), 10) * 60 * 60 + parseInt($('#compositionDurationMin').val(), 10) * 60 + parseInt($('#compositionDurationSec').val(), 10),
+                composition = new CompositionModel(
+                    {
+                        'projectId' : app.project.id,
+                        'name'      : $('#compositionName').val(),
+                        'fps'       : $('#compositionFps').val(),
+                        'height'    : $('#compositionHeight').val(),
+                        'width'     : $('#compositionWidth').val(),
+                        'duration'  : durationInSecs
+                    });
+
+            composition.save(null, {'success' : function () {
+                composition.initServerUpdateListener();
+                //update view manually
+                app.views.compositions.render();
+            }});
+
 
         },
 
@@ -76,8 +168,6 @@ define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], func
                     'assetId'          : asset.id
                 });
 
-                console.log(file.get('assetId'));
-
                 file.save(null, {success : function () {
                     file.initServerUpdateListener();
                     asset.save(null, {success : asset.analyze()});
@@ -93,7 +183,7 @@ define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], func
             switch (e.target.id) {
 
                 case 'dumpProject' :
-                    console.log(project.toJSON(), project.get('library').toJSON());
+                    console.log(project.toJSON(), project.get('library').toJSON(), project.get('compositions').toJSON());
                     console.log(project.get('library').at(0).get('files').toJSON());
                     break;
                 case 'saveLocalBtn':
@@ -113,9 +203,6 @@ define(['jquery', 'config', 'info', 'model/asset', 'model/file', 'qrcode'], func
                     break;
                 case 'clearLocalBtn':
                     $.jStorage.flush();
-                    break;
-                case 'sync':
-                    Backbone.sync;
                     break;
                 case 'saveBtn':
                     project.save({}, {'success' : function onSuccess() {

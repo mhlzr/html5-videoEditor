@@ -7,6 +7,8 @@ define(['backbone', 'backbone-rel', 'model/asset'],
 
             idAttribute : '_id',
 
+            urlRoot : 'sequence',
+
             defaults : {
                 _id       : null,
                 scale     : 1,
@@ -18,12 +20,11 @@ define(['backbone', 'backbone-rel', 'model/asset'],
                 inTime    : 0,
                 outTime   : 0,
                 length    : 0,
-                asset     : null,
+                assetId   : null,
                 effects   : null,
                 useAudio  : true
             },
 
-            url : 'sequence',
 
             initialize : function () {
 

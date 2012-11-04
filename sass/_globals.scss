@@ -37,3 +37,9 @@ $layerBackgroundColor: $bodyBackgroundColor;
   background: -ms-linear-gradient(top, rgba(191, 191, 191, 1) 0%, rgba(135, 135, 135, 1) 100%); /* IE10+ */
   background: linear-gradient(top bottom, rgba(191, 191, 191, 1) 0%, rgba(135, 135, 135, 1) 100%); /* W3C */
 }
+
+
+@mixin box-shadow($shadow){
+  -webkit-box-shadow: $shadow;
+  box-shadow: $shadow;
+}

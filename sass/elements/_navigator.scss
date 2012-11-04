@@ -21,7 +21,6 @@
 
 #navigatorControl {
   @include toolbar;
-  border-bottom: 1px solid $lineColor;
 
   ul {
     width: 100%;
@@ -58,7 +57,6 @@
 #navigatorCommands {
   @include toolbar;
   width: 100%;
-  min-height: 40px;
   border-top: 1px solid $lineColor;
   padding: 0;
 
@@ -85,7 +83,6 @@
 #library {
 
   div.asset {
-    padding: 0.5em 0em 0em 4em;
 
     background-color: $assetBackgrouncColor;
     color: #6d6c6c;
@@ -105,9 +102,13 @@
       background-image: url('../img/icon_audio.svg');
     }
 
+    &:last-child{
+      border: none;
+    }
+
     div.info {
       display: block;
-      width: 77%;
+      width: 90%;
       float: left;
       height: 100%;
 
@@ -115,27 +116,28 @@
         float: left;
         text-overflow: ellipsis;
         white-space: nowrap;
-        font-size: 1em;
-        width: 80%;
-        max-width: 100%;
+        font-size: 0.9em;
+        width: 75%;
+        max-width: 80%;
         overflow: hidden;
+        margin: 5px 0px 0px 55px;
       }
 
       span.status {
-        margin-top: 0.2em;
+        margin: 5px 0 0 55px;
         font-size: 0.7em;
         float: left;
-        width: 50%;
+        width: 75%;
       }
 
       .duration, .dimensions, .ratio {
         float: left;
-        margin-top: 0.3em;
+        margin-top: 5px;
         font-size: 0.7em;
       }
 
       .duration {
-        margin-left: 0;
+        margin-left: 55px;
       }
 
       progress {
@@ -143,9 +145,9 @@
         float: left;
         clear: both;
         height: 2px;
-        width: 97%;
+        width: 75%;
 
-        margin-top: 0.3em;
+        margin: 2px 0px 0px 55px;
 
         &:after {
           clear: both;
@@ -154,7 +156,7 @@
           text-align: right;
           font-size: 0.6em;
           position: relative;
-          left: 91%;
+          left: 92%;
           top: -24px;
           display: inline;
 
@@ -163,7 +165,7 @@
     }
 
     div.types {
-      width: 4%;
+      width: 10%;
       float: left;
       height: 100%;
       margin: 0;
@@ -214,7 +216,7 @@
 div.asset, div.composition, div.effect {
   @include user-select(none);
   clear: both;
-  height: 80px;
+  height: 70px;
   display: block;
   cursor: pointer;
   width: 100%;

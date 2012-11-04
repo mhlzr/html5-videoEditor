@@ -19,18 +19,16 @@ button {
   background-size: compact(100%, 100%, false, false, false, false, false, false, false);
   display: block;
   height: 100%;
-  min-height: 40px;
-  min-width: 40px;
-  line-height: 100%;
+  min-height: 32px;
+  min-width: 32px;
   border: none;
   background-repeat: no-repeat !important;
   background-position: center center !important;
   background-origin: content;
-  opacity: 0.7;
+  opacity: 1;
   margin-left: 3px; }
   button:hover {
     cursor: pointer;
-    opacity: 1;
     -webkit-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
     -moz-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
     -ms-transition: compact(opacity 2s ease-in-out, false, false, false, false, false, false, false, false);
@@ -85,7 +83,6 @@ body {
     body #wrapper header {
       width: 100%;
       height: 5%;
-      min-height: 40px;
       overflow: hidden; }
       body #wrapper header div {
         height: 100%;
@@ -105,20 +102,17 @@ body {
         float: left;
         display: block; }
         body #wrapper #mainContainer #navigator #navigatorControl {
-          height: 7%;
-          min-height: 40px; }
+          height: 7%; }
         body #wrapper #mainContainer #navigator #library, body #wrapper #mainContainer #navigator #compositions, body #wrapper #mainContainer #navigator #effects {
           height: 86%; }
         body #wrapper #mainContainer #navigator #navigatorCommands {
-          height: 7%;
-          min-height: 40px; }
+          height: 7%; }
       body #wrapper #mainContainer #stageContainer {
         display: block;
         float: left;
         width: 75%; }
         body #wrapper #mainContainer #stageContainer #stageControl {
-          height: 7%;
-          min-height: 40px; }
+          height: 7%; }
         body #wrapper #mainContainer #stageContainer #stage {
           height: 86%; }
         body #wrapper #mainContainer #stageContainer #stageCommands {
@@ -126,7 +120,9 @@ body {
           min-height: 40px; }
     body #wrapper #timeline {
       clear: both;
-      height: 30%; }
+      height: 30%;
+      display: block;
+      overflow: hidden; }
       body #wrapper #timeline #slider {
         height: 10%; }
 
@@ -190,8 +186,7 @@ VARIABLES
   background: -ms-linear-gradient(top, #e0e0e0 0%, #c6c6c6 100%);
   /* IE10+ */
   background: linear, compact(to bottom, #e0e0e0 0%, #c6c6c6 100%, false, false, false, false, false, false, false, false);
-  /* W3C */
-  border-bottom: 1px solid silver; }
+  /* W3C */ }
   #navigatorControl ul {
     width: 100%;
     height: 100%;
@@ -257,7 +252,6 @@ VARIABLES
   background: linear, compact(to bottom, #e0e0e0 0%, #c6c6c6 100%, false, false, false, false, false, false, false, false);
   /* W3C */
   width: 100%;
-  min-height: 40px;
   border-top: 1px solid silver;
   padding: 0; }
   #navigatorCommands div {
@@ -274,7 +268,6 @@ VARIABLES
       overflow: hidden; }
 
 #library div.asset {
-  padding: 0.5em 0em 0em 4em;
   background-color: white;
   color: #6d6c6c;
   border-bottom: 1px solid silver;
@@ -286,30 +279,33 @@ VARIABLES
     background-image: url("../img/icon_image.svg"); }
   #library div.asset.audio {
     background-image: url("../img/icon_audio.svg"); }
+  #library div.asset:last-child {
+    border: none; }
   #library div.asset div.info {
     display: block;
-    width: 77%;
+    width: 90%;
     float: left;
     height: 100%; }
     #library div.asset div.info span.name {
       float: left;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 1em;
-      width: 80%;
-      max-width: 100%;
-      overflow: hidden; }
+      font-size: 0.9em;
+      width: 75%;
+      max-width: 80%;
+      overflow: hidden;
+      margin: 5px 0px 0px 55px; }
     #library div.asset div.info span.status {
-      margin-top: 0.2em;
+      margin: 5px 0 0 55px;
       font-size: 0.7em;
       float: left;
-      width: 50%; }
+      width: 75%; }
     #library div.asset div.info .duration, #library div.asset div.info .dimensions, #library div.asset div.info .ratio {
       float: left;
-      margin-top: 0.3em;
+      margin-top: 5px;
       font-size: 0.7em; }
     #library div.asset div.info .duration {
-      margin-left: 0; }
+      margin-left: 55px; }
     #library div.asset div.info progress {
       appearance: none;
       -moz-appearance: none;
@@ -321,8 +317,8 @@ VARIABLES
       float: left;
       clear: both;
       height: 2px;
-      width: 97%;
-      margin-top: 0.3em; }
+      width: 75%;
+      margin: 2px 0px 0px 55px; }
       #library div.asset div.info progress[role] {
         appearance: none;
         -moz-appearance: none;
@@ -350,11 +346,11 @@ VARIABLES
         text-align: right;
         font-size: 0.6em;
         position: relative;
-        left: 91%;
+        left: 92%;
         top: -24px;
         display: inline; }
   #library div.asset div.types {
-    width: 4%;
+    width: 10%;
     float: left;
     height: 100%;
     margin: 0;
@@ -390,7 +386,7 @@ div.asset, div.composition, div.effect {
   -ms-user-select: none;
   user-select: none;
   clear: both;
-  height: 80px;
+  height: 70px;
   display: block;
   cursor: pointer;
   width: 100%; }
@@ -421,7 +417,6 @@ VARIABLES
   /* IE10+ */
   background: linear, compact(to bottom, #e0e0e0 0%, #c6c6c6 100%, false, false, false, false, false, false, false, false);
   /* W3C */
-  border-bottom: 1px solid silver;
   overflow: hidden; }
   #stageControl div {
     display: table;
@@ -436,7 +431,9 @@ VARIABLES
 
 #stage {
   overflow: hidden;
-  background-color: #272822; }
+  background-color: #272822;
+  -webkit-box-shadow: inset 1px 1px 20px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 1px 1px 20px 10px rgba(0, 0, 0, 0.3); }
 
 #stageCommands {
   background: #e0e0e0;

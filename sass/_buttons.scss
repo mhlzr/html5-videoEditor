@@ -8,19 +8,18 @@ button {
 
   display: block;
   height: 100%;
-  min-height: 40px;
-  min-width: 40px;
-  line-height: 100%;
+  min-height: 32px;
+  min-width: 32px;
   border: none;
   background-repeat: no-repeat !important;
   background-position: center center !important;
   background-origin: content;
-  opacity: 0.7;
+  opacity: 1;
   margin-left: 3px;
 
   &:hover {
     cursor: pointer;
-    opacity: 1;
+
     @include transition(opacity 2.0s ease-in-out);
   }
 

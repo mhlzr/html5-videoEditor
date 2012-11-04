@@ -12,7 +12,6 @@
 
 #stageControl {
   @include toolbar;
-  border-bottom: 1px solid $lineColor;
   overflow: hidden;
 
   div {
@@ -35,6 +34,7 @@
 #stage {
   overflow: hidden;
   background-color: $stageBackgroundColor;
+  @include box-shadow(inset 1px 1px 20px 10px rgba(0, 0, 0, 0.3));
 }
 
 #stageCommands {

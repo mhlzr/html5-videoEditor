@@ -15,6 +15,7 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
             this.app = app;
             self = this;
             this.addListeners();
+            this.onWindowResize();
             return this;
         },
 
@@ -61,6 +62,7 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
 
         onWindowResize : function () {
             app.device.setWindowDimensions($(window).width(), $(window).height());
+            app.resizeGUI();
         },
 
         windowEventHandler : function (e) {

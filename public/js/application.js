@@ -53,12 +53,42 @@ define([
         };
 
         /*
+         * Resize the GUI
+         */
+        app.resizeGUI = function () {
+            var BUTTON_HEIGHT = 34,
+                tHeight = this.device.height,
+                tWidth = this.device.width,
+                headerH = Math.max(tHeight * 0.05, BUTTON_HEIGHT) | 0,
+                timelineH = tHeight * 0.25 | 0,
+                mainH = tHeight - headerH - timelineH | 0,
+                controlH = Math.max(mainH * 0.07, BUTTON_HEIGHT) | 0,
+                commandH = Math.max((mainH - controlH) * 0.07, BUTTON_HEIGHT) | 0,
+                workH = mainH - controlH - commandH,
+                navigatorW = Math.max(tWidth * 0.25, 350) | 0,
+                stageContainerW = tWidth - navigatorW;
+
+            $('header').css('height', headerH);
+            $('#mainContainer').css('height', mainH);
+            $('#timeline').css('height', timelineH);
+
+            $('#navigatorControl, #stageControl').css('height', controlH);
+            $('#navigatorCommands, #stageCommands').css('height', commandH);
+
+            $('#navigator .list, #stage').css('height', workH);
+
+            $('#navigator').css('width', navigatorW);
+            $('#stageContainer').css('width', stageContainerW);
+
+        };
+
+        /*
          * Configuring Backbone
          */
         app.setupBackbone = function () {
 
             Backbone.history.start({
-                pushState : true
+                pushState:true
             });
 
             Backbone.setDomLibrary($);
@@ -71,18 +101,18 @@ define([
         app.initViews = function () {
 
             app.views.library = new LibraryListView({
-                collection : app.project.get('library'),
-                el         : $('#library')
+                collection:app.project.get('library'),
+                el:$('#library')
             });
 
             app.views.compositions = new CompositionListView({
-                collection : app.project.get('compositions'),
-                el         : $('#compositions')
+                collection:app.project.get('compositions'),
+                el:$('#compositions')
             });
 
             app.views.projectInfo = new ProjectInfoView({
-                model : app.project,
-                el    : $('#projectInfo')
+                model:app.project,
+                el:$('#projectInfo')
             });
 
             app.views.library.render();

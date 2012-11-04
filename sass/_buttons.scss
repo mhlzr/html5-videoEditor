@@ -1,4 +1,3 @@
-@import 'bourbon/bourbon';
 @import 'globals';
 
 button {
@@ -11,6 +10,7 @@ button {
   min-height: 32px;
   min-width: 32px;
   border: none;
+  background-color: transparent;
   background-repeat: no-repeat !important;
   background-position: center center !important;
   background-origin: content;
@@ -20,7 +20,7 @@ button {
   &:hover {
     cursor: pointer;
 
-    @include transition(opacity 2.0s ease-in-out);
+    //@include transition(opacity 2.0s ease-in-out);
   }
 
   &[disabled] {
@@ -56,5 +56,22 @@ button.play {
 button.upload {
   background-image: url("../img/icon_upload.svg");
 }
+
+button.encode{
+  background-image: url("../img/icon_encode.svg");
+}
+
+button.download{
+  background-image: url("../img/icon_download.svg");
+}
+
+button.left{
+  background-image: url("../img/icon_left.svg");
+}
+
+button.right{
+  background-image: url("../img/icon_right.svg");
+}
+
 
 

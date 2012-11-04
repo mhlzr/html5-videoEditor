@@ -30,6 +30,12 @@
     <header>
         <div id="projectInfo"></div>
         <div id="projectControl">
+            <a href="javascript:void(0)" id="saveBtn">Save Project</a>
+            <a href="javascript:void(0)" id="fetchBtn">Fetch Project</a>
+            <a href="javascript:void(0)" id="deleteBtn">Delete Project</a>
+            <a href="javascript:void(0)" id="dumpProject">Dump Project</a>
+            <a href="javascript:void(0)" id="render">Render</a>
+            <a href="javascript:void(0)" id="sync">Sync</a>
             <button id="settings" class="settings" title="Settings"></button>
             <button id="share" class="share" title="Export"></button>
         </div>
@@ -65,16 +71,16 @@
 
         <div id="stageContainer">
             <nav id="stageControl">
+                <button id="toggleNavigator" class="left"></button>
                 <div>
-                    <a href="javascript:void(0)" id="saveBtn">Save Project</a>
-                    <a href="javascript:void(0)" id="fetchBtn">Fetch Project</a>
-                    <a href="javascript:void(0)" id="deleteBtn">Delete Project</a>
-                    <a href="javascript:void(0)" id="dumpProject">Dump Project</a>
-                    <a href="javascript:void(0)" id="render">Render</a>
-                    <a href="javascript:void(0)" id="sync">Sync</a>
+                Composition: XYZ
                 </div>
             </nav>
-            <div id="stage"></div>
+            <div id="stage">
+
+                 <div id="compositionContainer"></div>
+
+            </div>
             <div id="stageCommands"></div>
 
         </div>

@@ -21,6 +21,10 @@ define([
         app.controller = null;
         app.socket = null;
 
+        app.currentComposition = null;
+        app.navigatorIsVisible = true;
+
+
         app.initialize = function (socket) {
 
             if (!this.device.runBrowserSupportTest()) {
@@ -64,9 +68,7 @@ define([
                 mainH = tHeight - headerH - timelineH | 0,
                 controlH = Math.max(mainH * 0.07, BUTTON_HEIGHT) | 0,
                 commandH = Math.max((mainH - controlH) * 0.07, BUTTON_HEIGHT) | 0,
-                workH = mainH - controlH - commandH,
-                navigatorW = Math.max(tWidth * 0.25, 350) | 0,
-                stageContainerW = tWidth - navigatorW;
+                workH = mainH - controlH - commandH;
 
             $('header').css('height', headerH);
             $('#mainContainer').css('height', mainH);
@@ -77,10 +79,29 @@ define([
 
             $('#navigator .list, #stage').css('height', workH);
 
-            $('#navigator').css('width', navigatorW);
-            $('#stageContainer').css('width', stageContainerW);
+            //Widths
+            $('#navigator').css('width', this.getDefaultNavigatorWidth());
+            $('#stageContainer').css('width', this.getDefaultStageWidth());
 
         };
+
+        /*
+         * These are used for toggling the navigator-Panel
+         */
+        app.getDefaultStageWidth = function () {
+            if (app.navigatorIsVisible) {
+                return this.device.width - this.getDefaultNavigatorWidth();
+            }
+            else {
+                return '100%';
+            }
+
+        };
+
+        app.getDefaultNavigatorWidth = function () {
+            return Math.max(this.device.width * 0.25, 350) | 0;
+        };
+
 
         /*
          * Configuring Backbone
@@ -88,7 +109,7 @@ define([
         app.setupBackbone = function () {
 
             Backbone.history.start({
-                pushState:true
+                pushState : true
             });
 
             Backbone.setDomLibrary($);
@@ -101,19 +122,21 @@ define([
         app.initViews = function () {
 
             app.views.library = new LibraryListView({
-                collection:app.project.get('library'),
-                el:$('#library')
+                collection : app.project.get('library'),
+                el         : $('#library')
             });
 
             app.views.compositions = new CompositionListView({
-                collection:app.project.get('compositions'),
-                el:$('#compositions')
+                collection : app.project.get('compositions'),
+                el         : $('#compositions')
             });
 
             app.views.projectInfo = new ProjectInfoView({
-                model:app.project,
-                el:$('#projectInfo')
+                model : app.project,
+                el    : $('#projectInfo')
             });
+
+            app.views.composition = null; //will be initialized by user
 
             app.views.library.render();
             //app.views.compositions.render();
@@ -143,4 +166,5 @@ define([
 
         return app;
 
-    });
+    })
+;

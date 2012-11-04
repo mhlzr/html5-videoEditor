@@ -11,9 +11,10 @@ require.config({
         'backbone-bind'     : 'lib/backbone.iobind',
         'backbone-sync'     : 'lib/backbone.iosync',
         'jquery'            : 'lib/jquery-1.8.1',
-        'jquery-hammer'     : 'lib/jquery.hammer',
+        'jquery-mousewheel' : 'lib/jquery.mousewheel',
         'json2'             : 'lib/json2',
         'jstorage'          : 'lib/jstorage',
+        'toe'               : 'lib/toe.built',
         'qrcode'            : 'lib/jquery.qrcode.min',
         'socket'            : 'lib/socket.io',
         'modernizr'         : 'lib/modernizr-2.6.2',
@@ -64,8 +65,12 @@ require.config({
             deps : ['jquery']
         },
 
-        'jquery-hammer' : {
-            deps : ['jquery', 'lib/hammer']
+        'jquery-mousewheel' : {
+            deps : ['jquery']
+        },
+
+        'toe' : {
+            deps : ['jquery']
         },
 
         'jstorage' : {

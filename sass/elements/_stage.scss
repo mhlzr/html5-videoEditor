@@ -1,4 +1,5 @@
 @import "../globals";
+@import "compass/css3/shared";
 
 #stageContainer {
   height: 100%;
@@ -35,6 +36,18 @@
   overflow: hidden;
   background-color: $stageBackgroundColor;
   @include box-shadow(inset 1px 1px 20px 10px rgba(0, 0, 0, 0.3));
+
+}
+
+#compositionContainer{
+
+}
+
+#composition {
+  margin: 0 auto;
+  display: block;
+  background-color: #000000;
+  @include transform-origin(center center);
 }
 
 #stageCommands {

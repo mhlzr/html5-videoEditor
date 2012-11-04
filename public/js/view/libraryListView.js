@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'jquery-hammer'],
+define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'toe'],
 
     function ($, _, Backbone, AssetView) {
 
@@ -19,7 +19,7 @@ define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'jquery
                 'dragstart div.asset' : 'assetDragStartHandler',
 
                 //mobile
-                'drag'                : 'assetDragStartHandler'
+                'drag div.asset'                : 'assetDragStartHandler'
             },
 
             assetClickHandler : function (e) {

@@ -15,11 +15,11 @@ define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'toe'],
             },
 
             events : {
-                'click div.asset'     : 'assetClickHandler',
-                'dragstart div.asset' : 'assetDragStartHandler',
+                'click div.asset'    : 'assetClickHandler',
+                'draginit div.asset' : 'assetDragStartHandler'
 
                 //mobile
-                'drag div.asset'                : 'assetDragStartHandler'
+                //'drag div.asset'      : 'assetDragStartHandler'
             },
 
             assetClickHandler : function (e) {
@@ -30,11 +30,19 @@ define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'toe'],
                 }
             },
 
-            assetDragStartHandler : function (e) {
-                e.originalEvent.dataTransfer.effectAllowed = 'link';
-                e.originalEvent.dataTransfer.setData('type', 'asset');
-                e.originalEvent.dataTransfer.setData('id', e.currentTarget.id);
+            assetDragStartHandler : function (e, drag) {
+                'use strict';
 
+                //don't know how to deactivate the jquery++-delegation,
+                //so had to do this workaround to get the target-id
+                var el = e.originalEvent.target;
+
+                while (!$(el).hasClass('asset')) {
+                    el = el.parentElement;
+                }
+
+                drag.data = {'type' : 'asset', 'id' : el.id};
+                drag.ghost();
             },
 
             comparator : function (asset) {

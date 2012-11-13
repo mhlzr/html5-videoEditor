@@ -4,8 +4,8 @@
  * Time: 17:10
  */
 define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', 'model/sequence',
-    'model/composition', 'qrcode'],
-    function ($, _, Config, Info, AssetModel, FileModel, SequenceModel, CompositionModel) {
+    'model/composition', 'view/compositionView', 'view/timelineView', 'qrcode'],
+    function ($, _, Config, Info, AssetModel, FileModel, SequenceModel, CompositionModel, CompositionView, TimelineView) {
 
         return  {
 
@@ -21,12 +21,17 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
             },
 
             addListeners : function () {
+                "use strict";
 
                 $(window).on('resize', this.onWindowResize);
 
                 if (!Config.DEBUG) {
                     window.onbeforeunload = this.windowEventHandler;
                     window.onunload = this.windowEventHandler;
+                }
+
+                if (app.device.isMobile) {
+                    window.addEventListener('orientationchange', this.deviceOrientationChangeHandler, false);
                 }
 
                 $('#addButton').on('click', function () {
@@ -43,8 +48,10 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
                 $('button, a').on('click', this.buttonHandler);
 
                 //Drag And Drop Events
-                $('#library').on('dragover drop', this.libraryFileDragHandler);
-                $('#stage').on('dragover drop', this.stageFileDropHandler);
+                //native Drop-Event for File-Drops
+                $('#library').on('drop', this.libraryFileDropHandler);
+                //jquery++ dnd events
+                $('#stage').on('dropon', this.stageDropHandler);
 
                 $('#navigatorControl li').on('click', this.navigatorControlClickHandler);
 
@@ -82,11 +89,11 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
 
             },
 
-            libraryFileDragHandler : function (e) {
+            libraryFileDropHandler : function (e) {
+                "use strict";
+
                 e.stopPropagation();
                 e.preventDefault();
-
-                if (e.type === 'dragover') return;
 
                 var files = e.originalEvent.dataTransfer.files;
                 _.each(files, function (file) {
@@ -96,30 +103,56 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
             },
 
 
-            stageFileDropHandler : function (e) {
-                e.stopPropagation();
-                e.preventDefault();
+            stageDropHandler : function (e, drop, drag) {
 
-                if (e.type === 'dragover') return;
 
-                var id = e.originalEvent.dataTransfer.getData('id'),
-                    type = e.originalEvent.dataTransfer.getData('type'),
+                var id = drag.data.id,
+                    type = drag.data.type,
                     sequence;
 
-                if (self.currentComposition) {
-                    //generate new sequence and add it to current composition if existent
+                console.log(id, type);
+
+                //Asset Drop into Composition --> Create Sequence
+                if (app.currentComposition && type === 'asset') {
+
+                    //generate new sequence and add it to current composition
                     sequence = new SequenceModel({
-                        assetId : id
+                        assetId  : id,
+                        name     : app.project.get('library').get(id).get('name'),
+                        type     : app.project.get('library').get(id).get('type'),
+                        duration : app.project.get('library').get(id).get('duration'),
+                        position : Math.random() * 300 | 0 //debugging
                     });
 
-                    console.log(id, type, sequence.toJSON());
-                    sequence.save();
+                    sequence.save(null, {success : function () {
+                        app.currentComposition.get('sequences').add(sequence);
+                    }});
+
                 }
 
-                else {
-                    if (window.confirm('You need to create a composition first. \nDo you want to do that right now?')) {
+                //Asset drop into nirvana --> Message
+                else if (!app.currentComposition && type === 'asset') {
+                    if (window.confirm('You need to create or select a composition first. \nDo you want to create one right now?')) {
                         Info.reveal($('#compositionDialogue'));
                     }
+                }
+                //Composition Drop into Composition --> Message
+                else if (app.currentComposition && type === 'composition') {
+                    if (window.confirm('You can\'t nest compositions. \nDo you want to open the composition you dragged?')) {
+                        app.currentComposition = app.project.get('compositions').get(id);
+                        app.controller.openComposition();
+                    }
+                }
+
+                //Composition Drop --> Open it
+                else if (!app.currentComposition && type === 'composition') {
+                    app.currentComposition = app.project.get('compositions').get(id);
+                    app.controller.openComposition();
+                }
+
+                //TODO effect
+                else {
+                    console.log('NOTHING');
                 }
 
             },
@@ -157,6 +190,25 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
 
             },
 
+            openComposition : function () {
+                "use strict";
+
+                app.views.composition = new CompositionView({
+                    model : app.currentComposition,
+                    el    : $('#stage')
+                });
+
+                app.views.timeline = new TimelineView({
+                    model : app.currentComposition,
+                    el    : $('#timeline')
+                });
+
+                app.views.timeline.render();
+                app.views.composition.render();
+
+
+            },
+
             createFileAssetRelation : function (fileObject) {
 
                 //quite complicated but the only solution i found
@@ -186,17 +238,37 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
 
             toggleNavigator : function () {
                 "use strict";
-                if (app.navigatorIsVisible) {
-                    app.navigatorIsVisible = false;
-                    $('#navigator').css('display', 'none');
-                    $('#stageContainer').css('width', '100%');
-                    $('#toggleNavigator').removeClass('left').addClass('right');
-                }
-                else {
-                    app.navigatorIsVisible = true;
-                    $('#navigator').css('display', 'block');
-                    $('#stageContainer').css('width', app.getDefaultStageWidth());
-                    $('#toggleNavigator').removeClass('right').addClass('left');
+                if (app.navigatorIsVisible) self.hideNavigator();
+                else self.showNavigator();
+            },
+
+            showNavigator : function () {
+                "use strict";
+                app.navigatorIsVisible = true;
+                $('#navigator').css('display', 'block');
+                $('#stageContainer').css('width', app.getDefaultStageWidth());
+                $('#toggleNavigator').removeClass('right').addClass('left');
+            },
+
+            hideNavigator : function () {
+                "use strict";
+                app.navigatorIsVisible = false;
+                $('#navigator').css('display', 'none');
+                $('#stageContainer').css('width', '100%');
+                $('#toggleNavigator').removeClass('left').addClass('right');
+            },
+
+            deviceOrientationChangeHandler : function (e) {
+                "use strict";
+                if (app.settings.get('autoHideNavigatorOnRotate')) {
+                    //portrait-mode
+                    if (window.orientation % 90 != 0) {
+                        self.hideNavigator();
+                    }
+                    //landscape-mode
+                    else {
+                        self.toggleNavigator(false);
+                    }
                 }
             },
 
@@ -207,8 +279,7 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
                 switch (e.target.id) {
 
                     case 'dumpProject' :
-                        console.log(project.toJSON(), project.get('library').toJSON(), project.get('compositions').toJSON());
-                        console.log(project.get('library').at(0).get('files').toJSON());
+                        console.log('P', project.toJSON(), 'L', project.get('library').toJSON(), 'C', project.get('compositions').toJSON());
                         break;
                     case 'saveLocalBtn':
 

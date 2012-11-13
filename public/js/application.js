@@ -64,7 +64,7 @@ define([
                 tHeight = this.device.height,
                 tWidth = this.device.width,
                 headerH = Math.max(tHeight * 0.05, BUTTON_HEIGHT) | 0,
-                timelineH = tHeight * 0.25 | 0,
+                timelineH = tHeight * 0.35 | 0,
                 mainH = tHeight - headerH - timelineH | 0,
                 controlH = Math.max(mainH * 0.07, BUTTON_HEIGHT) | 0,
                 commandH = Math.max((mainH - controlH) * 0.07, BUTTON_HEIGHT) | 0,
@@ -136,10 +136,11 @@ define([
                 el    : $('#projectInfo')
             });
 
-            app.views.composition = null; //will be initialized by user
+            //will be initialized by user-interaction in controller.js
+            app.views.composition = null;
+            app.views.timeline = null;
 
             app.views.library.render();
-            //app.views.compositions.render();
             app.views.projectInfo.render();
 
             app.views.renderAll = function () {

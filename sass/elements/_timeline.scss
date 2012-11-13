@@ -3,23 +3,44 @@
 #timeline {
   background-color: $timelineBackgroundColor;
   border-top: 1px solid $lineColor;
-  overflow: none;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 #slider {
+  display: block;
+  height: 40px;
+}
+
+#timescale {
   width: 100%;
   height: 30px;
   display: block;
   border-bottom: 1px solid $lineColor;
+
+  canvas {
+    background-color: #ffffff;
+    float: left;
+  }
 }
 
-#picker{
+#picker {
+
+  div.icon {
+    width: 40px;
+    height: 40px;
+    margin-left: -19px;
+    background-image: url('../img/icon_slider.svg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+  }
+
   position: relative;
-  left: 200px;
-  top:0;
+  left: 5px;
+  top: -37px;
   z-index: 2;
-  width: 3px;
-  background-color: red;
+  width: 1px;
+  background-color: #000;
   height: 100%;
   display: block;
 }
@@ -32,11 +53,14 @@
 #layerInfoContainer {
   width: 25%;
   float: left;
+  padding-top: 40px;
 }
 
 #layerContainer {
   width: 75%;
-  overflow: none;
+  min-height: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
   float: left;
 }
 
@@ -46,30 +70,45 @@
   display: block;
   border: 1px solid $lineColor;
   background-color: $layerBackgroundColor;
-  margin: 3px 0;
+  height: 40px;
 }
 
 .layerInfo {
-  height: 25px;
   padding: 5px 0px 0px 0px;
   border-right: none;
 
-  span{
+  span {
     text-overflow: ellipsis;
     padding-left: 5px;
   }
 }
 
 .layer {
-  height: 30px;
-  .video {
+
+  margin: 0px 0px 0px 5px;
+
+  div {
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 100%;
+    cursor: e-resize;
+    display: block;
+    @include user-select(none);
+
+    &.video {
+      @include background-image(linear-gradient(transparentize($videoColor, 0.2), $videoColor));
+    }
+
+    &.audio {
+      @include background-image(linear-gradient(transparentize($audioColor, 0.2), $audioColor));
+    }
+
+    &.image {
+      @include background-image(linear-gradient(transparentize($imageColor, 0.2), $imageColor));
+    }
   }
 
-  .audio {
-  }
-
-  .image {
-  }
 }
 
 

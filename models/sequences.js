@@ -9,6 +9,8 @@ function create(data, callback) {
             if (err) {
                 throw err;
             }
+            docs.id = docs._id;
+            delete docs._id;
             callback(err, docs);
         }
     );
@@ -16,6 +18,9 @@ function create(data, callback) {
 
 function read(data, callback) {
     'use strict';
+
+    data._id = data.id;
+    delete data.id;
 
     db.sequences.findOne({_id : db.ObjectId(data._id)}, function onFound(err, docs) {
         console.log('SEQUENCES.JS::FOUND', docs._id);
@@ -30,11 +35,13 @@ function read(data, callback) {
 function update(data, callback) {
     'use strict';
 
-    var id = data._id;
+    var id = data.id;
+    delete data.id;
     delete data._id;
+
     db.sequences.update({_id : db.ObjectId(id)}, data, {multi : false},
         function updateCallback(err, docs) {
-            data._id = id;
+            data.id = id;
             console.log('SEQUENCES.JS::UPDATED', id);
             if (err) {
                 throw err;
@@ -49,7 +56,7 @@ function update(data, callback) {
 function remove(data, callback) {
     'use strict';
 
-    var id = db.ObjectId(data._id);
+    var id = db.ObjectId(data.id);
 
     db.sequences.remove({_id : id}, function onRemoved(err, docs) {
         console.log('SEQUENCES.JS::REMOVED', id);

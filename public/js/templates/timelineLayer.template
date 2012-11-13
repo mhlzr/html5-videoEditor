@@ -1,0 +1,4 @@
+<div class="layer" id="{{this.id}}" style="width:{{this.totalWidth}}px">
+    <div class="{{this.type}} bar" style="left:{{this.position}}px;width:{{this.duration}}px">
+    </div>
+</div>

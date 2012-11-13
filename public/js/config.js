@@ -28,6 +28,8 @@ define(function () {
 
         'GUI_MIN_WINDOW_WIDTH'    : 800,
         'GUI_MIN_WINDOW_HEIGHT'   : 500,
-        'GUI_MAX_FILENAME_LENGTH' : 35
+        'GUI_MAX_FILENAME_LENGTH' : 35,
+
+        GUI_TIMELINE_PIXEL_PER_FRAME : 3
     };
 });

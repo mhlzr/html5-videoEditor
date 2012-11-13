@@ -1,1 +1,1 @@
-<div id="composition" style="width:{{this.width}}px;height:{{this.height}}px">Test</div>
+<div id="composition" style="width:{{this.width}}px;height:{{this.height}}px;"></div>

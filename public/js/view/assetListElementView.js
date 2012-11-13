@@ -25,6 +25,12 @@ define(['jquery', 'backbone', 'hbs!templates/assetListElement'],
                 this.$el
                     .find('#' + this.model.id + ' progress')
                     .val(this.model.get('progress'));
+
+                //force rerendering for webkit browsers
+                //http://stackoverflow.com/questions/3485365/
+                this.$el[0].style.display = 'none';
+                this.$el[0].offsetHeight;
+                this.$el[0].style.display = 'block';
             }
         });
 

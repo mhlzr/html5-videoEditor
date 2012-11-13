@@ -1,4 +1,4 @@
-<div id="{{this._id}}" class="composition" draggable="true">
+<div id="{{this._id}}" class="composition">
     <div class="info">
         {{this.name}}, {{this._id}}, {{this.width}}x{{this.height}}, {{this.duration}}, {{this.publicId}}
     </div>

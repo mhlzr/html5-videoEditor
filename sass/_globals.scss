@@ -13,13 +13,17 @@ $progressBarActiveColor: rgba(89, 166, 255, 1);
 $bodyBackgroundColor: rgba(240, 240, 240, 1);
 $headerBackgroundColor: $bodyBackgroundColor;
 $navigatorBackgroundColor: $bodyBackgroundColor;
-$stageBackgroundColor: rgba(39, 40, 34, 1);
+$stageBackgroundColor: rgba(39, 40, 34, 0.7);
 $timelineBackgroundColor: rgba(150, 150, 150, 1);
 $sliderBackgroundColor: $bodyBackgroundColor;
 
 $assetListBackgroundColor: rgba(255, 255, 255, 1);
 $compositionListBackgroundColor: $assetListBackgroundColor;
 $layerBackgroundColor: $bodyBackgroundColor;
+
+$videoColor: rgba(188, 91, 56, 1);
+$audioColor: rgba(211, 228, 124, 1);
+$imageColor: rgba(94, 141, 182, 1);
 
 /* MIXINS */
 

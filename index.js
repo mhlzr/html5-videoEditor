@@ -101,7 +101,6 @@ io.sockets.on('connection', function (socket) {
     socket.on('sequence:update', sequences.update);
     socket.on('sequence:delete', sequences.remove);
 
-
     /*
      COLLECTIONS FETCH
      */
@@ -118,7 +117,6 @@ io.sockets.on('connection', function (socket) {
         if (!data.projectId || !data.id) {
             throw new Error('Missing IDs');
         }
-
 
         //will be removed during update-process
         var fileId = data.id;
@@ -188,3 +186,5 @@ io.sockets.on('connection', function (socket) {
 
 
 app.listen(80);
+
+

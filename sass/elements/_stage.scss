@@ -36,16 +36,13 @@
   overflow: hidden;
   background-color: $stageBackgroundColor;
   @include box-shadow(inset 1px 1px 20px 10px rgba(0, 0, 0, 0.3));
-
-}
-
-#compositionContainer{
-
+  display: block;
 }
 
 #composition {
-  margin: 0 auto;
-  display: block;
+  position: relative;
+  top: 50%;
+  left: 50%;
   background-color: #000000;
   @include transform-origin(center center);
 }

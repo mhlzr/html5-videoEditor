@@ -11,6 +11,7 @@ require.config({
         'backbone-bind'     : 'lib/backbone.iobind',
         'backbone-sync'     : 'lib/backbone.iosync',
         'jquery'            : 'lib/jquery-1.8.1',
+        'jquery++'          : 'lib/jquerypp',
         'jquery-mousewheel' : 'lib/jquery.mousewheel',
         'json2'             : 'lib/json2',
         'jstorage'          : 'lib/jstorage',
@@ -62,6 +63,10 @@ require.config({
         },
 
         'info' : {
+            deps : ['jquery']
+        },
+
+        'jquery++' : {
             deps : ['jquery']
         },
 

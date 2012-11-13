@@ -1,4 +1,4 @@
-<div class="asset {{this.type}}" id="{{this._id}}" draggable="true">
+<div class="asset {{this.type}}" id="{{this._id}}">
     <div class="info">
         <span class="name"> {{this.name}}</span>
         <span class="status">{{this.status}}</span>

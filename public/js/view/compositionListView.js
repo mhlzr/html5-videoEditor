@@ -3,9 +3,9 @@
  * Date: 01.11.12
  * Time: 15:18
  */
-define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', 'view/compositionView', 'toe'],
+define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', 'toe'],
 
-    function ($, _, Backbone, CompositionListElementView, CompositionView) {
+    function ($, _, Backbone, CompositionListElementView) {
 
         return Backbone.View.extend({
 
@@ -20,22 +20,31 @@ define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', '
 
             events : {
                 'dblclick div.composition'  : 'compositionSelectHandler',
+                'draginit div.composition' : 'compositionDragStartHandler',
 
                 //mobile
                 'doubletap div.composition' : 'compositionSelectHandler'
             },
 
-            compositionSelectHandler : function (e) {
+            compositionDragStartHandler : function (e, drag) {
                 "use strict";
 
+                //don't know how to deactivate the jquery++-delegation,
+                //so had to do this workaround to get the target-id
+                var el = e.originalEvent.target;
+
+                while (!$(el).hasClass('composition')) {
+                    el = el.parentElement;
+                }
+
+                drag.data = {'type' : 'composition', 'id' : el.id};
+                drag.ghost();
+            },
+
+            compositionSelectHandler : function (e) {
+                "use strict";
                 app.currentComposition = this.collection.get(e.currentTarget.id);
-                app.views.composition = new CompositionView({
-                    model : app.currentComposition,
-                    el     : $('#compositionContainer')
-                });
-
-                app.views.composition.render();
-
+                app.controller.openComposition();
             },
 
             renderCompositionListView : function (composition) {

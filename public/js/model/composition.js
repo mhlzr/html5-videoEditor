@@ -33,28 +33,60 @@ define(['backbone', 'backbone-rel', 'model/sequence', 'model/file', 'collection/
             url         : 'composition',
 
             defaults : {
-                _id      : null,
-                name     : null,
-                width    : 0,
-                height   : 0,
-                fps      : 25,
-                duration : 60, //seconds
-                scale    : 1.0,
-                rotation : 0,
-                publicId : null
+                _id       : null,
+                name      : 'Untitled',
+                width     : 720,
+                height    : 576,
+                ratio     : 1.25,
+                playHead  : 0,
+                fps       : 25,
+                duration  : 130, //secondsTotal
+                durationH : 0,
+                durationM : 5,
+                durationS : 30,
+                scale     : 1.0,
+                rotation  : 0,
+                publicId  : null
             },
 
             initialize : function () {
                 "use strict";
+                this.on('change:durationH', this.calculateDuration);
+                this.on('change:durationM', this.calculateDuration);
+                this.on('change:durationS', this.calculateDuration);
+                this.on('change:width', this.calculateRatio);
+                this.on('change:height', this.calculateRatio);
+
+                this.on('sequences:add', this.sequenceAddedHandler);
+            },
+
+            sequenceAddedHandler : function (sequence) {
+                "use strict";
+                console.log('ADDED');
             },
 
             initServerUpdateListener : function () {
                 //TODO
             },
 
-            getTotalFrames : function(){
+            calculateDuration : function () {
+                "use strict";
+                this.set('duration', this.get('durationH') * 3600 + this.get('durationM') * 60 + this.get('durationS'));
+            },
+
+            calculateRatio : function () {
+                "use strict";
+                this.set('ratio', Math.roundDec(this.get('width') / this.get('height'), 2));
+            },
+
+            getTotalFrames : function () {
                 "use strict";
                 return this.get('fps') * this.get('duration');
+            },
+
+            validate : function () {
+                //TODO
+
             }
 
         });

@@ -20,7 +20,10 @@ header {
     color: $textColor;
     text-overflow: ellipsis;
     margin-left: 0.5em;
-
+    float: left;
+    max-width: 90%;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
 }

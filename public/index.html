@@ -38,6 +38,7 @@
             <a href="javascript:void(0)" id="sync">Sync</a>
             <button id="settings" class="settings" title="Settings"></button>
             <button id="share" class="share" title="Export"></button>
+            <button id="toggleFullscreen" class="fullscreen" title="Toggle fullscreen" disabled></button>
         </div>
     </header>
 
@@ -61,9 +62,10 @@
             <div id="navigatorCommands">
                 <div>
                     <input id="fileBrowser" class="add" type="file" multiple/>
-                    <button id="addButton" class="add" enabled></button>
+                    <button id="addButton" class="add"></button>
                     <button id="removeButton" class="remove" disabled></button>
-                    <button id="playButton" class="play" enabled></button>
+                    <button id="playButton" class="play"></button>
+                    <button id="cutButton" class="cut" disabled></button>
                 </div>
             </div>
         </div>
@@ -77,7 +79,11 @@
                 </div>
             </nav>
             <div id="stage"></div>
-            <div id="stageCommands"></div>
+            <div id="stageCommands">
+                <div>
+                    <button id="playComposition" class="play"></button>
+                </div>
+            </div>
 
         </div>
     </div>
@@ -97,84 +103,19 @@
 
     </div>
 
-
-    <noscript>
-        <div>
-            <h1>Seriously?!</h1>
-
-            <p>You are really trying to use a JavaScript-application with disabled JavaScript?
-                <br/>Think about it ... meanwhile have a look at <a href="http://www.activatejavascript.org/">http://www.activatejavascript.org</a>
-            </p>
-        </div>
-    </noscript>
-
-    <div id="exportDialogue" class="reveal-modal">
-        <h1>Export</h1>
-
-        <h2>Private URL</h2>
-
-        <p>This link gives anybody full control over this project.</p>
-
-        <p><a href="http://lorem">http://www.lorem.de</a></p>
-
-        <div id="screen">fff</div>
-        <div id="qrcode"></div>
-        <a class="close-reveal-modal">&#215;</a>
-    </div>
-
-    <div id="compositionDialogue" class="reveal-modal">
-        <h1>New Composition</h1>
-        <label for="compositionName">Name</label>
-        <input id="compositionName" type="text" required maxlength="128"/>
-
-        <fieldset>
-            <legend>Resolution</legend>
-            <label for="compositionPresets">Presets</label>
-            <select id="compositionPresets" required>
-                <option value="720x576">720x576 (DVD)</option>
-                <option value="1280x720">1280x720 (HD)</option>
-                <option value="1920x1080">1920x1080 (Full HD)</option>
-            </select>
-
-            <label for="compositionWidth">Width</label>
-            <input id="compositionWidth" type="number" required/>
-
-            <label for="compositionHeight">Height</label>
-            <input id="compositionHeight" type="number" required/>
-        </fieldset>
-
-        <label for="compositionFps">Framerate</label>
-        <input id="compositionFps" type="number" list="compositionFpsDefaults" value="25" required/>
-
-        <datalist id="compositionFpsDefaults">
-            <option value="60">
-            <option value="31">
-            <option value="30">
-            <option value="25">
-            <option value="24">
-        </datalist>
-
-        <fieldset>
-            <legend>Duration</legend>
-            <label for="compositionDurationHour">Hours</label>
-            <input id="compositionDurationHour" type="number" value="00" min="0" max="24" required/>
-
-            <label for="compositionDurationMin">Min</label>
-            <input id="compositionDurationMin" type="number" value="00" min="0" max="59" required/>
-
-            <label for="compositionDurationSec">Seconds</label>
-            <input id="compositionDurationSec" type="number" value="00" min="0" max="59" required/>
-        </fieldset>
-
-
-        <fieldset>
-            <legend>Encoding Settings</legend>
-        </fieldset>
-        <button id="createCompositionBtn">Okay</button>
-
-    </div>
-
 </div>
+
+<noscript>
+    <div>
+        <h1>Seriously?!</h1>
+
+        <p>You are really trying to use a JavaScript-application with disabled JavaScript?
+            <br/>Think about it ... meanwhile have a look at <a href="http://www.activatejavascript.org/">http://www.activatejavascript.org</a>
+        </p>
+    </div>
+</noscript>
+
+
 </body>
 
 

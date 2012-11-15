@@ -189,10 +189,10 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                 },
 
                 hasCompatibleMedia : function () {
-                    return this.getCompatibleMedia() !== null;
+                    return this.getCompatibleMediaUrl() !== null;
                 },
 
-                getCompatibleMedia : function () {
+                getCompatibleMediaUrl : function () {
 
                     var files = this.get('files'),
                         l = files.length,

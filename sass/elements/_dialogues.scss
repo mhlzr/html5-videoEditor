@@ -1,4 +1,83 @@
+@import "../globals";
 
+#dialogue {
+  display: none;
+
+  div {
+
+    h1 {
+      font-size: 1.3em;
+    }
+
+    p {
+      padding: 10px 1px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      float: left;
+    }
+
+    input, select {
+      float: right;
+      margin: 3px 0px;
+    }
+
+    select {
+      width: 188px;
+    }
+
+    input[type=number] {
+      width: 80px;
+      text-align: center;
+    }
+
+    fieldset {
+      clear: both;
+      width: 100%;
+      padding: 10px;
+
+      legend {
+        font-weight: bold;
+      }
+    }
+
+    .clear {
+      clear: both;
+    }
+
+    button {
+      margin-top: 15px;
+    }
+
+    button.okay {
+      float: right;
+      border: 1px solid red;
+      @include sassy-button("simple", 3px, 16px, $acceptColor);
+    }
+
+    button.cancel {
+      float: right;
+      border: 1px solid green;
+      @include sassy-button("simple", 3px, 16px, $cancelColor);
+    }
+  }
+
+  #createComposition {
+
+    #name {
+      width: 200px;
+    }
+    #ratioLabel {
+      float: left;
+    }
+    #ratio {
+      float: right;
+    }
+  }
+}
+
+/*
 #exportDialogue {
   h1 {
 
@@ -40,7 +119,4 @@
   }
 }
 
-
-#compositionDialogue{
-
-}
+*/

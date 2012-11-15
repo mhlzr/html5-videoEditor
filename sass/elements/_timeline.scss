@@ -75,17 +75,33 @@
 
 .layerInfo {
   padding: 5px 0px 0px 0px;
-  border-right: none;
+  border-right: 1px solid $lineColor;
 
   span {
     text-overflow: ellipsis;
-    padding-left: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 80%;
+    margin: 5px 0px 0px 5px;
+    float: left;
+  }
+
+  button {
+    float: right;
+
+    &.remove {
+      margin: -3px 5px 0px 0px;
+    }
+
+    &.undo {
+      margin: -3px 5px 0px 0px;
+    }
   }
 }
 
 .layer {
 
-  margin: 0px 0px 0px 5px;
+  border-left: none;
 
   div {
     position: relative;
@@ -94,7 +110,6 @@
     height: 100%;
     cursor: e-resize;
     display: block;
-    @include user-select(none);
 
     &.video {
       @include background-image(linear-gradient(transparentize($videoColor, 0.2), $videoColor));

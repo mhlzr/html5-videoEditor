@@ -18,6 +18,7 @@ require.config({
         'toe'               : 'lib/toe.built',
         'qrcode'            : 'lib/jquery.qrcode.min',
         'socket'            : 'lib/socket.io',
+        'screenfull'        : 'lib/screenfull',
         'modernizr'         : 'lib/modernizr-2.6.2',
         'hbs'               : 'lib/hbs',
         'handlebars'        : 'lib/handlebars',
@@ -26,6 +27,7 @@ require.config({
         'config'            : 'config',
         'controller'        : 'controller',
         'info'              : 'modules/info',
+        'device'            : 'modules/device',
         'utils'             : 'modules/utils'
     },
 
@@ -59,6 +61,12 @@ require.config({
         'modernizr' : {
             'exports' : function () {
                 return window.Modernizr
+            }
+        },
+
+        'screenfull' : {
+            'exports' : function () {
+                return window.screenfull
             }
         },
 

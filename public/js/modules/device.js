@@ -3,7 +3,7 @@
  * Date: 09.09.12
  * Time: 13:18
  */
-define(["modernizr"], function (Modernizr) {
+define(['modernizr', 'screenfull'], function (Modernizr, Screenfull) {
 
     var device = {};
 
@@ -11,6 +11,9 @@ define(["modernizr"], function (Modernizr) {
 
     device.width = 0;
     device.height = 0;
+
+    device.hasFullScreenSupport = Screenfull.enabled;
+
 
     device.isMobile = function () {
         //http://detectmobilebrowsers.com/
@@ -36,6 +39,15 @@ define(["modernizr"], function (Modernizr) {
         device.width = w;
         device.height = h;
     };
+
+    device.toggleFullscreen = function () {
+        'use strict';
+
+        if (device.hasFullScreenSupport) {
+            Screenfull.toggle();
+        }
+    };
+
 
     return device;
 })

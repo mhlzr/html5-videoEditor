@@ -1,6 +1,6 @@
 define([
     'config', 'jquery', 'jstorage', 'backbone', 'modernizr', 'socket', 'router',
-    'controller', 'model/settings', 'modules/device', 'modules/uploader.socket', 'info',
+    'controller', 'model/settings', 'device', 'modules/uploader.socket', 'info',
     'model/project',
     'view/libraryListView', 'view/compositionListView', 'view/projectInfoView',
     'backbone-bind', 'backbone-sync'],

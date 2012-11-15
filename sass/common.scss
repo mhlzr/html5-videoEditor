@@ -12,6 +12,7 @@
 
 * {
   @include box-sizing('border-box');
+
   font-family: 'Gudea', sans-serif;
   margin: 0;
   padding: 0;
@@ -25,6 +26,7 @@ body {
 
 [contenteditable]:hover,
 [contenteditable]:focus {
+  @include user-select(text);
   outline: 1px dotted $lineColor;
 }
 

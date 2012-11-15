@@ -45,9 +45,29 @@
   left: 50%;
   background-color: #000000;
   @include transform-origin(center center);
+
+  div.sequence {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+  }
 }
 
 #stageCommands {
   @include toolbar;
   border-top: 1px solid $lineColor;
+
+  div {
+    margin: 0 auto;
+    display: table;
+    height: 100%;
+    text-align: center;
+
+    button {
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
+
 }

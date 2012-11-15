@@ -53,7 +53,7 @@ io.enable('browser client gzip');          // gzip the file
 io.set('log level', 1);                    // reduce logging
 io.set('transports', [                     // enable all transports (optional if you want flashsocket)
     'websocket'
-    , 'flashsocket'
+    //, 'flashsocket'
     , 'htmlfile'
     , 'xhr-polling'
     , 'jsonp-polling'

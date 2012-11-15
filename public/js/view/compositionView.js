@@ -4,14 +4,19 @@
  * Time: 16:46
  */
 
-define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'jquery-mousewheel', 'toe'],
-    function ($, _, Backbone, Template) {
+define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/sequenceView', 'jquery-mousewheel', 'toe'],
+    function ($, _, Backbone, Template, SequenceView) {
 
         return Backbone.View.extend({
+
+            sequenceViews : [],
 
             initialize : function () {
 
                 _.bindAll(this, 'mouseWheelHandler', 'transformHandler', 'render');
+
+                this.model.on('change:playhead', this.render);
+
             },
 
             events : {
@@ -50,21 +55,46 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'jquery
             render : function () {
                 'use strict';
 
+                console.log('CompositionView::render()');
+
                 if (!this.model) return this;
 
                 this.$el.html(Template(this.model.toJSON()));
 
-                this.$el.find('#composition').css({
+                this.$('#composition').css({
                     'margin-top'  : -this.model.get('height') / 2,
                     'margin-left' : -this.model.get('width') / 2
                 });
 
-                //get all sequence-views
+                var self = this,
+                    view;
+
+                //create all sequence-views
                 this.model.get('sequences').each(function (sequence) {
-                    //self.$el.append(sequence.render);
+
+                    self.$el.find('#composition').append('<div id="' + sequence.id + '" class="sequence"></div>');
+
+                    view = new SequenceView({
+                        model : sequence,
+                        el    : $('#' + sequence.id)
+                    });
+
+                    self.sequenceViews.push(view);
+                    view.render();
                 });
 
                 return this;
+            },
+
+
+            play : function (position) {
+                "use strict";
+
+            },
+
+            pause : function () {
+                "use strict";
+
             }
 
         });

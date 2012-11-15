@@ -16,6 +16,8 @@ define(['backbone', 'backbone-rel'],
                 type     : 'video',
                 x        : 0,
                 y        : 0,
+                w        : 0,
+                height   : 0,
                 scale    : 1.0,
                 rotation : 0,
                 index    : 0,
@@ -23,7 +25,7 @@ define(['backbone', 'backbone-rel'],
                 inFrame  : 0,
                 outFrame : 0,
                 fps      : 0,
-                duration   : 0,
+                duration : 0,
                 assetId  : null,
                 effects  : null,
                 useAudio : true,
@@ -33,6 +35,12 @@ define(['backbone', 'backbone-rel'],
 
             initialize : function () {
                 this.on('change', this.changeHandler);
+            },
+
+            getAsset : function () {
+                "use strict";
+                if (!this.has('assetId')) return null;
+                return app.project.get('library').get(this.get('assetId'))
             },
 
             changeHandler : function () {

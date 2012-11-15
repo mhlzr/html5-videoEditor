@@ -3,20 +3,28 @@
  * Date: 12.09.12
  * Time: 17:10
  */
-define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', 'model/sequence',
-    'model/composition', 'view/compositionView', 'view/timelineView', 'qrcode'],
-    function ($, _, Config, Info, AssetModel, FileModel, SequenceModel, CompositionModel, CompositionView, TimelineView) {
+define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'model/file', 'model/sequence',
+    'model/composition', 'view/compositionView', 'view/timelineView', 'view/compositionCreateView', 'qrcode'],
+    function ($, _, Config, Device, Info, AssetModel, FileModel, SequenceModel, CompositionModel, CompositionView, TimelineView, CompositionCreateView) {
 
         return  {
 
             app                  : null,
             currentNavigatorView : 'library',
+            currentDialogue      : null,
 
             init : function (app) {
                 this.app = app;
                 self = this;
                 this.addListeners();
                 this.onWindowResize();
+
+                //detect if device supports fullscreen,
+                //if so enable the button
+                if (Device.hasFullScreenSupport) {
+                    $('#toggleFullscreen').removeAttr('disabled');
+                }
+
                 return this;
             },
 
@@ -39,7 +47,7 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
                         $('#fileBrowser').click();
                     }
                     else if (self.currentNavigatorView === 'compositions') {
-                        Info.reveal($('#compositionDialogue'));
+                        self.showDialogue('compositionCreate');
                     }
 
                 });
@@ -110,7 +118,6 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
                     type = drag.data.type,
                     sequence;
 
-                console.log(id, type);
 
                 //Asset Drop into Composition --> Create Sequence
                 if (app.currentComposition && type === 'asset') {
@@ -133,7 +140,7 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
                 //Asset drop into nirvana --> Message
                 else if (!app.currentComposition && type === 'asset') {
                     if (window.confirm('You need to create or select a composition first. \nDo you want to create one right now?')) {
-                        Info.reveal($('#compositionDialogue'));
+                        self.showDialogue('compositionCreate');
                     }
                 }
                 //Composition Drop into Composition --> Message
@@ -157,6 +164,30 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
 
             },
 
+            showDialogue : function (dialogueViewName) {
+                "use strict";
+
+                //create dialogue-DIV and append it
+                $('body').append('<div id="dialogue" class="reveal-modal"></div>');
+
+                var $dialogue = $('#dialogue');
+
+                switch (dialogueViewName) {
+
+                    case 'compositionCreate' :
+                        self.currentDialogue = new CompositionCreateView({
+                            el        : $dialogue,
+                            model     : new CompositionModel(),
+                            projectId : app.project.id
+                        });
+                        break;
+                }
+
+                self.currentDialogue.render();
+                Info.reveal($dialogue);
+
+            },
+
 
             uploadInputChangeHandler : function (e) {
 
@@ -166,29 +197,6 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
 
             },
 
-            createComposition : function (e) {
-
-                //Close Reveal Modal
-                $(this).trigger('reveal:close');
-                var durationInSecs = parseInt($('#compositionDurationHour').val(), 10) * 60 * 60 + parseInt($('#compositionDurationMin').val(), 10) * 60 + parseInt($('#compositionDurationSec').val(), 10),
-                    composition = new CompositionModel(
-                        {
-                            'projectId' : app.project.id,
-                            'name'      : $('#compositionName').val(),
-                            'fps'       : $('#compositionFps').val(),
-                            'height'    : $('#compositionHeight').val(),
-                            'width'     : $('#compositionWidth').val(),
-                            'duration'  : durationInSecs
-                        });
-
-                composition.save(null, {'success' : function () {
-                    composition.initServerUpdateListener();
-                    //update view manually
-                    app.views.compositions.render();
-                }});
-
-
-            },
 
             openComposition : function () {
                 "use strict";
@@ -328,6 +336,11 @@ define(['jquery', 'underscore', 'config', 'info', 'model/asset', 'model/file', '
                         self.toggleNavigator();
                         break;
 
+                    case 'toggleFullscreen' :
+                        if (Device.hasFullScreenSupport) {
+                            Device.toggleFullscreen();
+                        }
+                        break;
                 }
 
             }

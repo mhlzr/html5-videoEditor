@@ -32,6 +32,7 @@ button {
   }
 }
 
+
 button.settings {
   background: url('../img/icon_settings.svg');
 }
@@ -71,6 +72,22 @@ button.left{
 
 button.right{
   background-image: url("../img/icon_right.svg");
+}
+
+//http://iconmonstr.com/fullscreen-5-icon/
+button.fullscreen{
+  background-image: url("../img/icon_fullscreen.svg");
+  margin-right: 5px;
+}
+
+//http://iconmonstr.com/undo-5-icon/
+button.undo{
+  background-image: url("../img/icon_undo.svg");
+}
+
+//http://thenounproject.com/noun/scissors/#icon-No5108
+button.cut{
+  background-image: url("../img/icon_cut.svg");
 }
 
 

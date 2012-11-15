@@ -1,0 +1,13 @@
+<div id="exportDialogue" class="reveal-modal">
+    <h1>Export</h1>
+
+    <h2>Private URL</h2>
+
+    <p>This link gives anybody full control over this project.</p>
+
+    <p><a href="http://lorem">http://www.lorem.de</a></p>
+
+    <div id="screen">fff</div>
+    <div id="qrcode"></div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>

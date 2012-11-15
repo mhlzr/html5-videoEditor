@@ -1,1 +1,5 @@
-<div class="layerInfo"><span contenteditable>{{this.name}}</span></div>
+<div class="layerInfo">
+    <span contenteditable>{{this.name}}</span>
+    <button class="remove" title="Remove sequence"></button>
+    <button class="undo" title="Reset sequence"></button>
+</div>

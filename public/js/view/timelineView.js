@@ -4,9 +4,9 @@
  * Time: 10:47
  */
 
-define(["jquery", "backbone", 'underscore', 'config', 'hbs!templates/timelineLayer', 'hbs!templates/timelineInfo', 'jquery++'],
+define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/timelineLayer', 'hbs!templates/timelineInfo', 'jquery++'],
 
-    function ($, Backbone, _, Config, TimelineLayerTemplate, TimelineInfoTemplate) {
+    function ($, Backbone, _, Utils, Config, TimelineLayerTemplate, TimelineInfoTemplate) {
 
         return Backbone.View.extend({
 
@@ -25,8 +25,9 @@ define(["jquery", "backbone", 'underscore', 'config', 'hbs!templates/timelineLay
                 //jquery++ dnd events
                 'draginit div.layer .bar' : 'draginitLayerBarHandler',
                 'dragend div.layer .bar'  : 'dragEndLayerBarHandler',
-                'draginit #picker'        : 'dragInitPickerHandler',
-                'dragend #picker'         : 'dragEndPickerHandler',
+
+                'draginit #picker' : 'dragInitPickerHandler',
+                'dragend #picker'  : 'dragEndPickerHandler',
 
                 'click #timescale' : 'timescaleClickHandler'
             },
@@ -35,11 +36,12 @@ define(["jquery", "backbone", 'underscore', 'config', 'hbs!templates/timelineLay
                 "use strict";
 
                 var $el = $(e.originalEvent.srcElement),
+                    $layerContainer = $('#layerContainer'),
                     parent = $el.parent();
 
                 drag.horizontal();
-                drag.step({x : 3}, $('#layerContainer'));
-                drag.scrolls($('#layerContainer'), {
+                drag.step({x : Config.GUI_TIMELINE_PIXEL_PER_FRAME}, $layerContainer);
+                drag.scrolls($layerContainer, {
                     distance  : 50,
                     delta     : function (diff) {
                         return (50 - diff) / 2
@@ -65,22 +67,34 @@ define(["jquery", "backbone", 'underscore', 'config', 'hbs!templates/timelineLay
 
             dragInitPickerHandler : function (e, drag) {
                 "use strict";
-                var $el = $(e.originalEvent.srcElement),
-                    parent = $el.parent();
 
-                drag.step({x : 3}, parent);
+                drag.step({x : Config.GUI_TIMELINE_PIXEL_PER_FRAME});
                 drag.horizontal();
+                drag.limit($('#timescale'));
             },
 
             dragEndPickerHandler : function (e, drag, drop) {
                 "use strict";
+                var x = (this.$('#picker').css('left').replace('px', '')) | 0,
+                    frame = x / Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0;
 
+                this.changePlayheadPosition(frame);
             },
+
 
             timescaleClickHandler : function (e) {
                 "use strict";
-                console.log(e.target.offsetLeft, e.originalEvent.pageX, e.originalEvent.pageX - e.target.offsetLeft);
-                this.$('#picker').css('left', e.originalEvent.pageX - e.target.offsetLeft);
+                var x = e.originalEvent.pageX - $(e.target).parent().offset().left;
+                this.$('#picker').css('left', x);
+
+                this.changePlayheadPosition(x / Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0);
+            },
+
+            changePlayheadPosition : function (frame) {
+                "use strict";
+                if (frame >= 0 && frame <= this.model.getTotalFrames()) {
+                    this.model.set('playhead', frame);
+                }
             },
 
             sequenceChangeHandler : function (sequence) {
@@ -110,13 +124,16 @@ define(["jquery", "backbone", 'underscore', 'config', 'hbs!templates/timelineLay
                     data = _.extend(sequence.toJSON(), {
                         totalWidth : totalWidth
                     });
+
                     $layerContainer.append(TimelineLayerTemplate(data));
                     $infoContainer.append(TimelineInfoTemplate(data));
+
                 });
 
                 //update slider height
                 $picker.css('height', 500);//$layerContainer.innerHeight() + Math.abs($picker.css('top').replace('px', '')));
 
+                return this;
             },
 
 
@@ -124,66 +141,75 @@ define(["jquery", "backbone", 'underscore', 'config', 'hbs!templates/timelineLay
                 "use strict";
 
                 var $el = this.$('#timescale'),
-                    canvas = [],
                     ctx = [],
-                    frameWidth = Config.GUI_TIMELINE_PIXEL_PER_FRAME,
-                    currentSecond = 0,
-                    currentMinute = 0,
-                    currentHour = 0,
-                    timeArray = [],
-                    offsetX = 5; //margin-left
+                    cCanvas = null, //currentCanvas
+                    cCtx = null, //currentCtx
+                    iCtx = 0, //currentCtxIndex
+                    posX = 0;
+
+                //change the total width of the container
+                $el.css('width', this.model.getTotalFrames() * Config.GUI_TIMELINE_PIXEL_PER_FRAME + 1000); //TODO find number
+
+                //canvas' width is limited, so we need to create more of them
+                while (ctx.length < this.model.getTotalFrames() * Config.GUI_TIMELINE_PIXEL_PER_FRAME / Config.GUI_TIMELINE_CANVAS_MAX_WIDTH) {
+
+                    //create canvas(es)
+                    cCanvas = document.createElement('canvas');
+                    cCtx = ctx.push(cCanvas.getContext('2d'));
+
+                    //configure canvas
+                    cCanvas.width = Config.GUI_TIMELINE_CANVAS_MAX_WIDTH;
+                    cCanvas.height = 40;
+
+                    //configure canvas
+                    cCtx.fillStyle = '#000000';
+                    cCtx.strokeStyle = '#000000';
+                    cCtx.lineWidth = 1;
+                    cCtx.lineCap = 'butt';
+                    cCtx.font = "10pt Verdana";
+                    cCtx.textAlign = "center";
+
+                    //append do DOM
+                    $el.append(cCanvas);
+                }
 
 
-                //TODO: more canvases, scale not accurate...
+                for (var frame = 0; frame <= this.model.getTotalFrames(); frame++) {
 
-                //create canvas(es) depends on time and maxWidth of canvas
-                canvas[0] = document.createElement('canvas');
-                ctx[0] = canvas[0].getContext('2d');
+                    if (frame > (1 + iCtx) * Config.GUI_TIMELINE_CANVAS_MAX_WIDTH / Config.GUI_TIMELINE_PIXEL_PER_FRAME) {
 
-                canvas[0].width = 10000;//this.model.getTotalFrames() * frameWidth;
-                canvas[0].height = 40;
+                        iCtx++;
 
-                $el.append(canvas[0]);
+                        //substract the already existent canvas-elements
+                        //as each canvas starts at 0
+                        posX = iCtx * Config.GUI_TIMELINE_CANVAS_MAX_WIDTH / 3;
 
-                ctx[0].fillStyle = '#000000';
-                ctx[0].strokeStyle = '#000000';
-                ctx[0].lineWidth = 1;
-                ctx[0].lineCap = 'butt';
+                    }
 
+                    ctx[iCtx].beginPath();
+                    ctx[iCtx].moveTo((frame - posX) * Config.GUI_TIMELINE_PIXEL_PER_FRAME, 0);
 
-                for (var i = 0; i <= this.model.getTotalFrames(); i++) {
-
-                    timeArray = [];
-
-                    ctx[0].beginPath();
-                    ctx[0].moveTo(i * frameWidth + offsetX, 0);
+                    //start 00:00:00:00
+                    if (frame === 0) {
+                        ctx[0].lineTo(0, 22);
+                        ctx[0].fillText('Start', 4, 34);
+                    }
 
                     //got a second
-                    if (i % this.model.get('fps') === 0) {
-                        ctx[0].lineTo(i * frameWidth + offsetX, 22);
-                        ctx[0].font = "10pt Verdana";
-                        ctx[0].textAlign = "center";
-
-                        //calc time
-                        timeArray.push( currentHour < 10 ? '0' + currentHour : currentHour );
-                        timeArray.push( currentMinute < 10 ? '0' + currentMinute : currentMinute);
-                        timeArray.push( currentSecond < 10 ? '0' + currentSecond : currentSecond);
-
-                        ctx[0].fillText(timeArray.join(':'), i * frameWidth + offsetX, 34);
-
-                        if (currentSecond % 60 === 0)currentMinute++;
-                        if (currentMinute % 60 === 0)currentHour++;
-                        currentSecond++;
+                    else if (frame % this.model.get('fps') === 0) {
+                        ctx[iCtx].lineTo((frame - posX) * Config.GUI_TIMELINE_PIXEL_PER_FRAME, 22);
+                        ctx[iCtx].fillText(Utils.getCleanTimeCode(frame, this.model.get('fps')), (frame - posX) * Config.GUI_TIMELINE_PIXEL_PER_FRAME - 20, 34);
 
                     }
+
                     //just a frame
                     else {
-                        ctx[0].lineTo(i * frameWidth + offsetX, 14);
+                        ctx[iCtx].lineTo((frame - posX) * Config.GUI_TIMELINE_PIXEL_PER_FRAME, 14);
                     }
 
-                    ctx[0].closePath();
-                    ctx[0].stroke();
-                    ctx[0].fill();
+                    ctx[iCtx].closePath();
+                    ctx[iCtx].stroke();
+                    ctx[iCtx].fill();
                 }
             },
 

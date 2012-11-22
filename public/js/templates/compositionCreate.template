@@ -1,7 +1,7 @@
 <div id="createComposition">
     <h1>New Composition</h1>
 
-    <button class="close-reveal-modal"></button>
+    <button class="close-reveal-modal close"></button>
 
     <p>
         <label for="name">Name</label>
@@ -46,13 +46,13 @@
     <fieldset>
         <legend>Duration</legend>
         <label for="durationH">Hours</label>
-        <input id="durationH" type="number" min="0" max="24" required value="{{this.durationH}}"/>
+        <input id="durationS" type="number" min="0" max="59" required value="{{this.durationS}}"/>
 
         <label for="durationM">Min</label>
         <input id="durationM" type="number" min="0" max="59" required value="{{this.durationM}}"/>
 
         <label for="durationS">Seconds</label>
-        <input id="durationS" type="number" min="0" max="59" required value="{{this.durationS}}"/>
+        <input id="durationH" type="number" min="0" max="24" required value="{{this.durationH}}"/>
     </fieldset>
 
 

@@ -1,4 +1,4 @@
-define(['backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/composition', 'collection/composition'],
+define(['backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/composition', 'collection/compositions'],
 
     function (Backbone, BackboneRelational, AssetModel, LibraryCollection, CompositionModel, CompositionCollection) {
 
@@ -47,11 +47,18 @@ define(['backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/
             },
 
             initialize : function () {
-                this.on('change', this.changeHandler);
+                "use strict";
+                this.on('change:title', this.changeHandler);
             },
 
             changeHandler : function () {
-                console.log('PROJECT.JS::CHANGE');
+                "use strict";
+                this.save();
             }
-        });
-    });
+
+
+
+        })
+            ;
+    })
+;

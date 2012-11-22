@@ -70,7 +70,27 @@ function remove(data, callback) {
 }
 
 
+function getSequencesByCompositionId(data, callback) {
+    "use strict";
+    'use strict';
+    db.sequences.find({compositionId : data.id}, function onFound(err, docs) {
+        console.log('PROJECTS.JS::SEQUENCES SERVED WITH', docs.length, 'SEQUENCES');
+        if (err) throw err;
+
+        //the whole _id/id thing created a mess in the file-Model
+        for (var i = 0; i < docs.length; i++) {
+            docs[i].id = docs[i]._id;
+            delete docs[i]._id;
+        }
+
+        callback(err, docs);
+    });
+}
+
+
 exports.create = create;
 exports.read = read;
 exports.update = update;
 exports.remove = remove;
+
+exports.getSequencesByCompositionId = getSequencesByCompositionId;

@@ -13,6 +13,7 @@ require.config({
         'jquery'            : 'lib/jquery-1.8.1',
         'jquery++'          : 'lib/jquerypp',
         'jquery-mousewheel' : 'lib/jquery.mousewheel',
+        'jquery-scrollTo'   : 'lib/jquery.scrollTo',
         'json2'             : 'lib/json2',
         'jstorage'          : 'lib/jstorage',
         'toe'               : 'lib/toe.built',
@@ -79,6 +80,10 @@ require.config({
         },
 
         'jquery-mousewheel' : {
+            deps : ['jquery']
+        },
+
+        'jquery-scrollTo' : {
             deps : ['jquery']
         },
 

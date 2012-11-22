@@ -10,11 +10,22 @@ define(["backbone", "model/sequence"],
         return Backbone.Collection.extend({
 
             model : CompositionModel,
-
-            url : 'sequences',
+            url   : 'sequences',
 
             initialize : function () {
                 "use strict";
+
+                //automatically delete element if it gets removed
+                this.on('remove', function (element) {
+                    element.destroy();
+                });
+            },
+
+            //sequences can be stacked and overlap, that's
+            //why we need a comparator
+            comparator : function (sequence) {
+                "use strict";
+                return sequence.get('index')
             }
 
         });

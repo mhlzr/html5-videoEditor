@@ -1,0 +1,45 @@
+<div id="projectBrowser">
+
+    <h1>Project-Browser</h1>
+    {{#if this.cancellable}}
+    <button class="close-reveal-modal close"></button>
+    {{/if}}
+
+
+    <fieldset id="newProject">
+        <legend>
+            <input type="radio" value="new" name="type" id="radioNew" checked>
+            <label for="radioNew">New Project</label>
+        </legend>
+        <input type="text" id="projectTitle" min="3" maxlength="30" placeholder="Untitled"/>
+        <label for="projectTitle">Title</label>
+    </fieldset>
+
+    <fieldset id="existentProject">
+        <legend>
+            <input type="radio" value="existent" name="type" id="radioExistent">
+            <label for="radioExistent">Available Projects</label>
+        </legend>
+
+        <ul>
+            {{#each availableProjects}}
+            <li>
+                <input name="project" id="{{this.id}}" type="radio" value="{{this.id}}" disabled="disabled"/>
+                <label for="{{this.id}}">
+                    <span class="title">{{this.title}}</span>
+                    <span class="date">{{dateConverter this.date}}</span>
+                </label>
+                <button class="remove" data-id="{{this.id}}" title="Delete this project" disabled></button>
+            </li>
+            {{/each}}
+        </ul>
+
+    </fieldset>
+
+    {{#if this.cancellable}}
+    <button class="cancel">Cancel</button>
+    {{/if}}
+
+    <button class="okay" disabled>Okay</button>
+
+</div>

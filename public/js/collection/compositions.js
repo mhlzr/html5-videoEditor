@@ -5,14 +5,17 @@ define(["backbone", "model/composition"],
         return Backbone.Collection.extend({
 
             model : CompositionModel,
-
-            url : 'compositions',
+            url   : 'compositions',
 
             initialize : function () {
-                console.log('COMPOSITIONS.JS::INIT');
+                "use strict";
+
+                //automatically delete element if it gets removed
+                this.on('remove', function (element) {
+                    element.destroy();
+                });
             }
 
         });
-
 
     });

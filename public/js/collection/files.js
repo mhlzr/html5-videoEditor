@@ -8,9 +8,13 @@ define(['backbone', 'model/file'],
             url   : 'files',
 
             initialize : function () {
-                console.log('FILES.JS::INIT');
-            }
+                'use strict';
 
+                //automatically delete element if it gets removed
+                this.on('remove', function (element) {
+                    element.destroy();
+                });
+            }
         });
 
 

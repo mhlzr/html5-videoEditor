@@ -1,5 +1,6 @@
-define(['jquery', 'backbone', 'hbs!templates/compositionListElement'],
-    function ($, Backbone, Template) {
+define(['jquery', 'underscore', 'backbone', 'utils', 'hbs!templates/compositionListElement'],
+
+    function ($, _, Backbone, Utils, Template) {
         'use strict';
 
         return Backbone.View.extend({
@@ -7,15 +8,11 @@ define(['jquery', 'backbone', 'hbs!templates/compositionListElement'],
             tagName   : 'div',
             className : 'composition',
 
-            initialize : function () {
-                //this.model.on('change:progress', this.progressChangeHandler);
-            },
-
             render : function () {
 
-                if (!this.model) return null;
-
-                return Template(this.model.toJSON());
+                return Template(_.extend(this.model.toJSON(), {
+                    "timecode" : Utils.getCleanTimeCode(this.model.get('duration'), this.model.get('fps'))
+                }));
 
             }
 

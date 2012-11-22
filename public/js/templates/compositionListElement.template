@@ -1,14 +1,24 @@
 <div id="{{this._id}}" class="composition">
+
+    <div class="title">
+        {{this.name}}
+    </div>
+
+    <div class="status">Status</div>
+
+    <progress min="0" max="100" value="100"></progress>
+
     <div class="info">
-        {{this.name}}, {{this._id}}, {{this.width}}x{{this.height}}, {{this.duration}}, {{this.publicId}}
+        <span class="resolution">{{this.width}}x{{this.height}}</span>
+        <span class="timecode">{{this.timecode}}</span>
     </div>
-    <progress min="0" max="100"></progress>
-    <div class="controls">
-        <div>
-            <button class="settings"></button>
-            <button class="share"></button>
-            <button class="encode"></button>
-            <button class="download"></button>
-        </div>
+
+    <!--div class="controls">
+    <div>
+        <button class="settings"></button>
+        <button class="share"></button>
+        <button class="encode"></button>
+        <button class="download"></button>
     </div>
+</div-->
 </div>

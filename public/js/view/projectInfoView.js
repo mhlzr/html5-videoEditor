@@ -3,12 +3,12 @@
  * Date: 12.09.12
  * Time: 21:07
  */
-define(["jquery", "backbone", "hbs!templates/projectInfo"], function ($, Backbone, Template) {
+define(["jquery", 'underscore', "backbone", "hbs!templates/projectInfo"], function ($, _, Backbone, Template) {
 
     return Backbone.View.extend({
 
         initialize : function () {
-            this.model.on('change:title', this.render);
+            _.bindAll(this, 'render');
         },
 
         events : {
@@ -21,11 +21,7 @@ define(["jquery", "backbone", "hbs!templates/projectInfo"], function ($, Backbon
         },
 
         render : function () {
-
-            if (!this.model) return this;
-
             this.$el.html(Template(this.model.toJSON()));
-
             return this;
         }
 

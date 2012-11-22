@@ -4,7 +4,7 @@
  * Time: 18:28
  */
 
-define(["jquery", "backbone"], function ($, Backbone) {
+define(["jquery", 'underscore', "backbone"], function ($, _, Backbone) {
 
     return Backbone.View.extend({
 
@@ -16,15 +16,27 @@ define(["jquery", "backbone"], function ($, Backbone) {
         initialize : function () {
             "use strict";
 
+            _.bindAll(this, 'dblclickHandler', 'clickHandler');
+
             this.asset = this.model.getAsset();
+            this.$el.css({
+                'width'   : this.model.get('width'),
+                'height'  : this.model.get('height'),
+                'left'    : this.model.get('x'),
+                'top'     : this.model.get('y'),
+                'z-index' : this.model.get('index')
+            });
+        },
 
-
+        events : {
+            'dblclick' : 'dblclickHandler',
+            'click'    : 'clickHandler'
         },
 
         render : function () {
             "use strict";
 
-            if (!this.model) return this;
+            if (!this.model || !this.asset) return this;
 
             if (this.asset.get('type') === 'video') {
                 this.video = document.createElement('video');
@@ -33,10 +45,8 @@ define(["jquery", "backbone"], function ($, Backbone) {
 
                 //Load the video
                 this.video.src = this.asset.getCompatibleMediaUrl();
-
                 this.$el.append(this.video);
 
-                this.video.play();
             }
 
 
@@ -53,6 +63,32 @@ define(["jquery", "backbone"], function ($, Backbone) {
             return this;
         },
 
+        update : function (frame, fps) {
+            "use strict";
+
+            var model = this.model;
+
+            // console.log('start', model.get('position'), 'end', model.get('position') + model.get('duration') * fps, 'frame', frame);
+
+            //sequence-frame will be rendered
+            if (frame >= model.get('position') &&
+                frame <= (model.get('position') + model.get('duration') * fps)) {
+                //TODO frame render update
+                this.$el.show();
+
+                //if (this.video.canplay) {
+                this.video.currentTime = (frame - model.get('position')) / fps;
+                //}
+
+                //console.log(frame, 'should be rendered');
+            }
+            //sequence will be hidden
+            else {
+                this.$el.hide();
+            }
+
+        },
+
         getImageData : function (x, y, w, h) {
             "use strict";
 
@@ -63,6 +99,41 @@ define(["jquery", "backbone"], function ($, Backbone) {
 
             return this.ctx.getImageData(x, y, w, h);
 
+        },
+
+
+        dblclickHandler : function () {
+            "use strict";
+
+            app.currentSequence = this;
+            app.controller.showDialogue('sequenceCut', this.model);
+
+        },
+
+        clickHandler : function () {
+            "use strict";
+
+            if (app.currentSequence) {
+                app.currentSequence.$el.removeClass('active');
+            }
+            app.currentSequence = this;
+            this.$el.addClass('active');
+        },
+
+        play : function (startFrame) {
+            "use strict";
+            this.video.play();
+        },
+
+        pause : function () {
+            "use strict";
+            this.video.pause();
+        },
+
+
+        destroy : function () {
+            "use strict";
+            this.remove();
         }
 
     });

@@ -1,11 +1,11 @@
 define([
-    'config', 'jquery', 'jstorage', 'backbone', 'modernizr', 'socket', 'router',
+    'config', 'jquery', 'backbone', 'modernizr', 'socket', 'router',
     'controller', 'model/settings', 'device', 'modules/uploader.socket', 'info',
     'model/project',
     'view/libraryListView', 'view/compositionListView', 'view/projectInfoView',
     'backbone-bind', 'backbone-sync'],
 
-    function (Config, $, jStorage, Backbone, Modernizr, Socket, Router, Controller, Settings, Device, Uploader, Info, ProjectModel, LibraryListView, CompositionListView, ProjectInfoView) {
+    function (Config, $, Backbone, Modernizr, Socket, Router, Controller, Settings, Device, Uploader, Info, ProjectModel, LibraryListView, CompositionListView, ProjectInfoView) {
 
         'use strict';
 
@@ -22,6 +22,9 @@ define([
         app.socket = null;
 
         app.currentComposition = null;
+        app.currentSequence = null;
+        app.currentAsset = null;
+
         app.navigatorIsVisible = true;
 
 
@@ -39,20 +42,15 @@ define([
 
             this.project = new ProjectModel();
 
+            this.controller = Controller.init(this);
+
             this.router = new Router();
             this.setupBackbone();
 
             this.uploader = new Uploader(this.socket);
-
-            //this.info.noty({text : 'noty - a jquery notification library!' });
-            //this.info.reveal($('#dialogueTest'));
-
+            this.settings = new Settings();
             this.initViews();
 
-            this.getAvailableProjectsFromLocalStorage();
-
-            this.controller = Controller.init(this);
-            this.settings = new Settings();
 
         };
 
@@ -62,7 +60,6 @@ define([
         app.resizeGUI = function () {
             var BUTTON_HEIGHT = 34,
                 tHeight = this.device.height,
-                tWidth = this.device.width,
                 headerH = Math.max(tHeight * 0.05, BUTTON_HEIGHT) | 0,
                 timelineH = tHeight * 0.35 | 0,
                 mainH = tHeight - headerH - timelineH | 0,
@@ -71,6 +68,7 @@ define([
                 workH = mainH - controlH - commandH;
 
             $('header').css('height', headerH);
+            //$('#projectInfo h1').css('line-height', headerH + 'px');
             $('#mainContainer').css('height', mainH);
             $('#timeline').css('height', timelineH);
 
@@ -151,18 +149,6 @@ define([
                 });
             };
 
-        };
-
-        app.getAvailableProjectsFromLocalStorage = function () {
-            var localProjects = $.jStorage.index(),
-                outputList = $('#availableProjects');
-
-            var currentProj;
-
-            for (var i = 0; i < localProjects.length; i++) {
-                currentProj = $.jStorage.get(localProjects[i]);
-
-            }
         };
 
         return app;

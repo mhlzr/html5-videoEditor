@@ -3,9 +3,7 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="32px" height="32px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
-<g>
-	<polygon fill="#010101" points="4,28 4,0 0,4 0,28 0,32 4,32 28,32 32,28 	"/>
-</g>
-<path id="folder-4-icon" d="M30.463,25.526H6.351V12.339h7.295c0.967,0,1.902-0.345,2.636-0.974l2.88-2.463h11.301V25.526z
-	 M16.65,8.284l-2.145-1.994H6.351v4h6.759c0.648,0,1.28-0.219,1.789-0.622L16.65,8.284z"/>
+<path fill="#010101" d="M16,0C7.2,0,0,7.2,0,16s7.2,16,16,16s16-7.2,16-16S25,0,16,0z"/>
+<polyline fill="#FFFFFF" points="17.208,4.708 25.313,16 17.208,27.292 "/>
+<rect x="10.542" y="4.542" fill="#FFFFFF" width="3.417" height="22.917"/>
 </svg>

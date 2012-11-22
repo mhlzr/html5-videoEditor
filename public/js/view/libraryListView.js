@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'toe'],
+define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'jquery++'],
 
     function ($, _, Backbone, AssetView) {
 
@@ -18,16 +18,18 @@ define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'toe'],
                 'click div.asset'    : 'assetClickHandler',
                 'draginit div.asset' : 'assetDragStartHandler'
 
-                //mobile
-                //'drag div.asset'      : 'assetDragStartHandler'
             },
 
             assetClickHandler : function (e) {
                 var asset = this.collection.get(e.currentTarget.id);
-                if (asset.hasCompatibleMedia()) {
-                    console.log(asset.getCompatibleMedia());
-                    app.controller.currentAsset = asset;
-                }
+
+                //TODO open preview on dblclick
+                /*
+                 if (asset.hasCompatibleMedia()) {
+                 console.log(asset.getCompatibleMedia());
+                 app.controller.currentAsset = asset;
+                 }
+                 */
             },
 
             assetDragStartHandler : function (e, drag) {

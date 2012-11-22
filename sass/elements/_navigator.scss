@@ -1,30 +1,73 @@
-@import 'compass/css3/user-interface';
 @import '../globals';
 @import '../progressbar';
 
 #navigator {
+
   border-right: 1px solid $lineColor;
-  margin-right: -1px;
   //fix for the 1px border
+  margin-right: -1px;
+
   background-color: $navigatorBackgroundColor;
 
   div.asset, div.composition, div.effect {
     cursor: pointer;
-    @include user-select(none);
     clear: both;
     display: block;
     width: 100%;
+    height: 70px;
+    color: #6d6c6c;
+    font-size: 0.9em;
+    background-repeat: no-repeat;
+    background-position: 0.9em 1.2em;
+    border-bottom: 1px solid $lineColor;
+
+    &:hover {
+      cursor: pointer;
+      color: $textColor;
+      background-color: $highlightColor;
+    }
+
+    &.active {
+      background-color: $activeColor;
+    }
+
+    &.active:hover {
+      background-color: $highlightColor;
+    }
+
+    &:last-child {
+      border: none;
+    }
+
+    progress {
+      @include progressbar($progressBarStandardColor, $progressBarActiveColor);
+      float: left;
+      clear: both;
+      height: 2px;
+      width: 290px;
+
+      &:after {
+        clear: both;
+        color: $textColor;
+        content: attr(value) "%";
+        text-align: right;
+        font-size: 0.6em;
+        position: relative;
+        left: 270px;
+        top: -24px;
+        display: inline;
+
+      }
+    }
+
   }
 }
 
 #library, #compositions, #effects {
-  @include user-select(none);
-
   display: block;
   overflow: hidden;
   overflow-x: hidden;
   overflow-y: scroll;
-
 }
 
 #navigatorControl {
@@ -40,7 +83,6 @@
       display: table-cell;
       vertical-align: middle;
       width: (100%/3);
-      @include user-select(none);
 
       list-style: none;
       text-align: center;
@@ -91,13 +133,7 @@
 #library {
 
   div.asset {
-
     background-color: $assetListBackgroundColor;
-    color: #6d6c6c;
-    border-bottom: 1px solid $lineColor;
-    height: 70px;
-    background-repeat: no-repeat;
-    background-position: 0.9em 1.2em;
 
     &.video {
       background-image: url('../img/icon_video.svg');
@@ -110,15 +146,15 @@
       background-image: url('../img/icon_audio.svg');
     }
 
-    &:last-child {
-      border: none;
-    }
-
     div.info {
       display: block;
       width: 90%;
       float: left;
       height: 100%;
+
+      progress {
+        margin: 2px 0px 0px 55px;
+      }
 
       span.name {
         float: left;
@@ -128,7 +164,7 @@
         width: 75%;
         max-width: 80%;
         overflow: hidden;
-        margin: 5px 0px 0px 55px;
+        margin: 8px 0px 0px 55px;
       }
 
       span.status {
@@ -148,28 +184,6 @@
         margin-left: 55px;
       }
 
-      progress {
-        @include progressbar($progressBarStandardColor, $progressBarActiveColor);
-        float: left;
-        clear: both;
-        height: 2px;
-        width: 75%;
-
-        margin: 2px 0px 0px 55px;
-
-        &:after {
-          clear: both;
-          color: $textColor;
-          content: attr(value) "%";
-          text-align: right;
-          font-size: 0.6em;
-          position: relative;
-          left: 92%;
-          top: -24px;
-          display: inline;
-
-        }
-      }
     }
 
     div.types {
@@ -202,13 +216,6 @@
       }
     }
 
-    &:hover {
-      cursor: pointer;
-      color: $textColor;
-      background-color: $highlightColor;
-
-    }
-
   }
 
 }
@@ -217,22 +224,49 @@
   display: none;
 
   .composition {
-    border: 1px solid $lineColor;
+
     background-color: $compositionListBackgroundColor;
+    //http://iconmonstr.com/folder-4-icon/
+    background-image: url("../img/icon_composition.svg");
+    padding: 5px 0px 0px 55px;
     display: block;
 
-    div.info {
-      width: 100%;
-      height: 40px;
-      display: block;
+    .title, .status, .info {
+      width: 290px;
+    }
+
+    .title {
+      font-size: 1em;
+      margin-top: 3px;
+    }
+
+    .status {
+      font-size: 0.7em;
+      margin-top: 3px;
     }
 
     progress {
-      width: 80%;
+      margin-top: 2px;
       height: 2px;
       @include progressbar($progressBarStandardColor, $progressBarActiveColor);
     }
-    div.controls {
+
+    .info {
+      display: block;
+      margin-top: 7px;
+      font-size: 0.8em;
+
+      .resolution {
+        float: left;
+      }
+
+      .timecode {
+        float: right;
+        font-weight: bold;
+      }
+    }
+
+    /*div.controls {
       width: 100%;
       height: 32px + 2 * 5px;
 
@@ -251,7 +285,7 @@
       }
 
     }
-
+*/
   }
 }
 

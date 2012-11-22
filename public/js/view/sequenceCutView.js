@@ -4,11 +4,12 @@
  * Time: 21:51
  */
 
-define(['jquery', 'backbone', 'hbs!templates/sequenceCut'], function ($, Backbone) {
+define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], function ($, _, Backbone, Template) {
 
     return Backbone.View.extend({
 
-        asset : null,
+        asset       : null,
+        cuttingMode : false,
 
         initialize : function () {
             'use strict';
@@ -17,7 +18,9 @@ define(['jquery', 'backbone', 'hbs!templates/sequenceCut'], function ($, Backbon
 
         render : function () {
             'use strict';
-
+            this.$el.html(Template(_.extend(this.model.toJSON(), {
+                "cuttingMode" : this.cuttingMode ? 'cut' : 'preview'
+            })));
 
         }
 

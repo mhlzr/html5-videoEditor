@@ -4,21 +4,26 @@
  * Time: 10:47
  */
 
-define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/timelineLayer', 'hbs!templates/timelineInfo', 'jquery++'],
+define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/timelineLayer', 'hbs!templates/timelineInfo', 'jquery++', 'jquery-scrollTo'],
 
     function ($, Backbone, _, Utils, Config, TimelineLayerTemplate, TimelineInfoTemplate) {
 
         return Backbone.View.extend({
 
+            isPlaying : false,
 
             initialize : function () {
                 "use strict";
-                _.bindAll(this, 'render', 'sequenceChangeHandler');
-                this.model.get('sequences').on('add', this.render);
-                this.model.get('sequences').on('change', this.sequenceChangeHandler);
+                _.bindAll(this, 'playheadChangeHandler', 'render', 'sequenceAddedHandler', 'sequenceRemovedHandler', 'sequenceChangedHandler');
+
+                this.model.get('sequences').on('add', this.sequenceAddedHandler);
+                this.model.get('sequences').on('remove', this.sequenceRemovedHandler);
+                this.model.get('sequences').on('change', this.sequenceChangedHandler);
 
                 this.resetView();
                 this.renderTimeScale();
+
+                this.render();
             },
 
             events : {
@@ -29,7 +34,11 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                 'draginit #picker' : 'dragInitPickerHandler',
                 'dragend #picker'  : 'dragEndPickerHandler',
 
-                'click #timescale' : 'timescaleClickHandler'
+                'click #timescale'        : 'timescaleClickHandler',
+                'click .layerInfo button' : 'buttonClickHandler',
+
+                'keyup div.layerInfo .span' : 'layerInfoNameChangeHandler'
+                // 'keydown'                   : 'keydownHandler'
             },
 
             draginitLayerBarHandler : function (e, drag) {
@@ -53,15 +62,14 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
 
             dragEndLayerBarHandler : function (e, drag, drop) {
                 "use strict";
-                var $el = $(e.originalEvent.srcElement),
-                    parent = $el.parent(),
-                    id = parent[0].id,
-                    pos = $el.css('left').replace('px', '');
 
-                if (isNaN(pos)) pos = 0;
+                var $el = $(drag.element),
+                    $parent = $el.parent(),
+                    id = $parent.attr('data-id'),
+                    pos = parseInt($el.css('left').replace('px', ''));
 
                 //store the changes to the model
-                this.model.get('sequences').get(id).set('position', pos);
+                this.model.get('sequences').get(id).set('position', pos / Config.GUI_TIMELINE_PIXEL_PER_FRAME);
 
             },
 
@@ -75,63 +83,84 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
 
             dragEndPickerHandler : function (e, drag, drop) {
                 "use strict";
-                var x = (this.$('#picker').css('left').replace('px', '')) | 0,
-                    frame = x / Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0;
-
-                this.changePlayheadPosition(frame);
+                var x = (this.$('#picker').css('left').replace('px', '')) | 0;
+                this.changePlayheadPosition(x);
             },
 
 
             timescaleClickHandler : function (e) {
                 "use strict";
-                var x = e.originalEvent.pageX - $(e.target).parent().offset().left;
+                var x = e.originalEvent.pageX - $(e.target).parent().offset().left | 0;
                 this.$('#picker').css('left', x);
-
-                this.changePlayheadPosition(x / Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0);
+                this.changePlayheadPosition(x);
             },
 
-            changePlayheadPosition : function (frame) {
+            layerInfoNameChangeHandler : function (e) {
                 "use strict";
-                if (frame >= 0 && frame <= this.model.getTotalFrames()) {
-                    this.model.set('playhead', frame);
-                }
+                console.log(e.target);
             },
 
-            sequenceChangeHandler : function (sequence) {
+
+            sequenceChangedHandler : function (sequence) {
                 "use strict";
                 this.renderSequence(sequence);
             },
 
+            sequenceAddedHandler : function (sequence) {
+                "use strict";
+                this.renderSequence(sequence);
+            },
+
+            sequenceRemovedHandler : function (sequence) {
+                "use strict";
+                //removed from layerInfoContainer + layerContainer
+                $('[data-id=' + sequence.id + ']').remove();
+
+            },
+
             renderSequence : function (sequence) {
                 "use strict";
-                this.$('#layerContainer').find('#' + sequence.id).replaceWith(TimelineLayerTemplate(sequence.toJSON()));
+
+                var $layerContainer = this.$('#layerContainer'),
+                    $infoContainer = this.$('#layerInfoContainer'),
+                    totalWidth = this.model.getTotalFrames() * Config.GUI_TIMELINE_PIXEL_PER_FRAME,
+                    fps = this.model.get('fps'),
+                    data;
+
+                data = _.extend(sequence.toJSON(), {
+                    totalWidth  : totalWidth,
+                    barWidth    : sequence.get('duration') * fps * Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0,
+                    barPosition : sequence.get('position') * Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0
+                });
+
+                //already existent so update
+                if ($layerContainer.find('[data-id=' + sequence.id + ']').length > 0) {
+                    $layerContainer.find('[data-id=' + sequence.id + ']').replaceWith(TimelineLayerTemplate(data));
+                }
+                //non-existent so create
+                else {
+                    $layerContainer.append(TimelineLayerTemplate(data));
+                    $infoContainer.append(TimelineInfoTemplate(data));
+                }
+
             },
 
             render : function () {
                 "use strict";
 
-                if (!this.model) return this;
-
-                var $layerContainer = this.$('#layerContainer'),
-                    $infoContainer = this.$('#layerInfoContainer'),
+                var self = this,
                     $picker = this.$('#picker'),
-                    totalWidth = this.model.getTotalFrames() * Config.GUI_TIMELINE_PIXEL_PER_FRAME,
-                    data;
+                    $layerContainer = this.$('#layerContainer');
 
                 $layerContainer.css('width', this.model.length + 'px');
 
-                this.model.get('sequences').each(function (sequence) {
-                    data = _.extend(sequence.toJSON(), {
-                        totalWidth : totalWidth
-                    });
-
-                    $layerContainer.append(TimelineLayerTemplate(data));
-                    $infoContainer.append(TimelineInfoTemplate(data));
-
-                });
-
                 //update slider height
                 $picker.css('height', 500);//$layerContainer.innerHeight() + Math.abs($picker.css('top').replace('px', '')));
+
+                //render all sequence views
+                this.model.get('sequences').each(function (sequence) {
+                    self.renderSequence(sequence);
+                });
 
                 return this;
             },
@@ -217,9 +246,97 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                 "use strict";
                 this.$('#timescale, #layerInfoContainer').empty();
                 this.$('#layerContainer .layer').remove();
+            },
+
+            buttonClickHandler : function (e) {
+                "use strict";
+
+                var $target = $(e.target),
+                    id = $target.parent().attr("data-id"),
+                    cmd = $target.attr("data-cmd"),
+                    sequences = this.model.get('sequences'),
+                    sequence = sequences.get(id);
+
+
+                switch (cmd) {
+
+
+                    case 'up' :
+                        break;
+
+                    case 'down' :
+                        break;
+
+                    case 'reset' :
+                        sequences.remove(sequence);
+                        break;
+
+                    case 'remove' :
+                        sequences.remove(sequence);
+                        break;
+
+
+                }
+
+
+            },
+
+            changePlayheadPosition : function (frame) {
+                "use strict";
+
+                frame = frame / Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0;
+
+                if (frame >= 0 && frame <= this.model.getTotalFrames()) {
+                    this.model.set('playhead', frame);
+                }
+            },
+
+            togglePlayPause : function () {
+                "use strict";
+                this.isPlaying ? this.removePlayheadListener() : this.addPlayheadListener();
+                this.isPlaying = !this.isPlaying;
+            },
+
+
+            addPlayheadListener : function () {
+                "use strict";
+                this.model.on('change:playhead', this.playheadChangeHandler);
+            },
+
+            removePlayheadListener : function () {
+                "use strict";
+                this.model.off('change:playhead', this.playheadChangeHandler);
+            },
+
+            playheadChangeHandler : function (e, xPos) {
+                "use strict";
+                var $layerInfoContainer = $('#layerInfoContainer'),
+                    $layerContainer = $('#layerContainer'),
+                    viewportWidth = this.$el.width() - $layerInfoContainer.width() - Config.GUI_TIMELINE_AUTOSCROLL_PADDING;
+
+                //viewportWidth must be divisible by frameWidth
+                while (viewportWidth % Config.GUI_TIMELINE_PIXEL_PER_FRAME > 0) {
+                    viewportWidth--;
+                }
+
+                xPos *= Config.GUI_TIMELINE_PIXEL_PER_FRAME;
+
+                //autoscroll the timeline if playhead is moving
+                if (xPos % (viewportWidth) === 0) {
+                    $layerContainer.scrollTo('#picker');
+                }
+
+                $('#picker').css('left', xPos);
+
+            },
+
+            keydownHandler : function (e) {
+                "use strict";
+
             }
 
         });
 
 
-    });
+    })
+;

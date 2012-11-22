@@ -20,7 +20,7 @@ define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', '
 
             events : {
                 'dblclick div.composition'  : 'compositionSelectHandler',
-                'draginit div.composition' : 'compositionDragStartHandler',
+                'draginit div.composition'  : 'compositionDragStartHandler',
 
                 //mobile
                 'doubletap div.composition' : 'compositionSelectHandler'
@@ -77,9 +77,14 @@ define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', '
                 }, this);
 
                 return this.$el.html();
+            },
+
+            highlight : function (id) {
+                "use strict";
+                $('.composition').removeClass('active');
+                $('#' + id).addClass('active');
             }
-        })
-            ;
+        });
 
 
     })

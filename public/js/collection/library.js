@@ -8,7 +8,12 @@ define(["backbone", "model/asset"],
             url   : 'library',
 
             initialize : function () {
-                console.log('LIBRARY.JS::INIT');
+                "use strict";
+
+                //automatically delete element if it gets removed
+                this.on('remove', function (element) {
+                    element.destroy();
+                });
             }
 
         });

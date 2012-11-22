@@ -1,6 +1,6 @@
-define(['backbone', 'backbone-rel', 'model/sequence', 'model/file', 'collection/sequences', 'collection/files'],
+define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file', 'collection/sequences', 'collection/files'],
 
-    function (Backbone, BackboneRelational, SequenceModel, FileModel, SequenceCollection, FileCollection) {
+    function (_, Backbone, BackboneRelational, SequenceModel, FileModel, SequenceCollection, FileCollection) {
 
         return Backbone.RelationalModel.extend({
 
@@ -11,6 +11,7 @@ define(['backbone', 'backbone-rel', 'model/sequence', 'model/file', 'collection/
                     relatedModel    : SequenceModel,
                     collectionType  : SequenceCollection,
                     createModels    : true,
+                    includeInJSON   : 'id',
                     reverseRelation : {
                         key           : '_id',
                         includeInJSON : 'compositionId'
@@ -22,6 +23,7 @@ define(['backbone', 'backbone-rel', 'model/sequence', 'model/file', 'collection/
                     relatedModel    : FileModel,
                     collectionType  : FileCollection,
                     createModels    : true,
+                    includeInJSON   : 'id',
                     reverseRelation : {
                         key           : '_id',
                         includeInJSON : 'compositionId'
@@ -38,9 +40,9 @@ define(['backbone', 'backbone-rel', 'model/sequence', 'model/file', 'collection/
                 width     : 720,
                 height    : 576,
                 ratio     : 1.25,
-                playHead  : 0,
+                playhead  : 0,
                 fps       : 25,
-                duration  : 130, //secondsTotal
+                duration  : 330, //secondsTotal
                 durationH : 0,
                 durationM : 5,
                 durationS : 30,
@@ -51,18 +53,30 @@ define(['backbone', 'backbone-rel', 'model/sequence', 'model/file', 'collection/
 
             initialize : function () {
                 "use strict";
+
+                _.bindAll(this, 'sequenceAddedHandler');
+
                 this.on('change:durationH', this.calculateDuration);
                 this.on('change:durationM', this.calculateDuration);
                 this.on('change:durationS', this.calculateDuration);
                 this.on('change:width', this.calculateRatio);
                 this.on('change:height', this.calculateRatio);
 
-                this.on('sequences:add', this.sequenceAddedHandler);
+                this.get('sequences').on('add', this.sequenceAddedHandler);
+
+                if (!this.isNew()) {
+                    this.get('sequences').fetch({'data' : { 'id' : this.id }});
+                    this.initServerUpdateListener();
+                }
+
+                //force this once
+                this.calculateDuration();
             },
 
             sequenceAddedHandler : function (sequence) {
                 "use strict";
-                console.log('ADDED');
+                sequence.set('index', this.getLowestIndex());
+                this.save();
             },
 
             initServerUpdateListener : function () {
@@ -82,6 +96,12 @@ define(['backbone', 'backbone-rel', 'model/sequence', 'model/file', 'collection/
             getTotalFrames : function () {
                 "use strict";
                 return this.get('fps') * this.get('duration');
+            },
+
+            getLowestIndex : function () {
+                "use strict";
+                //TODO iterate over all get new index
+                return 4;
             },
 
             validate : function () {

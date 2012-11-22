@@ -7,11 +7,18 @@
 @import 'elements/timeline';
 @import 'elements/noscript';
 @import 'elements/_dialogues';
+@import "compass";
+@import "compass/css3/user-interface";
 
 /* GLOBALS */
 
 * {
   @include box-sizing('border-box');
+  @include user-select(none);
+
+  //webkit mobile specific
+  -webkit-focus-ring-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
   font-family: 'Gudea', sans-serif;
   margin: 0;
@@ -28,5 +35,10 @@ body {
 [contenteditable]:focus {
   @include user-select(text);
   outline: 1px dotted $lineColor;
+}
+
+input[type=text],
+input[type=number] {
+  @include user-select(text);
 }
 

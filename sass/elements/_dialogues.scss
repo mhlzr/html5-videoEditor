@@ -3,76 +3,151 @@
 #dialogue {
   display: none;
 
-  div {
+  h1 {
+    font-size: 1.3em;
+    float: left;
+  }
 
-    h1 {
-      font-size: 1.3em;
-    }
+  p {
+    clear: both;
+    padding: 10px 1px;
+    margin-bottom: 20px;
+  }
 
-    p {
-      padding: 10px 1px;
-      margin-bottom: 20px;
-    }
+  label {
+    float: left;
+  }
 
-    label {
-      float: left;
-    }
+  input, select {
 
-    input, select {
-      float: right;
-      margin: 3px 0px;
-    }
+  }
 
-    select {
-      width: 188px;
-    }
+  select {
+    width: 188px;
+  }
 
-    input[type=number] {
-      width: 80px;
-      text-align: center;
-    }
+  input[type=number] {
+    width: 80px;
+    text-align: center;
+  }
 
-    fieldset {
-      clear: both;
-      width: 100%;
-      padding: 10px;
+  fieldset {
+    clear: both;
+    width: 100%;
+    padding: 10px;
 
-      legend {
-        font-weight: bold;
+    legend {
+      font-weight: bold;
+
+      label {
+        float: none;
       }
-    }
-
-    .clear {
-      clear: both;
-    }
-
-    button {
-      margin-top: 15px;
-    }
-
-    button.okay {
-      float: right;
-      border: 1px solid red;
-      @include sassy-button("simple", 3px, 16px, $acceptColor);
-    }
-
-    button.cancel {
-      float: right;
-      border: 1px solid green;
-      @include sassy-button("simple", 3px, 16px, $cancelColor);
     }
   }
 
-  #createComposition {
+  .clear {
+    clear: both;
+  }
 
-    #name {
-      width: 200px;
-    }
-    #ratioLabel {
-      float: left;
-    }
-    #ratio {
-      float: right;
+  button.okay,
+  button.cancel {
+    margin-top: 15px;
+  }
+
+  button.okay {
+    float: right;
+    border: 1px solid red;
+    @include sassy-button("simple", 3px, 16px, $acceptColor);
+  }
+
+  button.cancel {
+    float: right;
+    border: 1px solid green;
+    @include sassy-button("simple", 3px, 16px, $cancelColor);
+  }
+
+}
+
+#createComposition {
+
+  input, select {
+    float: right;
+    margin: 3px 0px;
+  }
+
+  #name {
+    width: 200px;
+  }
+  #ratioLabel {
+    float: left;
+  }
+  #ratio {
+    float: right;
+  }
+}
+
+#projectBrowser {
+
+  input[type=text] {
+    float: right;
+    width: 250px;
+  }
+
+  ul {
+    list-style: none;
+    overflow-y: auto;
+    max-height: 200px;
+
+    li {
+      height: 36px;
+      width: 100%;
+      border: 1px solid $lineColor;
+      border-bottom: none;
+      line-height: 36px;
+      background-color: $activeColor;
+      line-height: 36px;
+
+      &:last-child {
+        border-bottom: 1px solid $lineColor;
+      }
+
+      &.selected {
+        background-color: $selectedColor;
+      }
+
+      input[type=radio] {
+        width: 30px;
+        height: 100%;
+        float: left;
+        margin-left: 10px;
+      }
+
+      label {
+        float: left;
+        width: 350px;
+
+        span.title {
+          float: left;
+          width: 240px;
+          overflow: hidden;
+          display: block;
+          word-wrap: break-word;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        span.date {
+          float: right;
+          margin-top: 13px;
+          line-height: 0.85em;
+          font-size: 0.85em;
+          color: #837F7F;
+        }
+      }
+      button {
+        float: right;
+        margin-right: 5px;
+      }
     }
   }
 }
@@ -120,3 +195,60 @@
 }
 
 */
+
+/*	--------------------------------------------------
+	Reveal Modals
+	-------------------------------------------------- */
+
+.reveal-modal-bg {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background: #000;
+  background: rgba(0, 0, 0, .8);
+  z-index: 100;
+  display: none;
+  top: 0;
+  left: 0;
+}
+
+.reveal-modal {
+  background-color: $bodyBackgroundColor;
+  visibility: hidden;
+  top: 100px;
+  left: 50%;
+  margin-left: -270px;
+  width: 540px;
+  position: absolute;
+  z-index: 101;
+  padding: 30px;
+  @include border-radius(5px);
+  @include box-shadow(0 0 10px rgba(0, 0, 0, .4));
+
+}
+
+.reveal-modal.small {
+  width: 200px;
+  margin-left: -140px;
+}
+
+.reveal-modal.medium {
+  width: 400px;
+  margin-left: -240px;
+}
+
+.reveal-modal.large {
+  width: 600px;
+  margin-left: -340px;
+}
+
+.reveal-modal.xlarge {
+  width: 800px;
+  margin-left: -440px;
+}
+
+.reveal-modal .close-reveal-modal {
+  float: right;
+  cursor: pointer;
+}
+

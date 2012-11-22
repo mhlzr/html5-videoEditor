@@ -92,10 +92,13 @@ define(['backbone', 'underscore', 'jquery', 'hbs!templates/compositionCreate'],
 
                 //save the composition
                 var model = this.model;
-                model.save(null, {'success' : function () {
+
+                model.save(null, {'success' : function (e) {
                     model.initServerUpdateListener();
                     app.project.get('compositions').add(model);
+                    model.save();
                 }});
+
 
                 this.destroy();
             },

@@ -15,7 +15,6 @@
 
     <link href='http://fonts.googleapis.com/css?family=Gudea:400,700' rel='stylesheet' type='text/css'>
 
-    <link href="css/reveal.css" rel="stylesheet" type="text/css" media="all"/>
     <link href="css/common.css" rel="stylesheet" type="text/css" media="all"/>
 
 
@@ -28,14 +27,9 @@
 
 <div id="wrapper">
     <header>
+        <button class="open" id="projectBrowser" title="Project-Browser"></button>
         <div id="projectInfo"></div>
         <div id="projectControl">
-            <a href="javascript:void(0)" id="saveBtn">Save Project</a>
-            <a href="javascript:void(0)" id="fetchBtn">Fetch Project</a>
-            <a href="javascript:void(0)" id="deleteBtn">Delete Project</a>
-            <a href="javascript:void(0)" id="dumpProject">Dump Project</a>
-            <a href="javascript:void(0)" id="render">Render</a>
-            <a href="javascript:void(0)" id="sync">Sync</a>
             <button id="settings" class="settings" title="Settings"></button>
             <button id="share" class="share" title="Export"></button>
             <button id="toggleFullscreen" class="fullscreen" title="Toggle fullscreen" disabled></button>
@@ -65,7 +59,6 @@
                     <button id="addButton" class="add"></button>
                     <button id="removeButton" class="remove" disabled></button>
                     <button id="playButton" class="play"></button>
-                    <button id="cutButton" class="cut" disabled></button>
                 </div>
             </div>
         </div>
@@ -81,7 +74,8 @@
             <div id="stage"></div>
             <div id="stageCommands">
                 <div>
-                    <button id="playComposition" class="play"></button>
+                    <button id="togglePlayPauseComposition" class="play"></button>
+                    <button id="cutButton" class="cut" disabled></button>
                 </div>
             </div>
 

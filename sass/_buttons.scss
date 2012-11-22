@@ -17,10 +17,13 @@ button {
   opacity: 1;
   margin-left: 3px;
 
+  &:focus {
+    outline-color: transparent;
+    outline-style: none;
+  }
+
   &:hover {
     cursor: pointer;
-
-    //@include transition(opacity 2.0s ease-in-out);
   }
 
   &[disabled] {
@@ -32,6 +35,13 @@ button {
   }
 }
 
+button.open {
+  background-image: url("../img/icon_open.svg");
+}
+
+button.close{
+  background-image: url("../img/icon_close.svg");
+}
 
 button.settings {
   background: url('../img/icon_settings.svg');
@@ -54,41 +64,79 @@ button.play {
   background: url('../img/icon_play.svg');
 }
 
+button.pause {
+  background: url('../img/icon_pause.svg');
+}
+
 button.upload {
   background-image: url("../img/icon_upload.svg");
 }
 
-button.encode{
+button.encode {
   background-image: url("../img/icon_encode.svg");
 }
 
-button.download{
+button.download {
   background-image: url("../img/icon_download.svg");
 }
 
-button.left{
+button.left {
   background-image: url("../img/icon_left.svg");
 }
 
-button.right{
+button.right {
   background-image: url("../img/icon_right.svg");
 }
 
+button.up {
+  background-image: url("../img/icon_up.svg");
+}
+
+button.down {
+  background-image: url("../img/icon_down.svg");
+}
+
 //http://iconmonstr.com/fullscreen-5-icon/
-button.fullscreen{
+button.fullscreen {
   background-image: url("../img/icon_fullscreen.svg");
   margin-right: 5px;
 }
 
 //http://iconmonstr.com/undo-5-icon/
-button.undo{
+button.undo {
   background-image: url("../img/icon_undo.svg");
 }
 
 //http://thenounproject.com/noun/scissors/#icon-No5108
-button.cut{
+button.cut {
   background-image: url("../img/icon_cut.svg");
 }
+
+button.frameIn {
+  background-image: url("../img/icon_frame_in.svg");
+}
+
+button.frameOut {
+  background-image: url("../img/icon_frame_out.svg");
+}
+
+button.frameNext {
+  background-image: url("../img/icon_frame_next.svg");
+}
+
+button.framePrev {
+  background-image: url("../img/icon_frame_prev.svg");
+}
+
+button.frameForward {
+  background-image: url("../img/icon_frame_forward.svg");
+}
+
+button.frameRewind {
+  background-image: url("../img/icon_frame_rewind.svg");
+}
+
+
 
 
 

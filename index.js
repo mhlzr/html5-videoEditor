@@ -107,6 +107,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('library:read', assets.getLibraryByProjectId);
     socket.on('compositions:read', compositions.getCompositionsByProjectId);
     socket.on('files:read', files.getFilesByAssetId);
+    socket.on('sequences:read', sequences.getSequencesByCompositionId);
 
 
     /*

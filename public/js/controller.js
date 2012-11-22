@@ -4,8 +4,8 @@
  * Time: 17:10
  */
 define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'model/file', 'model/sequence',
-    'model/composition', 'view/compositionView', 'view/timelineView', 'view/compositionCreateView', 'qrcode'],
-    function ($, _, Config, Device, Info, AssetModel, FileModel, SequenceModel, CompositionModel, CompositionView, TimelineView, CompositionCreateView) {
+    'model/composition', 'view/projectBrowseView', 'view/compositionView', 'view/timelineView', 'view/compositionCreateView', 'view/sequenceCutView', 'qrcode'],
+    function ($, _, Config, Device, Info, AssetModel, FileModel, SequenceModel, CompositionModel, ProjectBrowseView, CompositionView, TimelineView, CompositionCreateView, SequenceCutView) {
 
         return  {
 
@@ -113,23 +113,30 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
 
             stageDropHandler : function (e, drop, drag) {
 
+                //e.g. dragging a sequence on the stage
+                if (!drag.data) return;
 
                 var id = drag.data.id,
                     type = drag.data.type,
                     sequence;
 
-
                 //Asset Drop into Composition --> Create Sequence
                 if (app.currentComposition && type === 'asset') {
 
+                    var asset = app.project.get('library').get(id);
                     //generate new sequence and add it to current composition
                     sequence = new SequenceModel({
-                        assetId  : id,
-                        name     : app.project.get('library').get(id).get('name'),
-                        type     : app.project.get('library').get(id).get('type'),
-                        duration : app.project.get('library').get(id).get('duration'),
-                        position : Math.random() * 300 | 0 //debugging
-                    });
+                            assetId       : id,
+                            compositionId : app.currentComposition.id,
+                            name          : asset.get('name'),
+                            type          : asset.get('type'),
+                            duration      : asset.get('duration'),
+                            width         : asset.get('width'),
+                            height        : asset.get('height'),
+                            position      : 0
+                        }
+                    )
+                    ;
 
                     sequence.save(null, {success : function () {
                         app.currentComposition.get('sequences').add(sequence);
@@ -164,8 +171,11 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
 
             },
 
-            showDialogue : function (dialogueViewName) {
+            showDialogue : function (dialogueViewName, cancellable) {
                 "use strict";
+
+                //default
+                var cancelOption = cancellable === undefined ? true : cancellable;
 
                 //create dialogue-DIV and append it
                 $('body').append('<div id="dialogue" class="reveal-modal"></div>');
@@ -181,10 +191,28 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                             projectId : app.project.id
                         });
                         break;
+
+                    case 'sequenceCut' :
+                        self.currentDialogue = new SequenceCutView({
+                            el          : $dialogue,
+                            model       : app.currentSequence.model,
+                            cuttingMode : true
+                        });
+                        break;
+
+                    case 'projectBrowser' :
+                        self.currentDialogue = new ProjectBrowseView({
+                            el    : $dialogue,
+                            model : app.project
+                        });
+                        self.currentDialogue.cancellable = cancelOption;
                 }
 
-                self.currentDialogue.render();
-                Info.reveal($dialogue);
+                if (self.currentDialogue) {
+                    self.currentDialogue.render();
+                    Info.reveal($dialogue, {closeonbackgroundclick : cancelOption});
+                }
+
 
             },
 
@@ -201,6 +229,7 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
             openComposition : function () {
                 "use strict";
 
+
                 app.views.composition = new CompositionView({
                     model : app.currentComposition,
                     el    : $('#stage')
@@ -211,9 +240,8 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                     el    : $('#timeline')
                 });
 
-                app.views.timeline.render();
-                app.views.composition.render();
-
+                //highlight current composition in the navigator-View
+                app.views.compositions.highlight(app.currentComposition.id);
 
             },
 
@@ -282,45 +310,17 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
 
             buttonHandler : function (e) {
 
-                var project = app.project;
-
                 switch (e.target.id) {
-
-                    case 'dumpProject' :
-                        console.log('P', project.toJSON(), 'L', project.get('library').toJSON(), 'C', project.get('compositions').toJSON());
+                    case 'projectBrowser' :
+                        self.showDialogue('projectBrowser', true);
                         break;
-                    case 'saveLocalBtn':
-
-                        $.jStorage.set(project.id, {
-                            name : project.get('name'),
-                            date : project.get('date')
-                        });
+                    case 'togglePlayPauseComposition' :
+                        if (app.views.composition) {
+                            app.views.composition.togglePlayPause();
+                            app.views.timeline.togglePlayPause();
+                            $(this).toggleClass('pause play');
+                        }
                         break;
-
-                    case 'fetchBtn':
-                        project.fetch();
-                        break;
-
-                    case 'render' :
-                        app.views.renderAll();
-                        break;
-                    case 'clearLocalBtn':
-                        $.jStorage.flush();
-                        break;
-                    case 'saveBtn':
-                        project.save({}, {'success' : function onSuccess() {
-                            app.router.navigate('' + app.project.id, {trigger : true, replace : true});
-                        }});
-
-                        break;
-                    case 'deleteBtn':
-                        project.destroy();
-                        break;
-                    case 'addSequenceToCompBtn':
-                        console.log('ADDING SEQUENCE');
-                        project.get('compositions').add(new SequenceModel());
-                        break;
-
                     case 'share' :
                         Info.reveal($('#exportDialogue'));
                         $('#qrcode').empty().qrcode(window.location.href);

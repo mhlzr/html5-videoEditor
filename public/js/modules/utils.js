@@ -42,6 +42,41 @@ define(function () {
             }
 
             return timecode.join(':');
+        },
+
+
+        getReadableDate : function (dateString) {
+            "use strict";
+            var date,
+                now = new Date(),
+                cleanDateString = [],
+                cleanTimeString = [];
+
+            try {
+                date = new Date(dateString);
+            }
+            catch (e) {
+                return "";
+            }
+
+            //DATE
+
+            //today
+            if (new Date((now - date)).getHours() < 24) {
+                cleanDateString.push('Today');
+            }
+            //not today! :)
+            else {
+                cleanDateString.push(date.getDate() < 10 ? '0' + date.getDate() : date.getDate());
+                cleanDateString.push(date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth());
+                cleanDateString.push(date.getFullYear());
+            }
+
+            //TIME
+            cleanTimeString.push(date.getHours() < 10 ? '0' + date.getHours() : date.getHours());
+            cleanTimeString.push(date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
+
+            return cleanDateString.join('/') + ' ' + cleanTimeString.join(':');
         }
     }
 })

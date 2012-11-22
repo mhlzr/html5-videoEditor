@@ -1,5 +1,7 @@
-<div class="layerInfo">
+<div class="layerInfo" data-id="{{this.id}}">
     <span contenteditable>{{this.name}}</span>
-    <button class="remove" title="Remove sequence"></button>
-    <button class="undo" title="Reset sequence"></button>
+    <button class="remove" data-cmd="remove" title="Remove sequence"></button>
+    <button class="undo" data-cmd="reset" title="Reset sequence"></button>
+    <button class="down" data-cmd="down" title="Move down"></button>
+    <button class="up" data-cmd="up" title="Move up"></button>
 </div>

@@ -1,13 +1,25 @@
 var fs = require('fs'),
     wrench = require('wrench'),
-    util = require('util'),
     uuid = require('node-uuid'),
     mongo = require('mongojs'),
-    db = mongo.connect('/videoProjects', ['projects', 'files', 'assets', 'compositions', 'sequences']);
+    db = mongo.connect('/videoProjects', ['projects']),
+    assets = null,
+    compositions = null;
 
-var PROJECTS_PATH = __dirname + '/../public/projects/';
 
-function isProjectExistent(id, callback) {
+exports.init = function (assets, compositions, projectsPath, assetPath) {
+    "use strict";
+
+    this.assets = assets;
+    this.compositions = compositions;
+    this.projectsPath = projectsPath;
+    this.assetPath = assetPath;
+
+    return this;
+};
+
+
+exports.isProjectExistent = function (id, callback) {
     'use strict';
 
     if (!id || id.length < 24) {
@@ -18,21 +30,27 @@ function isProjectExistent(id, callback) {
     db.projects.findOne({_id : db.ObjectId(id)}, function onFound(err, docs) {
         callback(err === null);
     });
-}
+};
 
-function getProjectPathByProjectId(id, callback) {
+
+exports.getProjectPathByProjectId = function (id, callback) {
     'use strict';
 
     db.projects.findOne({_id : db.ObjectId(id)}, function onFound(err, docs) {
         if (err) {
             throw err;
         }
+
+        if (!docs) {
+            callback(null);
+            return;
+        }
         callback(docs.assetFolder);
     });
 
-}
+};
 
-function create(data, callback) {
+exports.create = function (data, callback) {
     'use strict';
 
     //UUID for asset-folder
@@ -42,8 +60,8 @@ function create(data, callback) {
 
             console.log('PROJECTS.JS::CREATED', docs._id);
 
-            createDir(PROJECTS_PATH + data.assetFolder, function onComplete(err) {
-                createDir(PROJECTS_PATH + data.assetFolder + '/assets', function onComplete(err) {
+            createDir(exports.projectsPath + data.assetFolder, function onComplete(err) {
+                createDir(exports.projectsPath + data.assetFolder + exports.assetPath, function onComplete(err) {
                     callback(err, {
                         _id         : docs._id,
                         assetFolder : docs.assetFolder
@@ -52,19 +70,15 @@ function create(data, callback) {
             });
         }
     );
-}
+};
 
-function read(data, callback) {
+exports.read = function (data, callback) {
     'use strict';
-    isProjectExistent(data._id, function (exists) {
+    exports.isProjectExistent(data._id, function (exists) {
             if (exists) {
                 db.projects.findOne({_id : db.ObjectId(data._id)}, function onFound(err, docs) {
                     if (docs) {
                         console.log('PROJECTS.JS::FOUND', docs._id);
-                        //didn't work this way
-                        /* db.assets.find({projectId:data._id}, function onFound(err, assets){
-                         docs.library = assets;
-                         });*/
                     }
                     callback(err, docs);
                 });
@@ -73,12 +87,10 @@ function read(data, callback) {
                 callback(new Error('Does not exist'), null);
             }
         }
-    )
-    ;
+    );
+};
 
-}
-
-function update(data, callback) {
+exports.update = function (data, callback) {
     'use strict';
     db.projects.update({_id : db.ObjectId(data._id)}, {
         $set : {
@@ -94,35 +106,45 @@ function update(data, callback) {
         callback(err, {});
     });
 
-}
+};
 
-function remove(data, callback) {
+exports.remove = function (data, callback) {
     'use strict';
 
     var id = db.ObjectId(data._id),
         assetFolder = null;
 
-    //to make sure nothing else gets deleted
-    db.projects.findOne({_id : id}, {assetFolder : 1}, function onFound(err, docs) {
+    //find by id
+    db.projects.findOne({_id : id}, function onFound(err, docs) {
+
+        if (!docs) {
+            callback(err, docs);
+            return;
+        }
+
         assetFolder = docs.assetFolder;
-        console.log(assetFolder);
-        db.projects.remove({_id : id}, function deleteCallback(err, docs) {
 
-            removeDirSync(PROJECTS_PATH + assetFolder);
+        //delete
+        db.projects.remove({_id : id}, function onRemoved(err, docs) {
+
+            //delete all files & folders that belong to the project
+            if (assetFolder) {
+                try {
+                    wrench.rmdirSyncRecursive(exports.projectsPath + assetFolder);
+                } catch (e) {
+                    callback(err, docs);
+                }
+            }
+
             console.log('PROJECTS.JS::REMOVED', id);
-
             callback(err, docs);
 
         });
 
     });
-}
 
+};
 
-function removeDirSync(path) {
-    'use strict';
-    wrench.rmdirSyncRecursive(path);
-}
 
 function createDir(path, callback) {
     'use strict';
@@ -134,25 +156,4 @@ function createDir(path, callback) {
     });
 }
 
-function clean(callback) {
-    'use strict';
-    console.log('PROJECTS.JS::PROJECTS CLEANED');
-    db.projects.remove({});
-    db.files.remove({});
-    db.assets.remove({});
-    db.sequences.remove({});
-    db.compositions.remove({});
-    wrench.rmdirSyncRecursive(PROJECTS_PATH);
-    createDir(PROJECTS_PATH, callback);
-}
 
-
-//EXPORTS
-exports.create = create;
-exports.read = read;
-exports.update = update;
-exports.remove = remove;
-
-exports.isProjectExistent = isProjectExistent;
-exports.getProjectPathByProjectId = getProjectPathByProjectId;
-exports.clean = clean;

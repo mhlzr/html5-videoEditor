@@ -1,9 +1,18 @@
 var uuid = require('node-uuid'),
     mongo = require('mongojs'),
-    db = mongo.connect('/videoProjects', ['compositions']);
+    db = mongo.connect('/videoProjects', ['compositions']),
+    files = null,
+    sequences = null;
+
+exports.init = function (files, sequences) {
+    "use strict";
+    this.files = files;
+    this.sequences = sequences;
+    return this;
+};
 
 
-function create(data, callback) {
+exports.create = function (data, callback) {
     'use strict';
 
     data.publicId = uuid.v4().replace(/-/g, '');
@@ -13,10 +22,10 @@ function create(data, callback) {
         if (err) throw err;
         callback(err, docs);
     });
-}
+};
 
 
-function read(data, callback) {
+exports.read = function (data, callback) {
     'use strict';
     db.compositions.findOne({_id : db.ObjectId(data._id)}, function onFound(err, docs) {
         console.log('COMPOSITIONS.JS:: FOUND', docs._id);
@@ -24,10 +33,10 @@ function read(data, callback) {
         callback(err, docs);
     });
 
-}
+};
 
 
-function update(data, callback) {
+exports.update = function (data, callback) {
     'use strict';
 
     var id = data._id;
@@ -42,34 +51,28 @@ function update(data, callback) {
             callback(err, {});
         }
     );
-}
+};
 
 
-function remove(data, callback) {
+exports.remove = function (data, callback) {
     'use strict';
 
     var id = db.ObjectId(data._id);
 
-    db.compositions.remove({_id : db.ObjectId(id)},
+    db.compositions.remove({_id : id},
         function onRemoved(err, docs) {
             console.log('COMPOSITIONS.JS::DELETED', id);
             if (err) throw err;
             callback(err, docs);
         }
     );
-}
+};
 
-function getCompositionsByProjectId(data, callback) {
+
+exports.getCompositionsByProjectId = function (data, callback) {
     db.compositions.find({projectId : data.id}, function onFound(err, docs) {
         console.log('PROJECTS.JS::COMPOSITIONS SERVED WITH', docs.length, 'COMPS.');
         if (err) throw err;
         callback(err, docs);
     });
-}
-
-exports.create = create;
-exports.read = read;
-exports.update = update;
-exports.remove = remove;
-
-exports.getCompositionsByProjectId = getCompositionsByProjectId;
+};

@@ -10,10 +10,18 @@ define(["backbone", "model/composition"],
             initialize : function () {
                 "use strict";
 
-                //automatically delete element if it gets removed
-                this.on('remove', function (element) {
-                    element.destroy();
+                this.on('remove', function (composition) {
+                    composition.destroy();
                 });
+            },
+
+
+            destroy : function () {
+                "use strict";
+
+                this.each(function (composition) {
+                    composition.destroy();
+                })
             }
 
         });

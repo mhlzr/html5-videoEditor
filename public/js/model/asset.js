@@ -48,8 +48,6 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
 
                 initialize : function () {
 
-                    console.log('ASSET.JS::INIT');
-
                     _.bindAll(this, 'fileAddHandler', 'fileChangeHandler',
                         'onAnalyzed', 'sendFileToUploader',
                         'analyze', 'metaDataFallback', 'hasCompatibleMedia', 'markAsReady',
@@ -60,6 +58,8 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
 
                     this.get('files').on('add', this.fileAddHandler);
                     this.get('files').on('change', this.fileChangeHandler);
+
+                    this.on('destroy', this.destroyHandler);
 
                     if (!this.isNew()) {
                         this.get('files').fetch({'data' : { 'id' : this.id }});
@@ -82,7 +82,6 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                 },
 
                 fileAddHandler : function (file) {
-                    console.log('ASSET.JS::FILE ADDED');
                     var originalFile = this.getOriginalFile().get('localFile');
                     this.set('type', this.getAssetTypeByFile(originalFile), {silent : true});
                     this.set('name', this.getCleanFileName(originalFile.name), {silent : true});
@@ -346,6 +345,14 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                     else if (mime) return mime;
                     else return this.getAssetTypeByExtension(ext);
 
+                },
+
+                destroyHandler : function () {
+                    "use strict";
+
+                    this.get('files').each(function (file) {
+                        file.destroy();
+                    });
                 }
 
             }

@@ -2,14 +2,9 @@ var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
     io = require('socket.io').listen(3000),
-    util = require('util'),
     events = require('events'),
     fs = require('fs'),
-    projects = require('./models/projects'),
-    assets = require('./models/assets'),
-    files = require('./models/files'),
-    compositions = require('./models/compositions'),
-    sequences = require('./models/sequences'),
+    manager = require('./modules/manager').createManager(),
     encoder = require('./modules/encoder'),
     metadata = require('./modules/metadata'),
     upload = require('./modules/upload.socket');
@@ -23,14 +18,14 @@ app.configure(function () {
 });
 
 app.get(/^\/([0-9a-fA-F]{24}$)/, function (req, res) {
-    projects.isProjectExistent(req.params[0], function onResponse(exists) {
+    manager.projects.isProjectExistent(req.params[0], function onResponse(exists) {
         if (exists) res.redirect('/#' + req.params[0]);
         else res.redirect('/');
     });
 });
 
 app.get('/reset', function onReset(req, res) {
-    projects.clean(function onComplete(err) {
+    manager.clean(function onComplete(err) {
         res.writeHead(200);
         res.end("Done!");
     });
@@ -61,58 +56,67 @@ io.set('transports', [                     // enable all transports (optional if
 
 io.sockets.on('connection', function (socket) {
 
+
     /*
      PROJECT CRUD
      */
-    socket.on('project:create', projects.create);
-    socket.on('project:read', projects.read);
-    socket.on('project:update', projects.update);
-    socket.on('project:delete', projects.remove);
+    socket.on('project:create', manager.projects.create);
+    socket.on('project:read', manager.projects.read);
+    socket.on('project:update', manager.projects.update);
+    socket.on('project:delete', manager.projects.remove);
 
     /*
      ASSET CRUD
      */
-    socket.on('asset:create', assets.create);
-    socket.on('asset:read', assets.read);
-    socket.on('asset:update', assets.update);
-    socket.on('asset:delete', assets.remove);
+    socket.on('asset:create', manager.assets.create);
+    socket.on('asset:read', manager.assets.read);
+    socket.on('asset:update', manager.assets.update);
+    socket.on('asset:delete', manager.assets.remove);
 
     /*
      File CRUD
      */
-    socket.on('file:create', files.create);
-    socket.on('file:read', files.read);
-    socket.on('file:update', files.update);
-    socket.on('file:delete', files.remove);
+    socket.on('file:create', manager.files.create);
+    socket.on('file:read', manager.files.read);
+    socket.on('file:update', manager.files.update);
+    socket.on('file:delete', function onRequest(data, callback) {
+        "use strict";
+        //the file gets unlinked first
+        manager.removePhysicalFile(data, function onUnlinked() {
+            //even if something fails, we still remove if from the db
+            manager.files.remove(data, callback);
+        });
+    });
 
     /*
      COMPOSITION CRUD
      */
-    socket.on('composition:create', compositions.create);
-    socket.on('composition:read', compositions.read);
-    socket.on('composition:update', compositions.update);
-    socket.on('composition:delete', compositions.remove);
+    socket.on('composition:create', manager.compositions.create);
+    socket.on('composition:read', manager.compositions.read);
+    socket.on('composition:update', manager.compositions.update);
+    socket.on('composition:delete', manager.compositions.remove);
 
     /*
      SEQUENCE CRUD
      */
-    socket.on('sequence:create', sequences.create);
-    socket.on('sequence:read', sequences.read);
-    socket.on('sequence:update', sequences.update);
-    socket.on('sequence:delete', sequences.remove);
+    socket.on('sequence:create', manager.sequences.create);
+    socket.on('sequence:read', manager.sequences.read);
+    socket.on('sequence:update', manager.sequences.update);
+    socket.on('sequence:delete', manager.sequences.remove);
 
     /*
      COLLECTIONS FETCH
      */
-    socket.on('library:read', assets.getLibraryByProjectId);
-    socket.on('compositions:read', compositions.getCompositionsByProjectId);
-    socket.on('files:read', files.getFilesByAssetId);
-    socket.on('sequences:read', sequences.getSequencesByCompositionId);
+    socket.on('library:read', manager.assets.getLibraryByProjectId);
+    socket.on('compositions:read', manager.compositions.getCompositionsByProjectId);
+    socket.on('files:read', manager.files.getFilesByAssetId);
+    socket.on('sequences:read', manager.sequences.getSequencesByCompositionId);
 
 
     /*
      UPLOADER
      */
+
     socket.on('upload', function (data) {
 
         if (!data.projectId || !data.id) {
@@ -122,10 +126,10 @@ io.sockets.on('connection', function (socket) {
         //will be removed during update-process
         var fileId = data.id;
 
-        projects.getProjectPathByProjectId(data.projectId, function onPathFound(path) {
-            upload.acceptData(data, path, function onDataAccepted(res) {
-                files.update(res, function onUpdated(err) {
-
+        manager.projects.getProjectPathByProjectId(data.projectId, function onPathFound(path) {
+            if (!path) throw new Error('No assetFolder existent for Project');
+            manager.acceptFilePartial(data, path, function onDataAccepted(res) {
+                manager.files.update(res, function onUpdated(err) {
                     if (err) throw err;
                     res.id = fileId;
 
@@ -136,7 +140,7 @@ io.sockets.on('connection', function (socket) {
                     if (res.isComplete) {
                         var filePath = (__dirname + '/public/projects/' + path + '/assets/' + data.fileName);
 
-                        assets.getAssetByFileId(fileId, function onReceived(asset) {
+                        manager.assets.getAssetByFileId(fileId, function onReceived(asset) {
                             metadata.getMetaData(asset.type, filePath, function onMetaDataRead(info) {
                                 socket.emit('asset/' + asset.id + ':update', info);
                             });
@@ -150,15 +154,16 @@ io.sockets.on('connection', function (socket) {
     /*
      TRANSCODER
      */
+
     socket.on('transcode', function (data) {
 
         if (!data.projectId || !data.formats || !data.id) {
             throw new Error('Missing IDs', data);
         }
 
-        projects.getProjectPathByProjectId(data.projectId, function onPathFound(path) {
-            data.path = 'public/projects/' + path + '/assets/';
-
+        manager.projects.getProjectPathByProjectId(data.projectId, function onPathFound(projectPath) {
+            if (!projectPath) throw new Error('No assetFolder existent for Project');
+            data.path = manager.getAbsoluteFilePath(projectPath);
             data.formats.forEach(function (format) {
                 encoder.addTranscodingJob(data, format, function onTranscodingProgress(progress) {
                     console.log(progress);

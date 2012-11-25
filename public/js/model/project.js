@@ -1,6 +1,6 @@
-define(['backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/composition', 'collection/compositions'],
+define(['underscore', 'backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/composition', 'collection/compositions'],
 
-    function (Backbone, BackboneRelational, AssetModel, LibraryCollection, CompositionModel, CompositionCollection) {
+    function (_, Backbone, BackboneRelational, AssetModel, LibraryCollection, CompositionModel, CompositionCollection) {
 
         return Backbone.RelationalModel.extend({
 
@@ -48,17 +48,30 @@ define(['backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/
 
             initialize : function () {
                 "use strict";
+
+                _.bindAll(this, 'changeHandler', 'destroyHandler');
+
+                this.get('library').on('add', this.changeHandler);
+                this.get('library').on('remove', this.changeHandler);
+                this.get('compositions').on('add', this.changeHandler);
+                this.get('compositions').on('remove', this.changeHandler);
+
                 this.on('change:title', this.changeHandler);
+
+                this.on('destroy', this.destroyHandler);
             },
 
             changeHandler : function () {
                 "use strict";
+                if (this.isNew()) return;
                 this.save();
+            },
+
+            destroyHandler : function () {
+                "use strict";
+                this.get('library').destroy();
+                this.get('compositions').destroy();
             }
 
-
-
-        })
-            ;
-    })
-;
+        });
+    });

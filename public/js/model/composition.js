@@ -54,7 +54,7 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
             initialize : function () {
                 "use strict";
 
-                _.bindAll(this, 'sequenceAddedHandler');
+                _.bindAll(this, 'sequenceAddedHandler', 'destroyHandler');
 
                 this.on('change:durationH', this.calculateDuration);
                 this.on('change:durationM', this.calculateDuration);
@@ -64,8 +64,11 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
 
                 this.get('sequences').on('add', this.sequenceAddedHandler);
 
+                this.on('destroy', this.destroyHandler);
+
                 if (!this.isNew()) {
                     this.get('sequences').fetch({'data' : { 'id' : this.id }});
+                    this.get('files').fetch({'data' : { 'id' : this.id }});
                     this.initServerUpdateListener();
                 }
 
@@ -106,6 +109,27 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
 
             validate : function () {
                 //TODO
+
+            },
+
+            destroyHandler : function () {
+                "use strict";
+                var self = this;
+
+                //do a fetch for all the collections, to be sure, that they are all removed
+                self.get('sequences').fetch({'data' : { 'id' : self.id }, 'success' : function () {
+                    self.get('sequences').each(function (sequence) {
+                        sequence.destroy();
+                    });
+
+                    self.get('files').fetch({'data' : { 'id' : self.id }, 'success' : function () {
+                        self.get('files').each(function (file) {
+                            file.destroy();
+                        });
+                    }});
+
+                }});
+
 
             }
 

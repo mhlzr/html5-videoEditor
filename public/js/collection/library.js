@@ -10,10 +10,18 @@ define(["backbone", "model/asset"],
             initialize : function () {
                 "use strict";
 
-                //automatically delete element if it gets removed
-                this.on('remove', function (element) {
-                    element.destroy();
+                this.on('remove', function (asset) {
+                    asset.destroy();
                 });
+
+            },
+
+            destroy : function () {
+                "use strict";
+
+                this.each(function (asset) {
+                    asset.destroy();
+                })
             }
 
         });

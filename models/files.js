@@ -1,7 +1,9 @@
 var mongo = require('mongojs'),
-    db = mongo.connect('/videoProjects', ['files']);
+    db = mongo.connect('/videoProjects', ['files']),
+    fs = require('fs');
 
-function create(data, callback) {
+
+exports.create = function (data, callback) {
     'use strict';
     //this shouldn't be stored on the server
     delete data.localUrl;
@@ -16,9 +18,9 @@ function create(data, callback) {
             callback(err, docs);
         }
     );
-}
+};
 
-function read(data, callback) {
+exports.read = function (data, callback) {
     'use strict';
     data._id = data.id;
     delete data.id;
@@ -29,9 +31,9 @@ function read(data, callback) {
         callback(err, docs);
     });
 
-}
+};
 
-function update(data, callback) {
+exports.update = function (data, callback) {
     'use strict';
     var id = data.id,
         dataUpdate = {};
@@ -49,13 +51,12 @@ function update(data, callback) {
 
     db.files.update({_id : db.ObjectId(id)}, {$set : dataUpdate}, {multi : false},
         function updateCallback(err) {
-            console.log('FILES.JS::UPDATED', id);
             if (err) throw err;
             callback(err, {});
         });
-}
+};
 
-function remove(data, callback) {
+exports.remove = function (data, callback) {
     'use strict';
 
     var id = db.ObjectId(data.id),
@@ -63,18 +64,18 @@ function remove(data, callback) {
 
     //to make sure nothing else gets deleted
     db.files.find({_id : id}, {files : 1}, function onFound(err, docs) {
-        //TODO delete all files and remove from db
-        //assetFolder = docs.assetFolder;
+
+        //not waiting for the callback, if the file can't be deleted,
+        //it should still get removed from database
         db.files.remove({_id : id}, function deleteCallback(err, docs) {
             console.log('FILES.JS::REMOVED', id);
             callback(err, docs);
-
         });
 
     });
-}
+};
 
-function getFilesByAssetId(data, callback) {
+exports.getFilesByAssetId = function (data, callback) {
     'use strict';
     db.files.find({assetId : data.id}, function onFound(err, docs) {
         console.log('PROJECTS.JS::FILES SERVED WITH', docs.length, 'FILES');
@@ -88,23 +89,4 @@ function getFilesByAssetId(data, callback) {
 
         callback(err, docs);
     });
-}
-
-
-function removeFile(filepath, callback) {
-    'use strict';
-    fs.exists(filepath, function onFileExists(exists) {
-        if (!exists) fs.unlink(filepath, function onFileUnlink(err) {
-            if (err) throw err;
-            callback();
-        });
-    });
-}
-
-
-exports.create = create;
-exports.read = read;
-exports.update = update;
-exports.remove = remove;
-
-exports.getFilesByAssetId = getFilesByAssetId;
+};

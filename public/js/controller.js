@@ -248,11 +248,11 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
             createFileAssetRelation : function (fileObject) {
 
                 //quite complicated but the only solution i found
-                var asset = new AssetModel({
-                    'projectId' : app.project.id
-                });
+                var asset = new AssetModel();
 
                 asset.save(null, {'success' : function () {
+
+                    app.project.get('library').add(asset);
 
                     asset.initServerUpdateListener();
 

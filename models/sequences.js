@@ -1,7 +1,7 @@
 var mongo = require('mongojs'),
     db = mongo.connect('/videoProjects', ['sequences']);
 
-function create(data, callback) {
+exports.create = function (data, callback) {
     'use strict';
 
     db.sequences.save(data, function saveCallback(err, docs) {
@@ -14,9 +14,9 @@ function create(data, callback) {
             callback(err, docs);
         }
     );
-}
+};
 
-function read(data, callback) {
+exports.read = function (data, callback) {
     'use strict';
 
     data._id = data.id;
@@ -30,9 +30,9 @@ function read(data, callback) {
         callback(err, docs);
     });
 
-}
+};
 
-function update(data, callback) {
+exports.update = function (data, callback) {
     'use strict';
 
     var id = data.id;
@@ -51,9 +51,9 @@ function update(data, callback) {
 
     );
 
-}
+};
 
-function remove(data, callback) {
+exports.remove = function (data, callback) {
     'use strict';
 
     var id = db.ObjectId(data.id);
@@ -70,9 +70,8 @@ function remove(data, callback) {
 }
 
 
-function getSequencesByCompositionId(data, callback) {
+exports.getSequencesByCompositionId = function (data, callback) {
     "use strict";
-    'use strict';
     db.sequences.find({compositionId : data.id}, function onFound(err, docs) {
         console.log('PROJECTS.JS::SEQUENCES SERVED WITH', docs.length, 'SEQUENCES');
         if (err) throw err;
@@ -85,12 +84,5 @@ function getSequencesByCompositionId(data, callback) {
 
         callback(err, docs);
     });
-}
+};
 
-
-exports.create = create;
-exports.read = read;
-exports.update = update;
-exports.remove = remove;
-
-exports.getSequencesByCompositionId = getSequencesByCompositionId;

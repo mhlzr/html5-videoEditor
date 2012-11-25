@@ -143,7 +143,9 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
                 var confirm = window.confirm('Are you sure you want to delete this project completely?'),
                     $target = $(e.target),
                     id = $target.attr('data-id'),
-                    $parent = $target.parent();
+                    model = this.model,
+                    $parent = $target.parent(),
+                    self = this;
 
                 if (!confirm) return;
 
@@ -156,18 +158,30 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
                 app.device.removeProjectFromLocalStorage(id);
 
                 //delete project on server-side
-                this.model.set('_id', id, {silent : true});
-                this.model.destroy();
+                model.set('_id', id, {silent : true});
 
-                //remove from DOM, without rerendering
-                $parent.remove();
+                //these collections need to be fetched so they can be deleted
+                model.get('library').fetch({'data' : { 'id' : id }, 'success' : function () {
+                    model.get('compositions').fetch({'data' : { 'id' : id }, 'success' : function () {
 
-                //check if there are any projects left
-                if (this.$el.find('li').length < 1) {
-                    //activate newProject option
-                    $('#radioNew').trigger('click');
-                    this.setExistentProjectsViewToDefault();
-                }
+
+                        //finally destroy the project
+                        model.destroy();
+
+                        //remove from DOM, without rerendering
+                        $parent.remove();
+
+                        //check if there are any projects left
+                        if (self.$el.find('li').length < 1) {
+                            //activate newProject option
+                            $('#radioNew').trigger('click');
+                            self.setExistentProjectsViewToDefault();
+                        }
+
+                    }});
+                }});
+
+
             },
 
             setExistentProjectsViewToDefault : function () {

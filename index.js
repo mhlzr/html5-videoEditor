@@ -6,8 +6,7 @@ var express = require('express'),
     fs = require('fs'),
     manager = require('./modules/manager').createManager(),
     encoder = require('./modules/encoder'),
-    metadata = require('./modules/metadata'),
-    upload = require('./modules/upload.socket');
+    metadata = require('./modules/metadata');
 
 app.use(express.bodyParser());
 

@@ -21,11 +21,12 @@ define([
         app.controller = null;
         app.socket = null;
 
-        app.currentComposition = null;
-        app.currentSequence = null;
-        app.currentAsset = null;
 
         app.navigatorIsVisible = true;
+        app.currentNavigatorView = 'library'; // 'compositions' || 'effects'
+        app.currentDialogue = null;
+
+        app.currentSequence = null;
 
 
         app.initialize = function (socket) {

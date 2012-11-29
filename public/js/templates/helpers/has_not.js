@@ -3,18 +3,16 @@
  * Date: 19.09.12
  * Time: 17:11
  */
-define('templates/helpers/has_not', ['handlebars'], function (Handlebars) {
+define('templates/helpers/has_not', ['underscore', 'handlebars'], function (_, Handlebars) {
 
     function has_not(context, options) {
 
-        //TODO fix this
-        /*
-        for (var i = 0; i < context.length; i++) {
-            if (context[i][options.hash.attr] === options.hash.value) {
-                return null;
-            }
-        }                       */
-        return options.fn(this);
+        var result = _.filter(context, function (el) {
+            return el === options.hash.value;
+        });
+
+        if (result.length > 0) return options.inverse(this);
+        else return options.fn(this);
     }
 
     Handlebars.registerHelper('has_not', has_not);

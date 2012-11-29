@@ -41,6 +41,7 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
                 this.scale(this.model.get('scale'));
             },
 
+
             sequenceDragStartHandler : function (e, drag) {
                 "use strict";
                 drag.data = {'type' : 'sequence'};
@@ -126,7 +127,7 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
                 "use strict";
 
                 //would cause a loop elsewise
-                if(this.isPlaying) return this;
+                if (this.isPlaying) return this;
 
                 var playhead = this.model.get('playhead'),
                     fps = this.model.get('fps');
@@ -153,7 +154,7 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
                 //i don't like this, but have no either how i should manage this
                 //via requestAnimationFrame
                 var self = this;
-                this.playTimer =  window.setInterval(function () {
+                this.playTimer = window.setInterval(function () {
                     self.model.set('playhead', self.model.get('playhead') + 1);
                 }, 1000 / this.model.get('fps'))
 
@@ -162,7 +163,7 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
             pause : function () {
                 "use strict";
 
-                window.clearInterval( this.playTimer);
+                window.clearInterval(this.playTimer);
                 this.playTimer = null;
 
                 //pause all sequence-views

@@ -2,7 +2,7 @@
 
 button {
 
-  @include transition(opacity 2.0s ease-in-out);
+  @include transition(opacity 0.3s ease-out);
   @include background-size(100%, 100%);
 
   display: block;

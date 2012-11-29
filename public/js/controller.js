@@ -9,9 +9,7 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
 
         return  {
 
-            app                  : null,
-            currentNavigatorView : 'library',
-            currentDialogue      : null,
+            app : null,
 
             init : function (app) {
                 this.app = app;
@@ -43,10 +41,10 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 }
 
                 $('#addButton').on('click', function () {
-                    if (self.currentNavigatorView === 'library') {
+                    if (app.currentNavigatorView === 'library') {
                         $('#fileBrowser').click();
                     }
-                    else if (self.currentNavigatorView === 'compositions') {
+                    else if (app.currentNavigatorView === 'compositions') {
                         self.showDialogue('compositionCreate');
                     }
 
@@ -75,8 +73,8 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 $('#navigatorControl').find('li').removeClass('active');
                 $(this).addClass('active');
 
-                self.currentNavigatorView = $(this).data('nav');
-                var el = $('#navigator').find('#' + self.currentNavigatorView);
+                app.currentNavigatorView = $(this).data('nav');
+                var el = $('#navigator').find('#' + app.currentNavigatorView);
                 $('#navigator .list').hide();
                 el.show();
             },
@@ -108,6 +106,23 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                     app.controller.createFileAssetRelation(file);
                 })
 
+            },
+
+            /**
+             * De/Activates the button controls for assets/compositions
+             * Gets called when an asset/composition in the library is selected by the user
+             * or a selected one is removed from the library/compositions-collection
+             */
+            toggleListControlsAvailability : function (remove, play) {
+                "use strict";
+                var $remove = $('#removeButton'),
+                    $play = $('#playButton');
+
+                if (remove) $remove.removeAttr('disabled');
+                else $remove.attr('disabled', 'disabled');
+
+                if (play) $play.removeAttr('disabled');
+                else $play.attr('disabled', 'disabled');
             },
 
 
@@ -154,14 +169,14 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 else if (app.currentComposition && type === 'composition') {
                     if (window.confirm('You can\'t nest compositions. \nDo you want to open the composition you dragged?')) {
                         app.currentComposition = app.project.get('compositions').get(id);
-                        app.controller.openComposition();
+                        self.openComposition();
                     }
                 }
 
                 //Composition Drop --> Open it
                 else if (!app.currentComposition && type === 'composition') {
                     app.currentComposition = app.project.get('compositions').get(id);
-                    app.controller.openComposition();
+                    self.openComposition();
                 }
 
                 //TODO effect
@@ -185,7 +200,7 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 switch (dialogueViewName) {
 
                     case 'compositionCreate' :
-                        self.currentDialogue = new CompositionCreateView({
+                        app.currentDialogue = new CompositionCreateView({
                             el        : $dialogue,
                             model     : new CompositionModel(),
                             projectId : app.project.id
@@ -193,7 +208,7 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                         break;
 
                     case 'sequenceCut' :
-                        self.currentDialogue = new SequenceCutView({
+                        app.currentDialogue = new SequenceCutView({
                             el          : $dialogue,
                             model       : app.currentSequence.model,
                             cuttingMode : true
@@ -201,15 +216,15 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                         break;
 
                     case 'projectBrowser' :
-                        self.currentDialogue = new ProjectBrowseView({
+                        app.currentDialogue = new ProjectBrowseView({
                             el    : $dialogue,
                             model : app.project
                         });
-                        self.currentDialogue.cancellable = cancelOption;
+                        app.currentDialogue.cancellable = cancelOption;
                 }
 
-                if (self.currentDialogue) {
-                    self.currentDialogue.render();
+                if (app.currentDialogue) {
+                    app.currentDialogue.render();
                     Info.reveal($dialogue, {closeonbackgroundclick : cancelOption});
                 }
 
@@ -218,17 +233,14 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
 
 
             uploadInputChangeHandler : function (e) {
-
                 for (var i = 0; i < e.target.files.length; i++) {
-                    app.controller.createFileAssetRelation(e.target.files[i]);
+                    self.createFileAssetRelation(e.target.files[i]);
                 }
-
             },
 
 
             openComposition : function () {
                 "use strict";
-
 
                 app.views.composition = new CompositionView({
                     model : app.currentComposition,
@@ -266,6 +278,7 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
 
                     file.save(null, {success : function () {
                         file.initServerUpdateListener();
+                        asset.getInfoFromOriginalFile();
                         asset.save(null, {success : asset.analyze()});
                     }});
                 }});
@@ -341,6 +354,17 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                             Device.toggleFullscreen();
                         }
                         break;
+
+                    case    'removeButton' :
+                        if (app.currentNavigatorView === 'library' && app.views.library.currentAsset) {
+                            app.views.library.currentAsset.destroy();
+                            app.views.library.currentAsset = null;
+                        }
+                        else if (app.currentNavigatorView === 'compositions' && app.views.compositions.currentComposition) {
+                            app.views.compositions.currentComposition.destroy();
+                            app.views.compositions.currentComposition = null;
+                        }
+
                 }
 
             }

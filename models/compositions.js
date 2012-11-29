@@ -11,10 +11,25 @@ exports.init = function (files, sequences) {
     return this;
 };
 
+exports.isPublicCompositionExistent = function (publicId, callback) {
+    "use strict";
+
+    if (!publicId || publicId.length < 32 || publicId.length > 32) {
+        callback(false);
+        return;
+    }
+
+    db.compositions.findOne({publicId : publicId}, function onFound(err) {
+        callback(err === null);
+    });
+};
+
 
 exports.create = function (data, callback) {
     'use strict';
 
+    //generating a publicId for the composition
+    //needed for previewing it
     data.publicId = uuid.v4().replace(/-/g, '');
 
     db.compositions.save(data, function onSaved(err, docs) {
@@ -41,7 +56,6 @@ exports.update = function (data, callback) {
 
     var id = data._id;
     delete data._id;
-    delete data.publicId;
 
     db.compositions.update({_id : db.ObjectId(id)}, data, {multi : false},
         function onUpdated(err, docs) {

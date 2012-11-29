@@ -42,13 +42,13 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                     width       : 0,
                     height      : 0,
                     ratio       : 0,
-                    duration    : 0,
-                    status      : 'Analyzing' //Analyzing, Queued for Upload, Uploading, Queued for Transcoding, Transcoding, All done!
+                    duration    : 0, //seconds
+                    status      : 'Analyzing' //Analyzing, Queued for Upload, Uploading, Queued for Transcoding, Transcoding, Ready
                 },
 
                 initialize : function () {
 
-                    _.bindAll(this, 'fileAddHandler', 'fileChangeHandler',
+                    _.bindAll(this, 'fileChangedHandler',
                         'onAnalyzed', 'sendFileToUploader',
                         'analyze', 'metaDataFallback', 'hasCompatibleMedia', 'markAsReady',
                         'changeHandler', 'initServerUpdateListener', 'serverUpdateHandler');
@@ -56,10 +56,12 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                     this.on('change', this.changeHandler);
                     this.on('analyzed', this.onAnalyzed);
 
-                    this.get('files').on('add', this.fileAddHandler);
-                    this.get('files').on('change', this.fileChangeHandler);
+                    this.get('files').on('change', this.fileChangedHandler);
 
                     this.on('destroy', this.destroyHandler);
+
+                    this.on('change:width', this.calculateRatio);
+                    this.on('change:height', this.calculateRatio);
 
                     if (!this.isNew()) {
                         this.get('files').fetch({'data' : { 'id' : this.id }});
@@ -72,26 +74,17 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                 },
 
                 serverUpdateHandler : function (data) {
-
-                    console.log('ASSET.JS::SERVER UPDATE');
-
                     _.each(data, function (val, key) {
                         this.set(key, val);
                     }, this);
-
                 },
 
-                fileAddHandler : function (file) {
-                    var originalFile = this.getOriginalFile().get('localFile');
-                    this.set('type', this.getAssetTypeByFile(originalFile), {silent : true});
-                    this.set('name', this.getCleanFileName(originalFile.name), {silent : true});
-                },
 
                 changeHandler : function () {
                     this.save();
                 },
 
-                fileChangeHandler : function (file) {
+                fileChangedHandler : function (file) {
 
                     //when a original file was uploaded completly
                     //it should get transcoded if needed
@@ -99,22 +92,34 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                         app.uploader.removeFile(file);
                         this.set('progress', 100);
                         this.set('status', 'Queued for Transcoding');
-                        if (app.settings.get('autoTranscode')) this.sendTranscodingJobs(file);
+
+                        this.createAlternativeFiles();
+
                     }
+
 
                     //update from encoder
                     else if (file.hasChanged('encodingProgress')) {
-                        var amountTotal, progressTotal;
+                        var amountTotal = 0,
+                            progressTotal = 0,
+                            value;
 
                         this.get('files').each(function (file) {
-                            if (!file.get('isOriginal')) {
+                            if (!file.get('isOriginal') && !file.get('isComplete')) {
                                 amountTotal++;
-                                progressTotal = file.get('encodingProgress');
+                                progressTotal += file.get('encodingProgress');
                             }
                         });
 
+                        //percentage
+                        value = Math.roundDec(progressTotal / amountTotal);
+                        this.set('progress', value);
 
-                        this.set('progress', Math.roundDec(progressTotal / amountTotal));
+                        //status
+                        if (value < 100) this.set('status', 'Transcoding');
+                        else this.checkStatus();
+
+
                     }
 
                     //update from uploader
@@ -127,8 +132,8 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
 
                 },
 
+
                 onAnalyzed : function () {
-                    console.log('ASSET.JS::ANALYZED', this.id);
                     if (!this.getOriginalFile().get('isComplete')) {
                         if (app.settings.get('autoUpload')) this.sendFileToUploader();
                     }
@@ -140,17 +145,41 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                 },
 
 
-                sendTranscodingJobs : function (originalFile) {
+                createAlternativeFiles : function () {
+                    'use strict';
 
-                    var formats = this.getMissingFileFormats();
+                    var formats = this.getMissingFileFormats(),
+                        i = 0,
+                        self = this;
 
                     if (formats.length > 0) {
 
-                        app.socket.emit('transcode', {
-                            'projectId' : app.project.id,
-                            'id'        : originalFile.id,
-                            'formats'   : formats
-                        })
+                        //create file-Objects
+                        for (i; i < formats.length; i++) {
+
+                            this.get('files').create({
+                                    ext            : formats[i],
+                                    remoteFileName : this.getOriginalFile().getFileNameWithoutExtension()
+                                }, {wait : true, success : function (file) {
+
+                                    //don't know why this is never added or overwritten
+                                    file.set('assetId', self.id, {silent : true});
+                                    file.initServerUpdateListener();
+                                    file.save(null, {success : function (file) {
+
+                                        if (app.settings.get('autoTranscode')) {
+                                            //finally send the transcode-cmd to the server
+                                            app.socket.emit('transcode', {
+                                                'projectId'      : app.project.id,
+                                                'originalFileId' : self.getOriginalFile().id,
+                                                'fileId'         : file.id,
+                                                'format'         : file.get('ext')
+                                            });
+                                        }
+                                    }});
+                                }}
+                            );
+                        }
                     }
                 },
 
@@ -173,7 +202,6 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                 },
 
                 markAsReady      : function () {
-                    console.log('ASSET.JS::MARK AS READY');
                     this.set('isAnalyzed', true, {silent : true});
                     this.set('status', 'Queued for Upload');
                     this.trigger('analyzed', this);
@@ -193,19 +221,21 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
 
                 getCompatibleMediaUrl : function () {
 
-                    var files = this.get('files'),
-                        l = files.length,
-                        type = this.get('type'),
-
-                    //TODO change this
+                    var type = this.get('type'),
+                    //only allow files, that are complete
+                        files = this.get('files').filter(function (file) {
+                            return file.get('isComplete');
+                        }),
                         path = window.location.protocol + '//' + window.location.host + '/projects/' + app.project.get('assetFolder') + '/assets/',
-                        i, ext, localUrl, url;
+                        file, i, ext, localUrl, url;
 
-                    for (i = 0; i < l; i++) {
+                    for (i = 0; i < files.length; i++) {
 
-                        ext = files.at(i).get('ext');
-                        url = path + files.at(i).getRemoteFileUrl();
-                        localUrl = files.at(i).get('localUrl');
+                        file = files[i];
+                        ext = file.get('ext');
+                        url = path + file.getRemoteFileUrl();
+                        localUrl = file.get('localUrl');
+
 
                         if (type === 'image') {
                             return (localUrl) ? localUrl : url;
@@ -215,20 +245,15 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                             if (app.device.isVideoFormatSupported(ext)) {
                                 return (localUrl) ? localUrl : url;
                             }
-                            else {
-                                return null;
-                            }
-
                         }
                         else if (type === 'audio') {
                             if (app.device.isAudioFormatSupported(ext)) {
                                 return (localUrl) ? localUrl : url;
                             }
-                            else {
-                                return null;
-                            }
+
                         }
                         else return null;
+
                     }
 
                     return null;
@@ -236,9 +261,8 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                 },
 
                 getMetadata : function () {
-                    console.log('ASSET.JS::GET METADATA');
 
-                    var localUrl = this.get('files').at(0).get('localUrl') || null,
+                    var localUrl = this.get('files').getOriginalFile().get('localUrl') || null,
                         self = this,
                         type = this.get('type'),
                         player, image;
@@ -273,12 +297,11 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
 
                         player.addEventListener('loadedmetadata', function onMetaData(e) {
 
-                            self.set('duration', e.target.duration || 0, {silent : true});
+                            self.set('duration', e.target.duration || 0);
 
                             if (type === 'video') {
-                                self.set('width', e.target.videoWidth || 0, {silent : true});
-                                self.set('height', e.target.videoHeight || 0, {silent : true});
-                                self.set('ratio', self.get('width') / self.get('height') || 0, {silent : true});
+                                self.set('width', e.target.videoWidth || 0);
+                                self.set('height', e.target.videoHeight || 0);
                             }
 
                             player.removeEventListener('loadedmetadata', arguments.callee);
@@ -315,7 +338,7 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
 
                 checkStatus : function () {
                     if (this.getMissingFileFormats().length === 0) {
-                        this.set('status', 'All done!');
+                        this.set('status', 'Ready');
                     }
                 },
 
@@ -335,6 +358,12 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                     return null;
                 },
 
+                getInfoFromOriginalFile : function () {
+                    var originalFile = this.getOriginalFile().get('localFile');
+                    this.set('type', this.getAssetTypeByFile(originalFile), {silent : true});
+                    this.set('name', this.getCleanFileName(originalFile.name), {silent : true});
+                },
+
                 getAssetTypeByFile : function (file) {
                     var mimeReg = new RegExp(/video|image|audio/),
                         extReg = new RegExp(/\.([^\.]+)$/),
@@ -344,6 +373,15 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
                     if (!mime && !ext) return null;
                     else if (mime) return mime;
                     else return this.getAssetTypeByExtension(ext);
+
+                },
+
+                calculateRatio : function () {
+                    "use strict";
+                    console.log('NOW', this.get('width'), this.get('height'));
+                    if (this.get('width') > 0 && this.get('height') > 0) {
+                        this.set('ratio', parseInt(this.get('width')) / parseInt(this.get('height')));
+                    }
 
                 },
 

@@ -8,6 +8,10 @@ var express = require('express'),
     encoder = require('./modules/encoder'),
     metadata = require('./modules/metadata');
 
+
+/**
+ * EXPRESS CONFIGURATION
+ */
 app.use(express.bodyParser());
 
 app.configure(function () {
@@ -16,31 +20,10 @@ app.configure(function () {
 
 });
 
-app.get(/^\/([0-9a-fA-F]{24}$)/, function (req, res) {
-    manager.projects.isProjectExistent(req.params[0], function onResponse(exists) {
-        if (exists) res.redirect('/#' + req.params[0]);
-        else res.redirect('/');
-    });
-});
 
-app.get('/reset', function onReset(req, res) {
-    manager.clean(function onComplete(err) {
-        res.writeHead(200);
-        res.end("Done!");
-    });
-});
-
-/*app.get('/preview/:id', function(req, res){
- res.redirect('/backbone/preview/#' + req.params.id);
- });
+/**
+ * SOCKET.IO CONFIGURATION
  */
-
-app.get('*', function (req, res) {
-    res.writeHead(404);
-    res.end();
-    //res.redirect('/');
-});
-
 io.enable('browser client minification');  // send minified client
 io.enable('browser client etag');          // apply etag caching logic based on version number
 io.enable('browser client gzip');          // gzip the file
@@ -53,6 +36,54 @@ io.set('transports', [                     // enable all transports (optional if
     , 'jsonp-polling'
 ]);
 
+
+/**
+ *  OPEN PROJECT VIA PROJECT-ID
+ */
+app.get(new RegExp(/^\/([0-9a-fA-F]{24}$)/), function (req, res) {
+    manager.projects.isProjectExistent(req.params[0], function onResponse(exists) {
+        "use strict";
+        if (exists) res.redirect('/#' + req.params[0]);
+        else res.redirect('/');
+    });
+});
+
+/**
+ * OPEN COMPOSITION VIA PUBLIC-ID
+ */
+app.get(new RegExp(/^\/preview\/([0-9a-fA-F]{32}$)/), function (req, res) {
+    manager.compositions.isPublicCompositionExistent(req.params[0], function onResponse(exists) {
+        "use strict";
+        if (exists)  res.redirect('/preview.html#' + req.params[0]);
+        else res.redirect('/');
+    });
+
+});
+
+
+/**
+ * CLEAR ALL DATA
+ */
+app.get('/reset', function onReset(req, res) {
+    manager.clean(function onComplete(err) {
+        res.writeHead(200);
+        res.end('Done!');
+    });
+});
+
+
+/**
+ * Everything else is a 404
+ */
+app.get('*', function (req, res) {
+    res.writeHead(404);
+    res.end();
+});
+
+
+/**
+ * SOCKET.IO EVENTS
+ */
 io.sockets.on('connection', function (socket) {
 
 
@@ -79,7 +110,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('file:read', manager.files.read);
     socket.on('file:update', manager.files.update);
     socket.on('file:delete', function onRequest(data, callback) {
-        "use strict";
+        'use strict';
         //the file gets unlinked first
         manager.removePhysicalFile(data, function onUnlinked() {
             //even if something fails, we still remove if from the db
@@ -125,27 +156,38 @@ io.sockets.on('connection', function (socket) {
         //will be removed during update-process
         var fileId = data.id;
 
-        manager.projects.getProjectPathByProjectId(data.projectId, function onPathFound(path) {
-            if (!path) throw new Error('No assetFolder existent for Project');
-            manager.acceptFilePartial(data, path, function onDataAccepted(res) {
+        manager.projects.getProjectPathByProjectId(data.projectId, function onPathFound(projectPath) {
+            if (!projectPath) throw new Error('No folder existent for Project');
+
+            //accept bytes an append to file
+            manager.acceptFilePartial(data, projectPath, function onDataAccepted(res) {
+
+                //inform client about progress
+                socket.emit('file/' + fileId + ':update', {
+                    byteOffset : res.byteOffset,
+                    isComplete : res.isComplete
+                });
+
+                //save to db
                 manager.files.update(res, function onUpdated(err) {
                     if (err) throw err;
-                    res.id = fileId;
-
-                    //inform about progress
-                    socket.emit('file/' + res.id + ':update', res);
-
-                    //read metaData if file is complete (more accurate than clients meta)
-                    if (res.isComplete) {
-                        var filePath = (__dirname + '/public/projects/' + path + '/assets/' + data.fileName);
-
-                        manager.assets.getAssetByFileId(fileId, function onReceived(asset) {
-                            metadata.getMetaData(asset.type, filePath, function onMetaDataRead(info) {
-                                socket.emit('asset/' + asset.id + ':update', info);
-                            });
-                        });
-                    }
                 });
+
+                //read metaData if file is complete (more accurate than clients meta)
+                if (res.isComplete) {
+
+                    var filePath = manager.getAbsoluteFilePath(projectPath, data.fileName);
+
+                    //get the asset from the db
+                    manager.assets.getAssetByFileId(fileId, function onReceived(asset) {
+
+                        //read metadata
+                        metadata.getMetaData(asset.type, filePath, function onMetaDataRead(info) {
+                            //inform client
+                            socket.emit('asset/' + asset._id + ':update', info);
+                        });
+                    });
+                }
             });
         });
     });
@@ -155,36 +197,75 @@ io.sockets.on('connection', function (socket) {
      */
 
     socket.on('transcode', function (data) {
+        "use strict";
 
-        if (!data.projectId || !data.formats || !data.id) {
-            throw new Error('Missing IDs', data);
+        if (!data.projectId || !data.fileId || !data.originalFileId || !data.format) {
+            throw new Error('Missing parameters for transcoding!');
+
         }
 
-        manager.projects.getProjectPathByProjectId(data.projectId, function onPathFound(projectPath) {
-            if (!projectPath) throw new Error('No assetFolder existent for Project');
-            data.path = manager.getAbsoluteFilePath(projectPath);
-            data.formats.forEach(function (format) {
-                encoder.addTranscodingJob(data, format, function onTranscodingProgress(progress) {
-                    console.log(progress);
-                    socket.emit('file/' + res.id + ':update', res);
+        var settings = {};
+        settings.fileId = data.fileId;
+        settings.projectId = data.projectId;
+        settings.format = data.format;
+
+        settings.fileName = null; //will be read from db
+        settings.originalFileName = null;//will be read from db
+
+        //get original fileObject
+        manager.files.read({id : data.originalFileId}, function onRead(err, res) {
+            "use strict";
+            if (!res) return;
+            settings.originalFileName = res.remoteFileName + '.' + res.ext;
+
+            //get new fileObject
+            manager.files.read({id : data.fileId}, function onRead(err, res) {
+                "use strict";
+                if (!res) return;
+                settings.fileName = res.remoteFileName + '.' + res.ext;
+
+                //get projectPath
+                manager.projects.getProjectPathByProjectId(data.projectId, function onPathFound(projectPath) {
+                    "use strict";
+
+                    if (!projectPath) throw new Error('No assetFolder existent for Project');
+                    settings.path = manager.getAbsoluteFilePath(projectPath);
+
+                    encoder.addTranscodingJob(settings);
+                    encoder.start();
+
                 });
             });
-            encoder.start();
         });
 
 
     });
 
-    encoder.on("transcoding:progress", function onTranscodingProgress(event) {
-        socket.emit("transcoding:progress", event);
+    encoder.on('transcoding:progress', function onTranscodingProgress(event) {
+
+        socket.emit('file/' + event.fileId + ':update', {
+            encodingProgress : event.encodingProgress,
+            isComplete       : event.isComplete
+        });
+
+        if (event.isComplete) {
+
+            //TODO get filesize from disk
+            //save to db
+            manager.files.update({id : event.fileId, isComplete : true}, function onUpdated(err) {
+                if (err) throw err;
+            });
+
+        }
+
     });
 
     /*
      //ENCODER EVENTS
-     encoder.on("encoding:complete", function onEncodingComplete() {
+     encoder.on('encoding:complete', function onEncodingComplete() {
 
      });
-     encoder.on("encoding:progress", function onEncodingProgress() {
+     encoder.on('encoding:progress', function onEncodingProgress() {
      */
 })
 ;

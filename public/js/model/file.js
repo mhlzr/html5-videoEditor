@@ -6,6 +6,8 @@ define(['backbone', 'underscore', 'backbone-rel', 'backbone-bind'],
 
             //somehow using _id attribute didn't work out at all,
             // _id was and still is always (re)set to null, don't know where and why
+            //workaround is using id
+
             idAttribute : 'id',
             urlRoot     : 'file',
 
@@ -23,8 +25,6 @@ define(['backbone', 'underscore', 'backbone-rel', 'backbone-bind'],
 
 
             initialize : function () {
-
-                console.log('FILE.JS::INIT');
 
                 _.bindAll(this, 'initServerUpdateListener', 'serverUpdateHandler');
 
@@ -55,13 +55,9 @@ define(['backbone', 'underscore', 'backbone-rel', 'backbone-bind'],
             },
 
             serverUpdateHandler : function (data) {
-
-                console.log('FILE.JS::SERVER UPDATE');
-
                 _.each(data, function (val, key) {
                     this.set(key, val);
                 }, this);
-
             },
 
             getRemoteFileUrl : function () {
@@ -73,11 +69,15 @@ define(['backbone', 'underscore', 'backbone-rel', 'backbone-bind'],
             },
 
             getFileExtensionByName : function (fileName) {
+                fileName = fileName || this.get('remoteFileName') + '.' + this.get('ext');
+
                 var regEx = new RegExp(/\.([^\.]+)$/);
                 return regEx.test(fileName) ? regEx.exec(fileName)[1].toString() : null;
             },
 
             getFileNameWithoutExtension : function (fileName) {
+                fileName = fileName || this.get('remoteFileName') + '.' + this.get('ext');
+
                 var regEx = new RegExp(/(.+?)(\.[^.]*$|$)/);
                 return regEx.test(fileName) ? regEx.exec(fileName)[1].toString() : null;
             },
@@ -90,8 +90,6 @@ define(['backbone', 'underscore', 'backbone-rel', 'backbone-bind'],
                 return (window.webkitURL || window.URL).revokeObjectURL(url);
             }
 
-        })
-            ;
+        });
 
-    })
-;
+    });

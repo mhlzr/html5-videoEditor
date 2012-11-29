@@ -48,7 +48,7 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
                 var value = $(e.target).val(),
                     $projectTitle = $('#projectTitle'),
                     $removeButtons = $('.remove'),
-                    $projectCheckboxes = $('input[name=project]');
+                    $projectCheckboxes = $('input[name="project"]');
 
                 //existent
                 if (value === 'existent') {
@@ -86,7 +86,11 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
                 "use strict";
                 var value = $(e.target).val();
 
-                this.model.set('title', value);
+                //to prevent changing the title of an existing project
+                if(this.model.isNew()){
+                    this.model.set('title', value);
+                }
+
                 this.toggleConfirmButtonState(value.length >= 3);
             },
 
@@ -99,7 +103,7 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
 
             },
 
-            createOrSelectProject : function (e) {
+            createOrSelectProject : function () {
                 "use strict";
 
                 var self = this,
@@ -167,6 +171,9 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
 
                         //finally destroy the project
                         model.destroy();
+
+                        //create new model
+                        self.model = new ProjectModel();
 
                         //remove from DOM, without rerendering
                         $parent.remove();

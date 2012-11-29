@@ -4,7 +4,7 @@ var fs = require('fs'),
     wrench = require('wrench');
 
 var PROJECTS_PATH = __dirname + '/../public/projects/',
-    ASSETS_SUBDIR = "/assets/";
+    ASSETS_SUBDIR = '/assets/';
 
 /**
  * Used to simplify  the access to the database
@@ -16,7 +16,7 @@ var PROJECTS_PATH = __dirname + '/../public/projects/',
  */
 
 exports.createManager = function () {
-    "use strict";
+    'use strict';
 
     this.files = require('./../models/files');
     this.sequences = require('./../models/sequences');
@@ -39,8 +39,8 @@ exports.createManager = function () {
  */
 
 exports.getAbsoluteFilePath = function (projectDir, fileName) {
-    if (!fileName)return PROJECTS_PATH + projectDir + ASSETS_SUBDIR;
-    else return  PROJECTS_PATH + projectDir + ASSETS_SUBDIR + fileName;
+    if (!fileName) return PROJECTS_PATH + projectDir + ASSETS_SUBDIR;
+    else return PROJECTS_PATH + projectDir + ASSETS_SUBDIR + fileName;
 };
 
 
@@ -52,7 +52,7 @@ exports.getAbsoluteFilePath = function (projectDir, fileName) {
  * @param data Object (needed id || _id, fileName)
  */
 exports.removePhysicalFile = function (data, callback) {
-    "use strict";
+    'use strict';
 
     var fileId = data.id,
         fileName = data.fileName,
@@ -145,7 +145,7 @@ exports.acceptFilePartial = function (data, projectPath, callback) {
                 };
 
                 if (isComplete) {
-                    console.log("MGR: UPLOAD COMPLETE", data.fileName);
+                    console.log('MGR: UPLOAD COMPLETE', data.fileName);
                 }
 
                 callback(response);
@@ -181,7 +181,7 @@ exports.clean = function (callback) {
         //remove the projects folder and it's content
         wrench.rmdirSyncRecursive(PROJECTS_PATH);
 
-        //recreate the just removed dir
+        //check if folder exists
         var exists = fs.existsSync(PROJECTS_PATH);
 
         //recreate the just removed dir

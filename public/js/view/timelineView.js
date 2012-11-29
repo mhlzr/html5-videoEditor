@@ -10,7 +10,8 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
 
         return Backbone.View.extend({
 
-            isPlaying : false,
+            currentSequence : null,
+            isPlaying       : false,
 
             initialize : function () {
                 "use strict";
@@ -332,6 +333,22 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
 
             keydownHandler : function (e) {
                 "use strict";
+
+            },
+
+            highlight : function () {
+                "use strict";
+                var $layerInfoContainer = $('#layerInfoContainer'),
+                    $layerContainer = $('#layerContainer'),
+                    id = this.currentSequence.model.id;
+
+                //deactivate all
+                $layerInfoContainer.find('div.layerInfo').removeClass('active');
+                $layerContainer.find('div.layer').removeClass('active');
+
+                //highlight current
+                $layerInfoContainer.find('div.layerInfo[data-id="' + id + '"]').addClass('active');
+                $layerContainer.find('div.layer[data-id="' + id + '"]').addClass('active');
 
             }
 

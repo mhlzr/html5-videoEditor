@@ -50,16 +50,15 @@
     position: absolute;
     top: 0;
     left: 0;
-    border: 1px solid red;
     display: block;
 
     &:hover {
-      border: 1px solid $highlightColor;
+     // border: 1px solid $highlightColor;
     }
 
     &.active,
     &.active:hover {
-      border: 1px solid $selectedColor;
+     // border: 1px solid $selectedColor;
     }
   }
 }

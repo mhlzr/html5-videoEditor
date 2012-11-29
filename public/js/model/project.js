@@ -1,4 +1,4 @@
-define(['underscore', 'backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/composition', 'collection/compositions'],
+define(['underscore', 'backbone', 'backbone-rel', 'model/asset', 'collection/library', 'model/composition', 'collection/compositions', 'device'],
 
     function (_, Backbone, BackboneRelational, AssetModel, LibraryCollection, CompositionModel, CompositionCollection) {
 
@@ -64,6 +64,10 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/asset', 'collection/lib
             changeHandler : function () {
                 "use strict";
                 if (this.isNew()) return;
+
+                //update locally
+                app.device.saveProjectToLocalStorage(this.id, this.get('title'), this.get('date'));
+
                 this.save();
             },
 

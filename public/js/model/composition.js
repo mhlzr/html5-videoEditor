@@ -48,7 +48,7 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
                 durationS : 30,
                 scale     : 1.0,
                 rotation  : 0,
-                publicId  : null
+                publicId  : null //will be set server-side
             },
 
             initialize : function () {

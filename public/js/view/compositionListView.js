@@ -9,6 +9,8 @@ define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', '
 
         return Backbone.View.extend({
 
+            currentComposition : null,
+
             initialize : function () {
 
 
@@ -16,14 +18,33 @@ define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', '
 
                 this.collection.on('add', this.render);
                 this.collection.on('remove', this.render);
+                this.collection.on('change', this.render);
+
             },
 
             events : {
+                'click div.composition'     : 'compositionClickHandler',
                 'dblclick div.composition'  : 'compositionSelectHandler',
                 'draginit div.composition'  : 'compositionDragStartHandler',
 
                 //mobile
                 'doubletap div.composition' : 'compositionSelectHandler'
+            },
+
+            compositionClickHandler : function (e) {
+                "use strict";
+
+                var $target = $(e.currentTarget),
+                    id = $target[0].id;
+
+                this.currentComposition = this.collection.get(id);
+
+                //highlight
+                $('.compositions').removeClass('active');
+                $target.addClass('active');
+
+                //enable controls, depending on asset status
+                app.controller.toggleListControlsAvailability(true, true);
             },
 
             compositionDragStartHandler : function (e, drag) {
@@ -58,8 +79,6 @@ define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', '
 
                 //hasn't been rendered before
                 if (_.isEmpty($compositionEl[0])) {
-                    //strange bug in firefox that produces duplicates
-                    $($compositionEl).remove();
                     this.$el.append(compositionView.render());
                 }
                 //needs update
@@ -71,6 +90,8 @@ define(['jquery', 'underscore', 'backbone', 'view/compositionListElementView', '
             render : function () {
 
                 if (!this.collection) return null;
+
+                this.$el.empty();
 
                 _.each(this.collection.models, function (composition) {
                     this.renderCompositionListView(composition);

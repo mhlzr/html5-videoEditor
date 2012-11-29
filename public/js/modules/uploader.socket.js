@@ -64,7 +64,8 @@ define(['config', 'jquery', 'underscore'], function (Config, $, _) {
 
             var start = file.get('byteOffset'),
                 end = start + Config.UPLOADER_CHUNK_SIZE,
-                localFile = file.get('localFile');
+                localFile = file.get('localFile'),
+                data;
 
 
             fileReader = new FileReader();
@@ -77,9 +78,16 @@ define(['config', 'jquery', 'underscore'], function (Config, $, _) {
 
             fileReader.onloadend = function (event) {
                 if (event.target.readyState == FileReader.DONE) {
-                    //regex to get rid of the data;base stuff
-                    self.sendFileChunk(file, event.target.result.match(/,(.*)$/)[1]);
-                    fileReader = null;
+
+                    if (event.target.result) {
+                        //regex to get rid of the data;base stuff
+                        data = event.target.result.match(/,(.*)$/);
+                        if (data) {
+                            self.sendFileChunk(file, data[1]);
+                            fileReader = null;
+                        }
+
+                    }
                 }
             };
 

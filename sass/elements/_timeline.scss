@@ -71,11 +71,19 @@
   border: 1px solid $lineColor;
   background-color: $layerBackgroundColor;
   height: 40px;
+
+  &.active {
+    border: 1px solid $selectedColor;
+  }
 }
 
 .layerInfo {
   padding: 5px 0px 0px 0px;
   border-right: 1px solid $lineColor;
+
+  &.active {
+    background-color: $highlightColor;
+  }
 
   span {
     text-overflow: ellipsis;

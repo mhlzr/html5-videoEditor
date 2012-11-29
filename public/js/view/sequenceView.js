@@ -104,20 +104,16 @@ define(["jquery", 'underscore', "backbone"], function ($, _, Backbone) {
 
         dblclickHandler : function () {
             "use strict";
-
-            app.currentSequence = this;
+            app.views.timeline.currentSequence = this;
             app.controller.showDialogue('sequenceCut', this.model);
+            app.views.timeline.highlight();
 
         },
 
         clickHandler : function () {
             "use strict";
-
-            if (app.currentSequence) {
-                app.currentSequence.$el.removeClass('active');
-            }
-            app.currentSequence = this;
-            this.$el.addClass('active');
+            app.views.timeline.currentSequence = this;
+            app.views.timeline.highlight();
         },
 
         play : function (startFrame) {

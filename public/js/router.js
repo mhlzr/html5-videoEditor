@@ -1,6 +1,5 @@
-define(['backbone', 'model/project'],
-
-    function (Backbone, ProjectModel) {
+define(['backbone'],
+    function (Backbone) {
 
         return Backbone.Router.extend({
 

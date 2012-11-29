@@ -22,6 +22,7 @@ exports.create = function (data, callback) {
 
 exports.read = function (data, callback) {
     'use strict';
+
     data._id = data.id;
     delete data.id;
 

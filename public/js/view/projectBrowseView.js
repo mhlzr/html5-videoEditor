@@ -1,4 +1,4 @@
-define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'model/project'],
+define(['underscore', 'backbone', 'jquery', 'hbs!templates/projectBrowser', 'model/project'],
 
     function (_, Backbone, $, Template, ProjectModel) {
 
@@ -9,11 +9,11 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
             //will do nothing :(
 
             initialize : function () {
-                "use strict";
+                'use strict';
             },
 
             render : function () {
-                "use strict";
+                'use strict';
 
                 var availableProjects = app.device.getAvailableProjectsFromLocalStorage(),
                     data = _.extend(this.model.toJSON(), {
@@ -43,7 +43,7 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
             },
 
             typeChangeHandler : function (e) {
-                "use strict";
+                'use strict';
 
                 var value = $(e.target).val(),
                     $projectTitle = $('#projectTitle'),
@@ -74,7 +74,7 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
 
 
             projectSelectHandler : function (e) {
-                "use strict";
+                'use strict';
                 var $selected = $(e.target).parent(); //li > input
                 $('li').removeClass('selected');
                 $selected.addClass('selected');
@@ -83,7 +83,7 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
             },
 
             projectTitleChange : function (e) {
-                "use strict";
+                'use strict';
                 var value = $(e.target).val();
 
                 //to prevent changing the title of an existing project
@@ -95,7 +95,7 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
             },
 
             toggleConfirmButtonState : function (state) {
-                "use strict";
+                'use strict';
                 var $confButton = $('.okay');
 
                 if (state) $confButton.removeAttr('disabled');
@@ -104,7 +104,7 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
             },
 
             createOrSelectProject : function () {
-                "use strict";
+                'use strict';
 
                 var self = this,
                     isNew = $('#radioNew:checked').length === 1;
@@ -142,7 +142,7 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
 
 
             destroyProject : function (e) {
-                "use strict";
+                'use strict';
 
                 var confirm = window.confirm('Are you sure you want to delete this project completely?'),
                     $target = $(e.target),
@@ -192,12 +192,12 @@ define(['underscore', "backbone", "jquery", 'hbs!templates/projectBrowser', 'mod
             },
 
             setExistentProjectsViewToDefault : function () {
-                "use strict";
+                'use strict';
                 $('#existentProject').append('<span>No projects available.</span>').find('ul').remove();
             },
 
             destroy : function () {
-                "use strict";
+                'use strict';
                 //Close Reveal modal
                 this.$el.trigger('reveal:close');
                 //remove from DOM

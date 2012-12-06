@@ -1,6 +1,7 @@
 <div id="projectBrowser">
 
     <h1>Project-Browser</h1>
+
     {{#if this.cancellable}}
     <button class="close-reveal-modal close"></button>
     {{/if}}

@@ -26,12 +26,9 @@ define([
         app.currentNavigatorView = 'library'; // 'compositions' || 'effects'
         app.currentDialogue = null;
 
-        app.currentSequence = null;
-
-
         app.initialize = function (socket) {
 
-            if (!this.device.runBrowserSupportTest()) {
+            if (!this.device.isBrowserSufficient()) {
                 console.log('Your browser is not supported');
                 return;
             }

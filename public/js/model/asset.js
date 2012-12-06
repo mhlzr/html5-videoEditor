@@ -378,7 +378,6 @@ define(['backbone', 'underscore', 'model/file', 'collection/files', 'config', 'b
 
                 calculateRatio : function () {
                     "use strict";
-                    console.log('NOW', this.get('width'), this.get('height'));
                     if (this.get('width') > 0 && this.get('height') > 0) {
                         this.set('ratio', parseInt(this.get('width')) / parseInt(this.get('height')));
                     }

@@ -8,8 +8,7 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
 
     return Backbone.View.extend({
 
-        asset       : null,
-        cuttingMode : false,
+        asset : null,
 
         initialize : function () {
             'use strict';
@@ -18,10 +17,13 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
 
         render : function () {
             'use strict';
-            this.$el.html(Template(_.extend(this.model.toJSON(), {
-                "cuttingMode" : this.cuttingMode ? 'cut' : 'preview'
-            })));
 
+
+            this.$el.html(Template(
+                _.extend(this.model.toJSON(), {
+                    videoUrl : this.asset.getCompatibleMediaUrl()
+                })
+            ));
         }
 
     });

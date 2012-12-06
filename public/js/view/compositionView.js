@@ -4,8 +4,8 @@
  * Time: 16:46
  */
 
-define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/sequenceView', 'jquery-mousewheel', 'jquery++', 'toe'],
-    function ($, _, Backbone, Template, SequenceView) {
+define(['jquery', 'underscore', 'backbone', 'device', 'hbs!templates/composition', 'view/sequenceView', 'jquery-mousewheel', 'jquery++', 'toe'],
+    function ($, _, Backbone, Device, Template, SequenceView) {
 
         return Backbone.View.extend({
 
@@ -15,9 +15,9 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
 
             initialize : function () {
 
-                _.bindAll(this, 'mouseWheelHandler', 'transformHandler', 'render', 'update', 'sequenceAddedHandler', 'sequenceRemovedHandler');
+                _.bindAll(this, 'mouseWheelHandler', 'transformHandler', 'render', 'playheadChangeHandler', 'playTimerUpdateHandler', 'sequenceAddedHandler', 'sequenceRemovedHandler');
 
-                this.model.on('change:playhead', this.update);
+                this.model.on('change:playhead', this.playheadChangeHandler);
 
                 this.model.get('sequences').on('add', this.sequenceAddedHandler);
                 this.model.get('sequences').on('remove', this.sequenceRemovedHandler);
@@ -37,8 +37,7 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
 
             mouseWheelHandler : function (e, delta, deltaX, deltaY) {
                 'use strict';
-                this.model.set('scale', this.model.get('scale') + (delta > 0 ? 0.1 : -0.1));
-                this.scale(this.model.get('scale'));
+                this.scale(this.model.get('scale') + (delta > 0 ? 0.1 : -0.1));
             },
 
 
@@ -55,24 +54,27 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
 
             scale : function (factor) {
                 "use strict";
+
                 if (factor > 0) {
+                    var $composition = $('#composition');
                     this.model.set('scale', factor);
-                    this.$el.find('#composition').css('transform', 'scale(' + (this.model.get('scale')) + ')');
+
+                    if (Device.hasZoom) {
+                        $composition.css('zoom', factor);
+                    }
+                    //firefox does not support zoom
+                    else {
+                        $composition.css('transform', 'scale(' + (factor) + ')');
+
+                    }
                 }
-            },
-
-            rotate : function (deg) {
-                "use strict";
-
             },
 
 
             render : function () {
                 'use strict';
-
-                console.log('CompositionView::render()');
-
-                if (!this.model) return this;
+                var self = this,
+                    view = null;
 
                 this.$el.html(Template(this.model.toJSON()));
 
@@ -81,11 +83,17 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
                     'margin-left' : -this.model.get('width') / 2
                 });
 
-                var self = this;
-
                 //create all sequence-views
                 this.model.get('sequences').each(function (sequence) {
-                    self.createSequenceView(sequence).render();
+
+                    view = self.createSequenceView(sequence).render();
+
+                    if (self.isSequenceVisibleAtCurrentPlayheadPosition(view)) {
+                        view.$el.show();
+                    }
+                    else {
+                        view.$el.hide();
+                    }
                 });
 
                 return this;
@@ -123,41 +131,63 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
                 return view;
             },
 
-            update : function () {
+            playheadChangeHandler : function () {
                 "use strict";
 
-                //would cause a loop elsewise
-                if (this.isPlaying) return this;
+                var self = this;
 
                 var playhead = this.model.get('playhead'),
                     fps = this.model.get('fps');
 
-                //update all sequence-views
+
                 _.each(this.sequenceViews, function (sequenceView) {
-                    sequenceView.update(playhead, fps);
+
+                    if (self.isSequenceVisibleAtCurrentPlayheadPosition(sequenceView)) {
+
+                        sequenceView.$el.show();
+                        sequenceView.update(playhead, fps);
+
+                        if(self.isPlaying){
+                            if(!sequenceView.isPlaying){
+                                sequenceView.play(self.model.get('fps'));
+                            }
+                        }
+                        else{
+
+                        }
+
+                    }
+                    else{
+                        sequenceView.$el.hide();
+                        sequenceView.pause();
+                    }
                 });
 
-                return this;
             },
 
 
-            play : function (startFrame) {
+            play : function () {
                 "use strict";
-
                 if (this.isPlaying) return;
 
-                //play all sequence-views
-                _.each(this.sequenceViews, function (sequenceView) {
-                    sequenceView.play(startFrame);
-                });
+                this.isPlaying = true;
+                this.playheadChangeHandler();
+                this.playTimer = window.setInterval(this.playTimerUpdateHandler, 1000 / this.model.get('fps'))
 
-                //i don't like this, but have no either how i should manage this
-                //via requestAnimationFrame
-                var self = this;
-                this.playTimer = window.setInterval(function () {
-                    self.model.set('playhead', self.model.get('playhead') + 1);
-                }, 1000 / this.model.get('fps'))
+            },
 
+
+            playTimerUpdateHandler : function () {
+                "use strict";
+                if(!this.isPlaying) return;
+                this.model.set('playhead', this.model.get('playhead') + 1);
+            },
+
+            isSequenceVisibleAtCurrentPlayheadPosition : function (sequenceView) {
+                "use strict";
+                var model = sequenceView.model;
+                return  this.model.get('playhead') >= model.get('position') &&
+                    this.model.get('playhead') <= (model.get('position') + model.get('duration') * this.model.get('fps'));
             },
 
             pause : function () {
@@ -165,6 +195,8 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
 
                 window.clearInterval(this.playTimer);
                 this.playTimer = null;
+
+                this.isPlaying = false;
 
                 //pause all sequence-views
                 _.each(this.sequenceViews, function (sequenceView) {
@@ -175,7 +207,6 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/composition', 'view/s
             togglePlayPause : function () {
                 "use strict";
                 this.isPlaying ? this.pause() : this.play();
-                this.isPlaying = !this.isPlaying;
             },
 
             destroy : function () {

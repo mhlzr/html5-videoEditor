@@ -1,33 +1,35 @@
-define(['backbone', 'underscore', 'jstorage'],
+define(['backbone', 'device'],
 
-    function (Backbone, _) {
+    function (Backbone, Device) {
 
         return Backbone.Model.extend({
 
             defaults : {
                 useExternalPreview        : true,
                 autoUpload                : true,
-                autoTranscode             : true,
+                autoTranscode             : false,
                 autoHideNavigatorOnRotate : true,
                 serverMetaDataExclusive   : false
             },
 
             initialize : function () {
-
-                console.log('SETTINGS.JS::INIT');
-
-                _.bindAll(this, 'saveSettingsToLocalStorage', 'readSettingsFromLocalStorage');
-
                 this.on('change', this.saveSettingsToLocalStorage);
                 this.readSettingsFromLocalStorage();
             },
 
             readSettingsFromLocalStorage : function () {
-                //TODO  readSettingsFromLocalStorage
+                var settings = Device.getSettingsFromLocalStorage(),
+                    self = this;
+
+                if (!settings) return; //no settings stored on this machine
+
+                _.each(settings, function (value, key) {
+                    self.set(key, value);
+                })
             },
 
             saveSettingsToLocalStorage : function () {
-                //TODO saveSettingsToLocalStorage
+                Device.saveSettingsToLocalStorage(this.toJSON());
             }
 
         });

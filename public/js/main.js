@@ -3,33 +3,35 @@ require.config({
     'locale' : 'en_us',
 
     'paths' : {
-        'underscore'        : 'lib/underscore',
-        'backbone'          : 'lib/backbone',
-        'backbone-rel'      : 'lib/backbone-relational',
-        'backbone-m-binder' : 'lib/Backbone.ModelBinder.min',
-        'backbone-c-binder' : 'lib/Backbone.CollectionBinder.min',
-        'backbone-bind'     : 'lib/backbone.iobind',
-        'backbone-sync'     : 'lib/backbone.iosync',
-        'jquery'            : 'lib/jquery-1.8.1',
-        'jquery++'          : 'lib/jquerypp',
-        'jquery-mousewheel' : 'lib/jquery.mousewheel',
-        'jquery-scrollTo'   : 'lib/jquery.scrollTo',
-        'json2'             : 'lib/json2',
-        'jstorage'          : 'lib/jstorage',
-        'toe'               : 'lib/toe.built',
-        'qrcode'            : 'lib/jquery.qrcode.min',
-        'socket'            : 'lib/socket.io',
-        'screenfull'        : 'lib/screenfull',
-        'modernizr'         : 'lib/modernizr-2.6.2',
-        'hbs'               : 'lib/hbs',
-        'handlebars'        : 'lib/handlebars',
-        'i18nprecompile'    : 'lib/i18nprecompile',
-        'app'               : 'application',
-        'config'            : 'config',
-        'controller'        : 'controller',
-        'info'              : 'modules/info',
-        'device'            : 'modules/device',
-        'utils'             : 'modules/utils'
+        'underscore'          : 'lib/underscore',
+        'backbone'            : 'lib/backbone',
+        'backbone-rel'        : 'lib/backbone-relational',
+        'backbone-m-binder'   : 'lib/Backbone.ModelBinder.min',
+        'backbone-c-binder'   : 'lib/Backbone.CollectionBinder.min',
+        'backbone-bind'       : 'lib/backbone.iobind',
+        'backbone-sync'       : 'lib/backbone.iosync',
+        'jquery'              : 'lib/jquery-1.8.1',
+        'jquery-ui'           : 'lib/jquery-ui-1.9.2.custom',
+        'jquery-ui-rotatable' : 'lib/jquery.ui.rotatable',
+        'jquery++'            : 'lib/jquerypp',
+        'jquery-mousewheel'   : 'lib/jquery.mousewheel',
+        'jquery-scrollTo'     : 'lib/jquery.scrollTo',
+        'json2'               : 'lib/json2',
+        'jstorage'            : 'lib/jstorage',
+        'toe'                 : 'lib/toe.built',
+        'qrcode'              : 'lib/jquery.qrcode.min',
+        'socket'              : 'lib/socket.io',
+        'screenfull'          : 'lib/screenfull',
+        'modernizr'           : 'lib/modernizr-2.6.2',
+        'hbs'                 : 'lib/hbs',
+        'handlebars'          : 'lib/handlebars',
+        'i18nprecompile'      : 'lib/i18nprecompile',
+        'app'                 : 'application',
+        'config'              : 'config',
+        'controller'          : 'controller',
+        'info'                : 'modules/info',
+        'device'              : 'modules/device',
+        'utils'               : 'modules/utils'
     },
 
     'hbs' : {
@@ -73,6 +75,14 @@ require.config({
 
         'info' : {
             deps : ['jquery']
+        },
+
+        'jquery-ui' : {
+            deps : ['jquery']
+        },
+
+        'jquery-ui-rotatable' : {
+            deps : ['jquery-ui', 'jquery']
         },
 
         'jquery++' : {

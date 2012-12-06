@@ -70,6 +70,7 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                     pos = parseInt($el.css('left').replace('px', ''));
 
                 //store the changes to the model
+                if(!id) return;
                 this.model.get('sequences').get(id).set('position', pos / Config.GUI_TIMELINE_PIXEL_PER_FRAME);
 
             },
@@ -126,11 +127,12 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                     $infoContainer = this.$('#layerInfoContainer'),
                     totalWidth = this.model.getTotalFrames() * Config.GUI_TIMELINE_PIXEL_PER_FRAME,
                     fps = this.model.get('fps'),
+                    fpsScaleFactor = fps / (sequence.get('fps') > 0  ? sequence.get('fps') : 1),
                     data;
 
                 data = _.extend(sequence.toJSON(), {
                     totalWidth  : totalWidth,
-                    barWidth    : sequence.get('duration') * fps * Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0,
+                    barWidth    : sequence.get('duration') / fpsScaleFactor * fps * Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0,
                     barPosition : sequence.get('position') * Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0
                 });
 

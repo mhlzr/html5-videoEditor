@@ -31,7 +31,7 @@
         <div id="projectInfo"></div>
         <div id="projectControl">
             <button id="settings" class="settings" title="Settings"></button>
-            <button id="share" class="share" title="Export"></button>
+            <button id="shareProject" class="share" title="Export"></button>
             <button id="toggleFullscreen" class="fullscreen" title="Toggle fullscreen" disabled></button>
         </div>
     </header>
@@ -68,7 +68,16 @@
             <nav id="stageControl">
                 <button id="toggleNavigator" class="left"></button>
                 <div>
-                    Composition: XYZ
+                    <select id="stageZoom">
+                        <option value="0.25">25%</option>
+                        <option value="0.5">50%</option>
+                        <option value="0.75">75%</option>
+                        <option value="1" selected>100%</option>
+                        <option value="1.5">150%</option>
+                        <option value="1.75">175%</option>
+                        <option value="2">200%</option>
+                    </select>
+                    <label for="stageZoom">Zoom</label>
                 </div>
             </nav>
             <div id="stage"></div>

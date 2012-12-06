@@ -3,18 +3,21 @@
  * Date: 09.09.12
  * Time: 13:18
  */
-define(['modernizr', 'screenfull', 'underscore', 'jstorage'], function (Modernizr, Screenfull, _) {
+define(['modernizr', 'screenfull', 'config', 'underscore', 'jstorage'], function (Modernizr, Screenfull, Config, _) {
 
 
         return{
 
-            capabilities : null,
-
             width  : 0,
             height : 0,
 
+            hasAudio             : Modernizr.audio,
+            hasCanvas            : Modernizr.canvas,
             hasFullScreenSupport : Screenfull.enabled,
-
+            hasTouch             : Modernizr.touch,
+            hasVideo             : Modernizr.video,
+            hasWebgl             : Modernizr.webgl,
+            hasZoom              : 'zoom' in window.document.body.style,
 
             isMobile : function () {
                 //http://detectmobilebrowsers.com/
@@ -32,8 +35,8 @@ define(['modernizr', 'screenfull', 'underscore', 'jstorage'], function (Moderniz
                 return Modernizr.audio[format] === 'probably';
             },
 
-            runBrowserSupportTest : function () {
-                return true;
+            isBrowserSufficient : function () {
+                return this.hasAudio && this.hasCanvas && this.hasVideo;
             },
 
             setWindowDimensions : function (w, h) {
@@ -47,6 +50,23 @@ define(['modernizr', 'screenfull', 'underscore', 'jstorage'], function (Moderniz
                 if (this.hasFullScreenSupport) {
                     Screenfull.toggle();
                 }
+            },
+
+            saveSettingsToLocalStorage : function (settings) {
+                "use strict";
+
+                if ($.jStorage.storageAvailable()) {
+                    $.jStorage.set(Config.USER_SETTINGS_ID, settings);
+                }
+            },
+
+            getSettingsFromLocalStorage : function () {
+                "use strict";
+
+                if ($.jStorage.storageAvailable()) {
+                    return $.jStorage.get(Config.USER_SETTINGS_ID);
+                }
+                return null;
             },
 
             saveProjectToLocalStorage : function (id, title, date) {
@@ -64,7 +84,7 @@ define(['modernizr', 'screenfull', 'underscore', 'jstorage'], function (Moderniz
                 "use strict";
 
                 if ($.jStorage.storageAvailable()) {
-                    $.jStorage.deleteKey(id)
+                    $.jStorage.deleteKey(id);
                 }
             },
 
@@ -77,7 +97,11 @@ define(['modernizr', 'screenfull', 'underscore', 'jstorage'], function (Moderniz
                 var localProjects = [];
 
                 _.each($.jStorage.index(), function (id) {
-                    localProjects.push(_.extend($.jStorage.get(id), {id : id}));
+                    //settings should not be included
+                    if (id !== Config.USER_SETTINGS_ID) {
+                        localProjects.push(_.extend($.jStorage.get(id), {id : id}));
+                    }
+
                 });
 
                 return localProjects;
@@ -88,4 +112,5 @@ define(['modernizr', 'screenfull', 'underscore', 'jstorage'], function (Moderniz
         }
 
     }
-);
+)
+;

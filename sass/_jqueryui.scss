@@ -1,0 +1,70 @@
+@import 'globals';
+
+.ui-resizable-handle {
+  width: 50px;
+  height: 50px;
+  display: block;
+  border-style: solid;
+  border-color: $selectedColor;
+  border-width: 0;
+  position: absolute;
+  z-index: 99999;
+
+}
+
+.ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle {
+  display: none;
+}
+
+.ui-resizable-se {
+  bottom: -5px;
+  border-bottom-width: 5px;
+  right: -5px;
+  border-right-width: 5px;
+  cursor: se-resize;
+}
+
+.ui-resizable-sw {
+  bottom: -5px;
+  border-bottom-width: 5px;
+  cursor: sw-resize;
+  left: -5px;
+  border-left-width: 5px;
+}
+
+.ui-resizable-nw {
+  top: -5px;
+  border-top-width: 5px;
+  cursor: nw-resize;
+  left: -5px;
+  border-left-width: 5px;
+}
+
+.ui-resizable-ne {
+  top: -5px;
+  border-top-width: 5px;
+  right: -5px;
+  border-right-width: 5px;
+  cursor: ne-resize;
+}
+
+.ui-rotatable-handle {
+  background: #f5dc58;
+  border: 1px solid #FFF;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -o-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  cursor: pointer;
+
+  height: 10px;
+  left: 50%;
+  margin: 0 0 0 -5px;
+  position: absolute;
+  top: -5px;
+  width: 10px;
+}
+
+.ui-rotatable-handle.clone {
+  visibility: hidden;
+}

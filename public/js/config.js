@@ -8,10 +8,10 @@ define(function () {
 
         'DEBUG' : true,
 
-        'API_HOST' : '192.168.178.34',
+        'API_HOST' : window.location.host,
         'API_PORT' : 80,
 
-        'WEBSOCKET_HOST' : '192.168.178.34',
+        'WEBSOCKET_HOST' : window.location.host,
         'WEBSOCKET_PORT' : 3000,
 
         'UPLOADER_CHUNK_SIZE'            : 1048576, //1MB
@@ -25,13 +25,17 @@ define(function () {
             'audio' : ['mp3', 'ogg'],
             'image' : ['jpeg']
         },
+        'MEDIA_VIDEO_MIN_WIDTH'              : 100,
+        'MEDIA_VIDEO_MIN_HEIGHT'             : 100,
 
         'GUI_MIN_WINDOW_WIDTH'    : 800,
         'GUI_MIN_WINDOW_HEIGHT'   : 500,
         'GUI_MAX_FILENAME_LENGTH' : 32,
 
-        GUI_TIMELINE_PIXEL_PER_FRAME    : 3,
-        GUI_TIMELINE_CANVAS_MAX_WIDTH   : 1000,
-        GUI_TIMELINE_AUTOSCROLL_PADDING : 20,
+        'GUI_TIMELINE_PIXEL_PER_FRAME'    : 3,
+        'GUI_TIMELINE_CANVAS_MAX_WIDTH'   : 1000,
+        'GUI_TIMELINE_AUTOSCROLL_PADDING' : 20,
+
+        'USER_SETTINGS_ID' : 'settings'
     };
 });

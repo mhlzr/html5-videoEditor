@@ -1,13 +1,26 @@
-<div id="videoPreview" class="{{this.cuttingMode}}">
-    <div class="video">TEST TEST</div>
-    <div class="controls">
-        <input type="range" name="points" min="0" max="{{this.duration}}" />
-        <button class="frameRewind"></button>
-        <button class="framePrev"></button>
-        <button class="frameIn"></button>
-        <button class="play"></button>
-        <button class="frameOut"></button>
-        <button class="frameNext"></button>
-        <button class="frameForward"></button>
+<div id="previewDialogue" class="cut">
+
+    <button class="close-reveal-modal close"></button>
+
+    <div style="clear:both"></div>
+
+    <div class="video">
+        <video src="{{this.videoUrl}}"></video>
     </div>
+
+    <div class="controls">
+
+        <input type="range" name="points" min="0" max="{{this.duration}}"/>
+
+        <div class="buttonbar">
+            <button class="frameRewind"></button>
+            <button class="framePrev"></button>
+            <button class="frameIn"></button>
+            <button class="play"></button>
+            <button class="frameOut"></button>
+            <button class="frameNext"></button>
+            <button class="frameForward"></button>
+        </div>
+    </div>
+
 </div>

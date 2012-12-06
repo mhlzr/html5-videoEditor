@@ -4,8 +4,8 @@
  * Time: 17:10
  */
 define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'model/file', 'model/sequence',
-    'model/composition', 'view/projectBrowseView', 'view/compositionView', 'view/timelineView', 'view/compositionCreateView', 'view/sequenceCutView', 'qrcode'],
-    function ($, _, Config, Device, Info, AssetModel, FileModel, SequenceModel, CompositionModel, ProjectBrowseView, CompositionView, TimelineView, CompositionCreateView, SequenceCutView) {
+    'model/composition', 'view/projectBrowseView', 'view/compositionView', 'view/timelineView', 'view/compositionCreateView', 'view/sequenceCutView', 'view/projectExportView', 'view/settingsView'],
+    function ($, _, Config, Device, Info, AssetModel, FileModel, SequenceModel, CompositionModel, ProjectBrowseView, CompositionView, TimelineView, CompositionCreateView, SequenceCutView, ProjectExportView, SettingsView) {
 
         return  {
 
@@ -61,8 +61,8 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
 
                 $('#navigatorControl li').on('click', this.navigatorControlClickHandler);
 
-                //Dialog-Buttons
-                $('#createCompositionBtn').on('click', this.createComposition);
+                //Zoom Dropdown
+                $('#stageZoom').on('change', this.stageZoomChangeHandler);
 
                 return this;
             },
@@ -148,6 +148,7 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                             duration      : asset.get('duration'),
                             width         : asset.get('width'),
                             height        : asset.get('height'),
+                            fps           : asset.get('fps'),
                             position      : 0
                         }
                     )
@@ -180,9 +181,8 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 }
 
                 //TODO effect
-                else {
-                    console.log('NOTHING');
-                }
+                //else if{}
+
 
             },
 
@@ -190,12 +190,17 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 "use strict";
 
                 //default
-                var cancelOption = cancellable === undefined ? true : cancellable;
+                var cancelOption = cancellable === undefined ? true : cancellable,
+                    $dialogue = $('#dialogue').css('top', ''); //reveal sets top inline
 
-                //create dialogue-DIV and append it
-                $('body').append('<div id="dialogue" class="reveal-modal"></div>');
+                //create dialogue-DIV and append it if needed
+                if ($dialogue.length < 1) {
+                    $('body').append('<div id="dialogue" class="reveal-modal"></div>');
+                    $dialogue = $('#dialogue');
+                }
 
-                var $dialogue = $('#dialogue');
+                //always reset to default
+                $dialogue.removeClass('fullscreen').addClass('standard');
 
                 switch (dialogueViewName) {
 
@@ -210,9 +215,13 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                     case 'sequenceCut' :
                         app.currentDialogue = new SequenceCutView({
                             el          : $dialogue,
-                            model       : app.currentSequence.model,
+                            model       : app.views.timeline.currentSequence.model,
                             cuttingMode : true
                         });
+                        $dialogue.addClass('fullscreen').removeClass('standard');
+                        break;
+
+                    case 'assetPreview' :
                         break;
 
                     case 'projectBrowser' :
@@ -221,6 +230,21 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                             model : app.project
                         });
                         app.currentDialogue.cancellable = cancelOption;
+                        break;
+
+                    case 'exportProject' :
+                        app.currentDialogue = new ProjectExportView({
+                            el    : $dialogue,
+                            model : app.project
+                        });
+                        break;
+
+                    case 'settings' :
+                        app.currentDialogue = new SettingsView({
+                            el    : $dialogue,
+                            model : app.settings
+                        });
+                        break;
                 }
 
                 if (app.currentDialogue) {
@@ -321,6 +345,12 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 }
             },
 
+            stageZoomChangeHandler : function () {
+                "use strict";
+                if (!app.views.composition) return;
+                app.views.composition.scale(parseFloat($(this).val()));
+            },
+
             buttonHandler : function (e) {
 
                 switch (e.target.id) {
@@ -334,9 +364,11 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                             $(this).toggleClass('pause play');
                         }
                         break;
-                    case 'share' :
-                        Info.reveal($('#exportDialogue'));
-                        $('#qrcode').empty().qrcode(window.location.href);
+                    case 'shareProject' :
+                        self.showDialogue('exportProject', true);
+                        break;
+                    case 'settings' :
+                        self.showDialogue('settings', true);
                         break;
                     case 'startBtn'  :
                         app.uploader.start();
@@ -344,7 +376,6 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                     case 'stopBtn' :
                         app.uploader.stop();
                         break;
-
                     case 'toggleNavigator' :
                         self.toggleNavigator();
                         break;

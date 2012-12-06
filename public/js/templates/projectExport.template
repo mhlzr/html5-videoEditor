@@ -1,13 +1,16 @@
-<div id="exportDialogue" class="reveal-modal">
-    <h1>Export</h1>
+<div id="exportProject">
+    <h1>Share/Export</h1>
+
+    <button class="close-reveal-modal close"></button>
 
     <h2>Private URL</h2>
 
-    <p>This link gives anybody full control over this project.</p>
+    <input type="text" readonly value="{{url}}"/>
 
-    <p><a href="http://lorem">http://www.lorem.de</a></p>
-
-    <div id="screen">fff</div>
     <div id="qrcode"></div>
-    <a class="close-reveal-modal">&#215;</a>
+    <div class="desc">
+        <p>This link gives anybody full control over this project, so think about with whom you share it.</p>
+        <p>If you only want to share a composition have a look in the navigator.</p></div>
+    <button class="okay">Okay</button>
+
 </div>

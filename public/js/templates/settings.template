@@ -1,0 +1,37 @@
+<div id="settings">
+
+    <h1>Settings</h1>
+
+    <button class="close-reveal-modal close"></button>
+
+    <fieldset>
+        <legend>Client</legend>
+
+        <input id="useExternalPreview" type="checkbox" disabled {{#if useExternalPreview }}checked{{/if}}/>
+        <label for="useExternalPreview">Use External Preview</label>
+
+        <input id="autoHideNavigatorOnRotate" type="checkbox" {{#if autoHideNavigatorOnRotate }}checked{{/if}}/>
+        <label for="autoHideNavigatorOnRotate">Hide Navigator in portrait-mode (Mobile/tablet only)</label>
+
+        <input id="autoUpload" type="checkbox" {{#if autoUpload }}checked{{/if}}/>
+        <label for="autoUpload">Upload assets automatically</label>
+
+
+    </fieldset>
+
+    <fieldset>
+        <legend>Server</legend>
+
+        <input id="serverMetaDataExclusive" type="checkbox" {{#if serverMetaDataExclusive }}checked{{/if}}/>
+        <label for="serverMetaDataExclusive">Use server-metadata exclusively</label>
+
+        <input id="autoTranscode" type="checkbox" {{#if autoTranscode }}checked{{/if}}/>
+        <label for="autoTranscode">Auto-transcode videos</label>
+
+    </fieldset>
+
+    <button class="okay">Okay</button>
+
+
+
+</div>

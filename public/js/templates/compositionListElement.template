@@ -6,19 +6,19 @@
 
     <div class="status">Status</div>
 
-    <progress min="0" max="100" value="100"></progress>
+    <progress max="100" value="100"></progress>
 
     <div class="info">
         <span class="resolution">{{this.width}}x{{this.height}}</span>
         <span class="timecode">{{this.timecode}}</span>
     </div>
 
-    <!--div class="controls">
-    <div>
-        <button class="settings"></button>
-        <button class="share"></button>
-        <button class="encode"></button>
-        <button class="download"></button>
+    <div class="controls">
+        <div>
+            <button class="settings" data-cmd="settings" disabled></button>
+            <button class="share" data-cmd="share" disabled></button>
+            <button class="encode" data-cmd="encode"></button>
+            <button class="download" data-cmd="download" disabled></button>
+        </div>
     </div>
-</div-->
 </div>

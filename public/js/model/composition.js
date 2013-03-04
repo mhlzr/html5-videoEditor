@@ -112,6 +112,16 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
 
             },
 
+            sendEncodingRequest : function () {
+                "use strict";
+
+                app.socket.emit('encode', {
+                    'projectId'     : app.project.id,
+                    'compositionId' : this.id,
+                    'format'        : {'foo' : 'bat'}
+                });
+            },
+
             destroyHandler : function () {
                 "use strict";
                 var self = this;

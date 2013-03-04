@@ -4,7 +4,7 @@ define(['underscore', 'backbone', 'jquery', 'hbs!templates/projectBrowser', 'mod
 
         return Backbone.View.extend({
 
-            //couldm't get this view to work with a form and submit-button
+            //couldn't get this view to work with a form and submit-button
             //the submit event never got prevented, so now pressing enter
             //will do nothing :(
 

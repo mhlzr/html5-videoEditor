@@ -4,7 +4,8 @@ var fs = require('fs'),
     wrench = require('wrench');
 
 var PROJECTS_PATH = __dirname + '/../public/projects/',
-    ASSETS_SUBDIR = '/assets/';
+    ASSETS_SUBDIR = '/assets/',
+    COMPOSITIONS_SUBDIR = '/compositions';
 
 /**
  * Used to simplify  the access to the database
@@ -22,7 +23,7 @@ exports.createManager = function () {
     this.sequences = require('./../models/sequences');
     this.assets = require('./../models/assets').init(this.files);
     this.compositions = require('./../models/compositions').init(this.files, this.sequences);
-    this.projects = require('./../models/projects').init(this.assets, this.compositions, PROJECTS_PATH, ASSETS_SUBDIR);
+    this.projects = require('./../models/projects').init(this.assets, this.compositions, PROJECTS_PATH, ASSETS_SUBDIR, COMPOSITIONS_SUBDIR);
 
     return this;
 

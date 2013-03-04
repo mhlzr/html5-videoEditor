@@ -67,13 +67,12 @@ exports.remove = function (data, callback) {
 
     });
 
-}
+};
 
 
 exports.getSequencesByCompositionId = function (data, callback) {
     "use strict";
     db.sequences.find({compositionId : data.id}, function onFound(err, docs) {
-        console.log('PROJECTS.JS::SEQUENCES SERVED WITH', docs.length, 'SEQUENCES');
         if (err) throw err;
 
         //the whole _id/id thing created a mess in the file-Model

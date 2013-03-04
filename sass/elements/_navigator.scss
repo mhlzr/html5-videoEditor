@@ -50,7 +50,6 @@
       float: left;
       clear: both;
       height: 2px;
-      width: 290px;
 
       &:after {
         clear: both;
@@ -160,6 +159,7 @@
       height: 100%;
 
       progress {
+        width: 290px;
         margin: 2px 0px 0px 55px;
       }
 
@@ -249,9 +249,10 @@
     background-image: url("../img/icon_composition.svg");
     padding: 5px 0px 0px 55px;
     display: block;
+    overflow: hidden;
 
     .title, .status, .info {
-      width: 290px;
+      width: 340px;
     }
 
     .title {
@@ -265,9 +266,15 @@
     }
 
     progress {
+      width: 340px;
       margin-top: 2px;
       height: 2px;
       @include progressbar($progressBarStandardColor, $progressBarActiveColor);
+
+      &:after {
+        left: 315px !important;
+        top: -20px !important;
+      }
     }
 
     .info {
@@ -285,9 +292,11 @@
       }
     }
 
-    /*div.controls {
-      width: 100%;
-      height: 32px + 2 * 5px;
+    div.controls {
+
+      position: relative;
+      left: 96px;
+      top: -57px;
 
       div {
         height: 100%;
@@ -300,11 +309,10 @@
         display: table-cell;
         vertical-align: middle;
         float: left;
-        margin: 5px 10px 10px 3px;
       }
 
     }
-*/
+
   }
 }
 

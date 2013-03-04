@@ -7,13 +7,14 @@ var fs = require('fs'),
     compositions = null;
 
 
-exports.init = function (assets, compositions, projectsPath, assetPath) {
+exports.init = function (assets, compositions, projectsPath, assetPath, compPath) {
     "use strict";
 
     this.assets = assets;
     this.compositions = compositions;
     this.projectsPath = projectsPath;
     this.assetPath = assetPath;
+    this.compositionPath = compPath;
 
     return this;
 };
@@ -62,9 +63,11 @@ exports.create = function (data, callback) {
 
             createDir(exports.projectsPath + data.assetFolder, function onComplete(err) {
                 createDir(exports.projectsPath + data.assetFolder + exports.assetPath, function onComplete(err) {
-                    callback(err, {
-                        _id         : docs._id,
-                        assetFolder : docs.assetFolder
+                    createDir(exports.projectsPath + data.assetFolder + exports.compositionPath, function onComplete(err) {
+                        callback(err, {
+                            _id         : docs._id,
+                            assetFolder : docs.assetFolder
+                        });
                     });
                 });
             });

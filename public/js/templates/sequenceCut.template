@@ -4,22 +4,18 @@
 
     <div style="clear:both"></div>
 
-    <div class="video">
-        <video src="{{this.videoUrl}}"></video>
-    </div>
+    <div class="video"></div>
 
     <div class="controls">
 
-        <input type="range" name="points" min="0" max="{{this.duration}}"/>
-
         <div class="buttonbar">
-            <button class="frameRewind"></button>
-            <button class="framePrev"></button>
-            <button class="frameIn"></button>
-            <button class="play"></button>
-            <button class="frameOut"></button>
-            <button class="frameNext"></button>
-            <button class="frameForward"></button>
+            <button class="frameRewind" data-cmd="frameRewind"></button>
+            <button class="framePrev" data-cmd="framePrev"></button>
+            <button class="frameIn" data-cmd="frameIn"></button>
+            <button class="play" data-cmd="togglePlay"></button>
+            <button class="frameOut" data-cmd="frameOut"></button>
+            <button class="frameNext" data-cmd="frameNext"></button>
+            <button class="frameForward" data-cmd="frameForward"></button>
         </div>
     </div>
 

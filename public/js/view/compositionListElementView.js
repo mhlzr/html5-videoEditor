@@ -8,6 +8,23 @@ define(['jquery', 'underscore', 'backbone', 'utils', 'hbs!templates/compositionL
             tagName   : 'div',
             className : 'composition',
 
+            events : {
+                'click button' : 'buttonClickHandler'
+            },
+
+            buttonClickHandler : function (e) {
+                var cmd = ($(e.target).attr('data-cmd'));
+
+                switch (cmd) {
+                    case 'encode' :
+                        this.model.sendEncodingRequest();
+                        break;
+                    default:
+                        break;
+                    //TODO other cases
+                }
+            },
+
             render : function () {
 
                 return Template(_.extend(this.model.toJSON(), {

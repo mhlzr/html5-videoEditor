@@ -6,6 +6,7 @@ var express = require('express'),
     fs = require('fs'),
     manager = require('./modules/manager').createManager(),
     encoder = require('./modules/encoder'),
+    avisynth = require('./modules/avisynth'),
     metadata = require('./modules/metadata');
 
 
@@ -193,7 +194,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     /*
-     TRANSCODER
+     TRANSCODE REQUEST
      */
 
     socket.on('transcode', function (data) {
@@ -201,7 +202,6 @@ io.sockets.on('connection', function (socket) {
 
         if (!data.projectId || !data.fileId || !data.originalFileId || !data.format) {
             throw new Error('Missing parameters for transcoding!');
-
         }
 
         var settings = {};
@@ -237,9 +237,68 @@ io.sockets.on('connection', function (socket) {
                 });
             });
         });
-
-
     });
+
+
+    socket.on('encode', function (data) {
+        "use strict";
+
+        if (!data.projectId || !data.compositionId || !data.format) {
+            throw new Error('Missing parameters for encoding!');
+        }
+
+        var settings = {};
+        settings.seqs = [];
+
+        //get composition by id
+        manager.compositions.read({_id : data.compositionId }, function onFound(err, docs) {
+
+            settings.width = docs.width * docs.scale | 0;
+            settings.height = docs.height * docs.scale | 0;
+            settings.fps = docs.fps;
+            settings.duration = docs.duration;
+            settings.fileName = docs.name + '.' + data.format.ext;
+
+            //get all sequences that are used in the composition
+            manager.sequences.getSequencesByCompositionId({id : data.compositionId}, function onFound(err, seqs) {
+
+                //check if any sequences belong to composition
+                if (seqs.length < 1) return;
+
+                var seq;
+                for (var i = 0; i < seqs.length; i++) {
+                    seq = seqs[i];
+                    //get original files related to sequence by assetid
+                    manager.files.getFilesByAssetId({id : seq.assetId}, function onFound(err, files) {
+
+                        for (var j = 0; j < files.length; j++) {
+
+                            if (files[j].isOriginal) {
+                                //store filepath
+                                seq.fileName = files[j].remoteFileName + '.' + files[j].ext;
+                                settings.seqs.push(seq);
+                            }
+                        }
+
+                        //create AVS-script
+                        var avsString = avisynth.createAVSFromComposition(settings);
+
+                        console.log(avsString);
+                        //create avisynth-file
+                       // fs.appendFile('message.txt', 'data to append', function (err) {
+//
+                       // });
+
+                        //send to encoder
+                    });
+                }
+            });
+        });
+    });
+
+    /*
+     ENCODER EVENTS
+     */
 
     encoder.on('transcoding:progress', function onTranscodingProgress(event) {
 
@@ -261,7 +320,6 @@ io.sockets.on('connection', function (socket) {
     });
 
     /*
-     //ENCODER EVENTS
      encoder.on('encoding:complete', function onEncodingComplete() {
 
      });

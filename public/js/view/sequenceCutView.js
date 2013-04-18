@@ -25,21 +25,21 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
         buttonClickHandler : function (e) {
             "use strict";
 
-            var $target = $(e.target);
-            console.log(this.video);
+            var $target = $(e.target),
+                fps = this.model.get('fps') | 0;
 
             switch ($target.attr('data-cmd')) {
                 case 'frameRewind' :
-                    this.rewind(this.model.fps);
+                    this.rewind(1);
                     break;
                 case 'framePrev' :
-                    this.rewind(1 / this.model.fps);
+                    this.rewind(1 / fps);
                     break;
                 case 'frameForward' :
-                    this.forward(this.model.fps);
+                    this.forward(1);
                     break;
                 case 'frameNext' :
-                    this.forward(1 / this.model.fps);
+                    this.forward(1 / fps);
                     break;
 
                 case 'togglePlay' :
@@ -53,6 +53,15 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
                     }
                     this.isPlaying = !this.isPlaying;
                     break;
+
+                case 'frameIn' :
+                    this.setMarker('inFrame');
+                    break;
+                case 'frameOut' :
+                    this.setMarker('outFrame');
+                    break;
+
+
             }
         },
 
@@ -76,12 +85,37 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
 
         rewind : function (frames) {
             "use strict";
-            if (this.isReady()) this.video.currentTime = this.video.currentTime - frames;
+            this.seek(frames, -1);
         },
 
         forward : function (frames) {
             "use strict";
-            if (this.isReady()) this.video.currentTime = this.video.currentTime + frames;
+            this.seek(frames, 1);
+        },
+
+        seek : function (frames, dir) {
+            "use strict";
+            var seek = this.video.currentTime + ((dir < 1) ? frames * -1 : frames);
+            if (this.isReady() && seek <= this.video.duration && seek >= 0) this.video.currentTime = seek;
+        },
+
+        setMarker : function (type) {
+            "use strict";
+            var fps = this.model.get('fps'),
+                current = this.video.currentTime,
+                currentMarkerPosition = fps * current;
+
+            console.log(currentMarkerPosition, this.model.get('inFrame'), this.model.get('outFrame'));
+            if (type === 'inFrame' && currentMarkerPosition > this.model.get('outFrame')) {
+                window.alert('inMarker can\'t be higher than outMarker');
+            }
+            else if (type === 'outFrame' && currentMarkerPosition < this.model.get('inFrame')) {
+                window.alert('outMarker can\'t be lower than inMarker');
+            }
+            else {
+                this.model.set(type, currentMarkerPosition | 0);
+            }
+
         },
 
         isReady : function () {

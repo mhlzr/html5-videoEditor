@@ -5,7 +5,7 @@ var fs = require('fs'),
 
 var PROJECTS_PATH = __dirname + '/../public/projects/',
     ASSETS_SUBDIR = '/assets/',
-    COMPOSITIONS_SUBDIR = '/compositions';
+    COMPOSITIONS_SUBDIR = '/compositions/';
 
 /**
  * Used to simplify  the access to the database
@@ -39,9 +39,12 @@ exports.createManager = function () {
  * @return {String} absolute Path
  */
 
-exports.getAbsoluteFilePath = function (projectDir, fileName) {
-    if (!fileName) return PROJECTS_PATH + projectDir + ASSETS_SUBDIR;
-    else return PROJECTS_PATH + projectDir + ASSETS_SUBDIR + fileName;
+exports.getAbsoluteFilePath = function (projectDir, fileName, type) {
+    var dir = ASSETS_SUBDIR;
+    if (type === 'compositions') dir = COMPOSITIONS_SUBDIR;
+
+    if (!fileName) return PROJECTS_PATH + projectDir + dir;
+    else return PROJECTS_PATH + projectDir + dir + fileName;
 };
 
 

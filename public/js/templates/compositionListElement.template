@@ -4,7 +4,7 @@
         {{this.name}}
     </div>
 
-    <div class="status">Status</div>
+    <div class="status">{{this.status}}</div>
 
     <progress max="100" value="100"></progress>
 

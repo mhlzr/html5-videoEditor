@@ -26,6 +26,10 @@ button {
     cursor: pointer;
   }
 
+  &:active{
+    @include transform(scale(0.8));
+  }
+
   &[disabled] {
     cursor: default;
     opacity: 0.4;
@@ -59,6 +63,11 @@ button.add {
 
 button.remove {
   background: url('../img/icon_remove.svg');
+
+  &:active{
+    @include transition(transform 0.3s ease-out);
+    @include transform(rotate(90deg));
+  }
 }
 
 button.play {

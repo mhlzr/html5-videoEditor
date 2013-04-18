@@ -1,4 +1,4 @@
-<div class="layer" data-id="{{this.id}}" style="width:{{this.totalWidth}}px">
+<div class="layer" data-id="{{this.id}}" style="width:{{this.totalWidth}}px" data-stack="{{this.stack}}">
     <div class="{{this.type}} bar" style="left:{{this.barPosition}}px;width:{{this.barWidth}}px">
     </div>
 </div>

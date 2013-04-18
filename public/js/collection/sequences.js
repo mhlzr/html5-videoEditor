@@ -25,7 +25,7 @@ define(["backbone", "model/sequence"],
             //why we need a comparator
             comparator : function (sequence) {
                 "use strict";
-                return sequence.get('index')
+                return sequence.get('stack')
             }
 
         });

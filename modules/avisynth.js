@@ -1,9 +1,17 @@
 /**
  * @author Matthieu Holzer
  */
+var _ = require('underscore');
 
 exports.createAVSFromComposition = function (comp) {
     'use strict';
+
+    //sort sequences stacking
+    comp.seqs = _.sortBy(comp.seqs, function (seq) {
+        return seq.index;
+    });
+
+    comp.seqs.reverse();
 
     var avs = [];
 
@@ -11,7 +19,7 @@ exports.createAVSFromComposition = function (comp) {
     avs.push('LoadPlugin("C:\\Program Files (x86)\\AviSynth 2.5\\plugins\\ffms2.dll")');
 
     //Background
-    avs.push('base = BlankClip(length=' + comp.duration * comp.fps + ',width=' + comp.width + ', height=' + comp.height + ', pixel_type="RGB32", fps=' + comp.fps + ', color=$000000, audio_rate=44100')
+    avs.push('base = BlankClip(length=' + comp.duration * comp.fps + ',width=' + comp.width + ', height=' + comp.height + ', pixel_type="RGB32", fps=' + comp.fps + ', color=$000000, audio_rate=44100)');
 
     var relFilePath = '';
     //Creating all Streams (Clips)
@@ -22,10 +30,10 @@ exports.createAVSFromComposition = function (comp) {
         //Index file
         avs.push('FFIndex("' + relFilePath + '")');
 
-        avs.push('stream' + i + ' = AudioDub( FFVideoSource("' + relFilePath + '"), FFAudioSource("' + relFilePath + '")).ChangeFPS(' + comp.fps + ').BilinearResize(' + comp.seqs[i].width + ',' + comp.seqs[i].height + ')');
+        avs.push('stream' + i + ' = AudioDub( FFVideoSource("' + relFilePath + '"), FFAudioSource("' + relFilePath + '")).ChangeFPS(' + comp.fps + ').BilinearResize(' + comp.seqs[i].width + ',' + comp.seqs[i].height + ').Trim(' + comp.seqs[i].inFrame * comp.fps + ',-' + (comp.seqs[i].duration * comp.fps) + ')');
 
         //Stacking the videos
-        avs.push('o' + i + ' = ' + ((i == 0) ? 'base' : ('o' + (i - 1).toString())) + '.AddVideo(stream' + i + ', ' + comp.seqs[i].position + ', ' + (comp.seqs[i].position + comp.seqs[i].duration).toString() + ', ' + comp.seqs[i].x + ', ' + comp.seqs[i].y + ')');
+        avs.push('o' + i + ' = ' + ((i == 0) ? 'base' : ('o' + (i - 1).toString())) + '.AddVideo(stream' + i + ', ' + comp.seqs[i].position + ', ' + ((comp.seqs[i].position + comp.seqs[i].duration) * comp.fps).toString() + ', ' + comp.seqs[i].x + ', ' + comp.seqs[i].y + ')');
     }
 
 

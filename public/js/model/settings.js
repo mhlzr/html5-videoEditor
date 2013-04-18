@@ -7,7 +7,7 @@ define(['backbone', 'device'],
             defaults : {
                 useExternalPreview        : true,
                 autoUpload                : true,
-                autoTranscode             : false,
+                autoTranscode             : true,
                 autoHideNavigatorOnRotate : true,
                 serverMetaDataExclusive   : false
             },

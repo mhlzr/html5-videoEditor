@@ -47,6 +47,7 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
                 durationM : 5,
                 durationS : 30,
                 scale     : 1.0,
+                status    : 'Unencoded', //Unencoded, Encoding, Encoded
                 rotation  : 0,
                 publicId  : null //will be set server-side
             },
@@ -114,12 +115,16 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
 
             sendEncodingRequest : function () {
                 "use strict";
+                //TODO remove comment
+               // if (this.get('status') === 'Encoding') return;
 
                 app.socket.emit('encode', {
                     'projectId'     : app.project.id,
                     'compositionId' : this.id,
-                    'format'        : {'foo' : 'bat'}
+                    'format'        : {'foo' : 'bar'}
                 });
+
+                this.set('status', 'Encoding');
             },
 
             destroyHandler : function () {

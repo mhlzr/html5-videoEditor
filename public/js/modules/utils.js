@@ -62,7 +62,7 @@ define(function () {
             //DATE
 
             //today
-            if (new Date((now - date)).getHours() < 24) {
+            if (new Date((now - date)).getHours() > 24) {
                 cleanDateString.push('Today');
             }
             //not today! :)

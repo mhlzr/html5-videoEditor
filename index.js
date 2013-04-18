@@ -196,7 +196,6 @@ io.sockets.on('connection', function (socket) {
     /*
      TRANSCODE REQUEST
      */
-
     socket.on('transcode', function (data) {
         "use strict";
 
@@ -239,7 +238,9 @@ io.sockets.on('connection', function (socket) {
         });
     });
 
-
+    /*
+     ENCODE REQUEST
+     */
     socket.on('encode', function (data) {
         "use strict";
 
@@ -261,13 +262,18 @@ io.sockets.on('connection', function (socket) {
 
             //get all sequences that are used in the composition
             manager.sequences.getSequencesByCompositionId({id : data.compositionId}, function onFound(err, seqs) {
-
                 //check if any sequences belong to composition
                 if (seqs.length < 1) return;
 
-                var seq;
-                for (var i = 0; i < seqs.length; i++) {
-                    seq = seqs[i];
+                function addFileToSettings(i) {
+
+                    if (i >= seqs.length) {
+                        //complete
+                        createAVSFile();
+                        return;
+                    }
+
+                    var seq = seqs[i];
                     //get original files related to sequence by assetid
                     manager.files.getFilesByAssetId({id : seq.assetId}, function onFound(err, files) {
 
@@ -277,21 +283,31 @@ io.sockets.on('connection', function (socket) {
                                 //store filepath
                                 seq.fileName = files[j].remoteFileName + '.' + files[j].ext;
                                 settings.seqs.push(seq);
+
+                                addFileToSettings(i + 1);
                             }
                         }
-
-                        //create AVS-script
-                        var avsString = avisynth.createAVSFromComposition(settings);
-
-                        console.log(avsString);
-                        //create avisynth-file
-                       // fs.appendFile('message.txt', 'data to append', function (err) {
-//
-                       // });
-
-                        //send to encoder
                     });
                 }
+
+                addFileToSettings(0);
+
+
+                function createAVSFile() {
+                    //create AVS-script
+                    var avsString = avisynth.createAVSFromComposition(settings);
+
+                    //store to disk
+                    manager.projects.getProjectPathByProjectId(data.projectId, function onFound(projectFolder) {
+                        var path = manager.getAbsoluteFilePath(projectFolder, data.compositionId + '.avs', 'compositions');
+                        //create avisynth-file
+                        fs.writeFile(path, avsString, function (err) {
+                            //send to encoder
+                        });
+
+                    });
+                }
+
             });
         });
     });

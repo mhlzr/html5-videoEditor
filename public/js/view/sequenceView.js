@@ -18,22 +18,31 @@ define(["jquery", 'underscore', "backbone", 'device', 'config', 'jquery-ui', 'jq
         initialize : function () {
             "use strict";
 
-            _.bindAll(this, 'dblclickHandler', 'clickHandler', 'mouseResizeHandler');
+            _.bindAll(this, 'dblclickHandler', 'clickHandler', 'mouseResizeHandler', 'updateCSS');
 
             this.asset = this.model.getAsset();
-            this.$el.css({
-                'width'   : this.model.get('width') * this.model.get('scale'),
-                'height'  : this.model.get('height') * this.model.get('scale'),
-                'left'    : this.model.get('x'),
-                'top'     : this.model.get('y'),
-                'z-index' : this.model.get('index')
-            });
+
+            this.model.on('change:stack', this.updateCSS);
+
+            this.updateCSS();
         },
 
         events : {
             'dblclick' : 'dblclickHandler',
             'click'    : 'clickHandler',
             'dragmove' : 'positionChangeHandler'
+        },
+
+        updateCSS : function () {
+            "use strict";
+
+            this.$el.css({
+                'width'   : this.model.get('width') * this.model.get('scale'),
+                'height'  : this.model.get('height') * this.model.get('scale'),
+                'left'    : this.model.get('x'),
+                'top'     : this.model.get('y'),
+                'z-index' : 1000 - this.model.get('stack') // inverse stacking
+            });
         },
 
         render : function () {
@@ -43,8 +52,8 @@ define(["jquery", 'underscore', "backbone", 'device', 'config', 'jquery-ui', 'jq
 
             if (this.asset.get('type') === 'video') {
                 this.video = document.createElement('video');
-                this.canvas = document.createElement('canvas');
-                this.ctx = this.canvas.getContext('2d');
+                //this.canvas = document.createElement('canvas');
+                // this.ctx = this.canvas.getContext('2d');
 
 
                 //mouse-controls
@@ -69,15 +78,12 @@ define(["jquery", 'underscore', "backbone", 'device', 'config', 'jquery-ui', 'jq
 
                 //Load the video
                 this.video.src = this.asset.getCompatibleMediaUrl();
+                this.video.load();
                 this.$el.append(this.video);
 
 
             }
 
-
-            //Debug
-            this.ctx.fillStyle = 'red';
-            this.ctx.fillRect(0, 0, 100, 100);
 
             //TODO how does a sequence get rendered
             //get video file/url
@@ -91,6 +97,7 @@ define(["jquery", 'underscore', "backbone", 'device', 'config', 'jquery-ui', 'jq
         update : function (frame, fps) {
             "use strict";
 
+            console.log(frame);
 
             if (this.isPlaying) return;
             /* Video States
@@ -105,12 +112,8 @@ define(["jquery", 'underscore', "backbone", 'device', 'config', 'jquery-ui', 'jq
             //TODO seekable timerange check
 
             //Video can be seeked
-            if (this.video.readyState === this.video.HAVE_FUTURE_DATA ||
-                this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
-
-
-                this.video.currentTime = (frame - this.model.get('position')) / fps;
-
+            if (this.video.readyState >= this.video.HAVE_ENOUGH_DATA) {
+                this.video.currentTime = this.model.get('inFrame') + ((frame - this.model.get('position')) / fps);
             }
 
         },

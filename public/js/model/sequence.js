@@ -20,7 +20,7 @@ define(['backbone', 'backbone-rel'],
                 height   : 0,
                 scale    : 1.0,
                 rotation : 0,
-                index    : 0,
+                stack    : 0,
                 position : 0,
                 inFrame  : 0,
                 outFrame : 0,
@@ -35,6 +35,9 @@ define(['backbone', 'backbone-rel'],
 
             initialize : function () {
                 this.on('change', this.changeHandler);
+
+                //default outFrame is last frame
+                this.set('outFrame', this.get('duration') * this.get('fps'), {silent : true});
             },
 
             getAsset : function () {
@@ -49,7 +52,40 @@ define(['backbone', 'backbone-rel'],
                 //no need to resave here
                 if (this.hasChanged('id')) return;
 
+                if (this.hasChanged('inFrame') || this.hasChanged('outFrame')) {
+                    this.set('duration', ~~((this.get('outFrame') - this.get('inFrame')) / this.get('fps')));
+                    console.log(this.get('duration'));
+                }
+
                 this.save();
+
+            },
+
+            parse : function (res) {
+                "use strict";
+                if (!_.isEmpty(res)) {
+                    return res;
+                }
+            },
+
+            resetToDefaults : function () {
+                "use strict";
+
+                var asset = this.getAsset();
+
+                this.set({
+                    name     : asset.get('name'),
+                    type     : asset.get('type'),
+                    duration : asset.get('duration'),
+                    x        : 0,
+                    y        : 0,
+                    width    : asset.get('width'),
+                    height   : asset.get('height'),
+                    fps      : asset.get('fps'),
+                    outFrame : asset.get('duration') * asset.get('fps'),
+                    inFrame  : 0,
+                    position : 0
+                })
 
             }
 

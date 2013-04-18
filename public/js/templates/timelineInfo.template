@@ -1,4 +1,4 @@
-<div class="layerInfo" data-id="{{this.id}}">
+<div class="layerInfo" data-id="{{this.id}}" data-stack="{{this.stack}}">
     <span contenteditable>{{this.name}}</span>
     <button class="remove" data-cmd="remove" title="Remove sequence"></button>
     <button class="undo" data-cmd="reset" title="Reset sequence"></button>

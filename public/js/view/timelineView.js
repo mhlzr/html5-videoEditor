@@ -38,7 +38,7 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                 'click #timescale'        : 'timescaleClickHandler',
                 'click .layerInfo button' : 'buttonClickHandler',
 
-                'keyup div.layerInfo .span' : 'layerInfoNameChangeHandler'
+                'keyup .layerInfo span' : 'layerInfoNameChangeHandler'
                 // 'keydown'                   : 'keydownHandler'
             },
 
@@ -70,7 +70,7 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                     pos = parseInt($el.css('left').replace('px', ''));
 
                 //store the changes to the model
-                if(!id) return;
+                if (!id) return;
                 this.model.get('sequences').get(id).set('position', pos / Config.GUI_TIMELINE_PIXEL_PER_FRAME | 0);
 
             },
@@ -99,7 +99,12 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
 
             layerInfoNameChangeHandler : function (e) {
                 "use strict";
-                console.log(e.target);
+                var $target = $(e.target),
+                    id = $target.parent().data('id'),
+                    name = $target.text(),
+                    seq = this.model.get('sequences').get(id);
+
+                seq.set('name', name);
             },
 
 
@@ -127,7 +132,7 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                     $infoContainer = this.$('#layerInfoContainer'),
                     totalWidth = this.model.getTotalFrames() * Config.GUI_TIMELINE_PIXEL_PER_FRAME,
                     fps = this.model.get('fps'),
-                    fpsScaleFactor = fps / (sequence.get('fps') > 0  ? sequence.get('fps') : 1),
+                    fpsScaleFactor = fps / (sequence.get('fps') > 0 ? sequence.get('fps') : 1),
                     data;
 
                 data = _.extend(sequence.toJSON(), {
@@ -145,7 +150,6 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                     $layerContainer.append(TimelineLayerTemplate(data));
                     $infoContainer.append(TimelineInfoTemplate(data));
                 }
-
             },
 
             render : function () {
@@ -255,23 +259,31 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                 "use strict";
 
                 var $target = $(e.target),
-                    id = $target.parent().attr("data-id"),
+                    $parent = $target.parent(),
+                    id = $parent.attr("data-id"),
                     cmd = $target.attr("data-cmd"),
                     sequences = this.model.get('sequences'),
-                    sequence = sequences.get(id);
+                    sequencesAmount = sequences.length - 1,
+                    sequence = sequences.get(id),
+                    stack = parseInt(sequence.get('stack'), 10);
 
 
                 switch (cmd) {
 
-
                     case 'up' :
+                        if (stack > 0) {
+                            this.swapSequences(stack, stack - 1);
+                        }
                         break;
 
                     case 'down' :
+                        if (stack < sequencesAmount) {
+                            this.swapSequences(stack, stack + 1);
+                        }
                         break;
 
                     case 'reset' :
-                        sequences.remove(sequence);
+                        sequence.resetToDefaults();
                         break;
 
                     case 'remove' :
@@ -281,6 +293,41 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
 
                 }
 
+
+            },
+
+            swapSequences : function (sourceStack, targetStack) {
+                "use strict";
+                var sequences = this.model.get('sequences'),
+                    $sourceInfo = this.$('.layerInfo[data-stack="' + sourceStack + '"]'),
+                    $sourceLayer = this.$('.layer[data-stack="' + sourceStack + '"]'),
+                    sourceSeqId = $sourceInfo.attr('data-id'),
+                    sourceSeq = sequences.get(sourceSeqId),
+                    $targetInfo = this.$('.layerInfo[data-stack="' + targetStack + '"]'),
+                    $targetLayer = this.$('.layer[data-stack="' + targetStack + '"]'),
+                    targetSeqId = $targetInfo.attr('data-id'),
+                    targetSeq = sequences.get(targetSeqId);
+
+                if (sourceStack > targetStack) {
+                    $sourceInfo.insertBefore($targetInfo);
+                    $sourceLayer.insertBefore($targetLayer);
+                }
+                else {
+                    $sourceInfo.insertAfter($targetInfo);
+                    $sourceLayer.insertAfter($targetLayer);
+                }
+
+                //just to make sure even if i gets rerendered
+                $sourceInfo.attr('data-stack', targetStack);
+                $sourceLayer.attr('data-stack', targetStack);
+                $targetInfo.attr('data-stack', sourceStack);
+                $targetLayer.attr('data-stack', sourceStack);
+
+                sourceSeq.set('stack', targetStack);
+                targetSeq.set('stack', sourceStack);
+
+                this.renderSequence(sourceSeq);
+                this.renderSequence(targetSeq);
 
             },
 
@@ -335,7 +382,7 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
 
             keydownHandler : function (e) {
                 "use strict";
-
+                //TODO control playback via keys
             },
 
             highlight : function () {

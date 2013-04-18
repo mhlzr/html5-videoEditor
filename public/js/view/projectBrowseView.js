@@ -176,7 +176,7 @@ define(['underscore', 'backbone', 'jquery', 'hbs!templates/projectBrowser', 'mod
                         self.model = new ProjectModel();
 
                         //remove from DOM, without rerendering
-                        $parent.remove();
+                        $parent.delay(300).remove();
 
                         //check if there are any projects left
                         if (self.$el.find('li').length < 1) {

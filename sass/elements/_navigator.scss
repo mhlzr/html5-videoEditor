@@ -96,6 +96,7 @@
 
       &.active {
         @include toolbarHover;
+        font-weight: bold;
       }
       &:hover {
         @include toolbarHover;

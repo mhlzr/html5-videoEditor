@@ -138,7 +138,10 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 //Asset Drop into Composition --> Create Sequence
                 if (app.currentComposition && type === 'asset') {
 
-                    var asset = app.project.get('library').get(id);
+                    var asset = app.project.get('library').get(id),
+                        sequences = app.currentComposition.get('sequences'),
+                        index = sequences.length;
+
                     //generate new sequence and add it to current composition
                     sequence = new SequenceModel({
                             assetId       : id,
@@ -148,14 +151,14 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                             duration      : asset.get('duration'),
                             width         : asset.get('width'),
                             height        : asset.get('height'),
+                            stack         : index,
                             fps           : asset.get('fps'),
                             position      : 0
                         }
-                    )
-                    ;
+                    );
 
                     sequence.save(null, {success : function () {
-                        app.currentComposition.get('sequences').add(sequence);
+                        sequences.add(sequence);
                     }});
 
                 }

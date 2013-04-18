@@ -47,7 +47,6 @@ define(["jquery", 'underscore', "backbone", 'device', 'config', 'jquery-ui', 'jq
 
         render : function () {
             "use strict";
-
             if (!this.model || !this.asset) return this;
 
             if (this.asset.get('type') === 'video') {
@@ -97,9 +96,9 @@ define(["jquery", 'underscore', "backbone", 'device', 'config', 'jquery-ui', 'jq
         update : function (frame, fps) {
             "use strict";
 
-            console.log(frame);
-
             if (this.isPlaying) return;
+
+
             /* Video States
              HAVE_NOTHING (0) No data available
              HAVE_METADATA (1) Duration and dimensions are available
@@ -112,8 +111,8 @@ define(["jquery", 'underscore', "backbone", 'device', 'config', 'jquery-ui', 'jq
             //TODO seekable timerange check
 
             //Video can be seeked
-            if (this.video.readyState >= this.video.HAVE_ENOUGH_DATA) {
-                this.video.currentTime = this.model.get('inFrame') + ((frame - this.model.get('position')) / fps);
+            if (this.video && this.video.readyState >= this.video.HAVE_ENOUGH_DATA) {
+                this.video.currentTime = this.model.get('inFrame') / fps + ((frame - this.model.get('position')) / fps);
             }
 
         },

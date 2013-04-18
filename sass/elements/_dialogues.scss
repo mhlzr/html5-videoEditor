@@ -268,7 +268,7 @@
   background-color: $bodyBackgroundColor;
   visibility: hidden;
   position: absolute;
-  z-index: 101;
+  z-index: 1001;
   padding: 30px;
   @include border-radius(5px);
   @include box-shadow(0 0 10px rgba(0, 0, 0, .4));

@@ -30,6 +30,7 @@ define(['backbone'],
                                     app.device.saveProjectToLocalStorage(app.project.id, app.project.get('title'), app.project.get('date'));
 
                                     app.project.get('library').fetch({'data' : { 'id' : app.project.id }, 'success' : function () {
+
                                         app.project.get('compositions').fetch({'data' : { 'id' : app.project.id }, 'success' : function () {
                                             app.views.renderAll();
 

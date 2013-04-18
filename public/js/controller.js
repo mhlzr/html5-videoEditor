@@ -55,7 +55,12 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
 
                 //Drag And Drop Events
                 //native Drop-Event for File-Drops
-                $('#library').on('drop', this.libraryFileDropHandler);
+                var library = $('#library')[0];
+                library.addEventListener("dragenter", this.libraryFileDropHandler, false);
+                library.addEventListener("dragexit", this.libraryFileDropHandler, false);
+                library.addEventListener("dragover", this.libraryFileDropHandler, false);
+                library.addEventListener("drop", this.libraryFileDropHandler, false);
+
                 //jquery++ dnd events
                 $('#stage').on('dropon', this.stageDropHandler);
 
@@ -101,7 +106,9 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                 e.stopPropagation();
                 e.preventDefault();
 
-                var files = e.originalEvent.dataTransfer.files;
+                if(e.type !== 'drop') return;
+
+                var files = e.dataTransfer.files;
                 _.each(files, function (file) {
                     app.controller.createFileAssetRelation(file);
                 })
@@ -365,6 +372,12 @@ define(['jquery', 'underscore', 'config', 'device', 'info', 'model/asset', 'mode
                             app.views.composition.togglePlayPause();
                             app.views.timeline.togglePlayPause();
                             $(this).toggleClass('pause play');
+                        }
+                        break;
+                    case 'cutButton' :
+                        if (app.views.timeline && app.views.timeline.currentSequence) {
+                            app.controller.showDialogue('sequenceCut', app.views.timeline.currentSequence.model);
+                            app.views.timeline.highlight();
                         }
                         break;
                     case 'shareProject' :

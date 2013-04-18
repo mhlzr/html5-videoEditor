@@ -28,6 +28,11 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
             var $target = $(e.target),
                 fps = this.model.get('fps') | 0;
 
+            if ($target.hasClass('close')) {
+                this.destroy();
+                return;
+            }
+
             switch ($target.attr('data-cmd')) {
                 case 'frameRewind' :
                     this.rewind(1);
@@ -60,7 +65,6 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
                 case 'frameOut' :
                     this.setMarker('outFrame');
                     break;
-
 
             }
         },
@@ -105,7 +109,6 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
                 current = this.video.currentTime,
                 currentMarkerPosition = fps * current;
 
-            console.log(currentMarkerPosition, this.model.get('inFrame'), this.model.get('outFrame'));
             if (type === 'inFrame' && currentMarkerPosition > this.model.get('outFrame')) {
                 window.alert('inMarker can\'t be higher than outMarker');
             }
@@ -121,6 +124,13 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
         isReady : function () {
             "use strict";
             return this.video.readyState === this.video.HAVE_FUTURE_DATA || this.video.readyState === this.video.HAVE_ENOUGH_DATA;
+        },
+
+        destroy : function () {
+            "use strict";
+            this.video.pause();
+            delete(this.video);
+            this.$el.remove();
         }
 
     });

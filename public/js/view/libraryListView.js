@@ -66,10 +66,6 @@ define(['jquery', 'underscore', 'backbone', 'view/assetListElementView', 'jquery
                     drag.ghost();
                 },
 
-                comparator : function (asset) {
-                    //return asset.get('name');
-                },
-
                 renderAssetView : function (asset) {
 
                     //without an id the asset shouldn't be rendered

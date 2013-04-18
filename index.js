@@ -269,8 +269,8 @@ io.sockets.on('connection', function (socket) {
         //get composition by id
         manager.compositions.read({_id : data.compositionId }, function onFound(err, docs) {
 
-            settings.width = docs.width * docs.scale | 0;
-            settings.height = docs.height * docs.scale | 0;
+            settings.width = docs.width | 0;
+            settings.height = docs.height  | 0;
             settings.fps = docs.fps;
             settings.duration = docs.duration;
             settings.fileName = docs.name + '.' + data.format.ext;

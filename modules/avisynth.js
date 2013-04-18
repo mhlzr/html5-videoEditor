@@ -11,8 +11,6 @@ exports.createAVSFromComposition = function (comp) {
         return seq.index;
     });
 
-    comp.seqs = comp.seqs.reverse();
-
     var avs = [];
 
     //LoadingPlugins

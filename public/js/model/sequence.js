@@ -37,7 +37,9 @@ define(['backbone', 'backbone-rel'],
                 this.on('change', this.changeHandler);
 
                 //default outFrame is last frame
-                this.set('outFrame', this.get('duration') * this.get('fps'), {silent : true});
+                if (this.get('outFrame') === 0) {
+                    this.set('outFrame', this.get('duration') | 0, {silent : true});
+                }
             },
 
             getAsset : function () {
@@ -54,19 +56,12 @@ define(['backbone', 'backbone-rel'],
 
                 if (this.hasChanged('inFrame') || this.hasChanged('outFrame')) {
                     this.set('duration', ~~((this.get('outFrame') - this.get('inFrame')) / this.get('fps')));
-                    console.log(this.get('duration'));
                 }
 
                 this.save();
 
             },
 
-            parse : function (res) {
-                "use strict";
-                if (!_.isEmpty(res)) {
-                    return res;
-                }
-            },
 
             resetToDefaults : function () {
                 "use strict";

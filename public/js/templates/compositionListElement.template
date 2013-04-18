@@ -6,7 +6,7 @@
 
     <div class="status">{{this.status}}</div>
 
-    <progress max="100" value="100"></progress>
+    <progress max="100" value="{{this.progress}}"></progress>
 
     <div class="info">
         <span class="resolution">{{this.width}}x{{this.height}}</span>
@@ -18,7 +18,7 @@
             <button class="settings" data-cmd="settings" disabled></button>
             <button class="share" data-cmd="share" disabled></button>
             <button class="encode" data-cmd="encode"></button>
-            <button class="download" data-cmd="download" disabled></button>
+            <button class="download" data-cmd="download" {{#unless_eq this.status compare='Encoded'}}disabled{{/unless_eq}}></button>
         </div>
     </div>
 </div>

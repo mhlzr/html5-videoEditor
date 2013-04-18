@@ -65,6 +65,12 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
                 case 'frameOut' :
                     this.setMarker('outFrame');
                     break;
+                case 'jumpToOut' :
+                    this.jumpTo(this.model.get('outFrame'));
+                    break;
+                case 'jumpToIn' :
+                    this.jumpTo(this.model.get('inFrame'));
+                    break;
 
             }
         },
@@ -107,16 +113,39 @@ define(['jquery', 'underscore', 'backbone', 'hbs!templates/sequenceCut'], functi
             "use strict";
             var fps = this.model.get('fps'),
                 current = this.video.currentTime,
-                currentMarkerPosition = fps * current;
+                currentMarkerPosition = fps * current | 0;
 
-            if (type === 'inFrame' && currentMarkerPosition > this.model.get('outFrame')) {
+            if ((type === 'outFrame' && this.model.get('inFrame') === currentMarkerPosition) ||
+                (type === 'inFrame' && this.model.get('outFrame') === currentMarkerPosition)) {
+                window.alert('inMarker can\'t be the same as outMarker');
+            }
+            else if (type === 'inFrame' && currentMarkerPosition > this.model.get('outFrame')) {
                 window.alert('inMarker can\'t be higher than outMarker');
             }
             else if (type === 'outFrame' && currentMarkerPosition < this.model.get('inFrame')) {
                 window.alert('outMarker can\'t be lower than inMarker');
             }
             else {
-                this.model.set(type, currentMarkerPosition | 0);
+                this.model.set(type, currentMarkerPosition);
+                //update view
+                this.updateMarkerButtons();
+            }
+
+        },
+
+        updateMarkerButtons : function () {
+            "use strict";
+            var $in = this.$('button[data-cmd="jumpToIn"]'),
+                $out = this.$('button[data-cmd="jumpToOut"]');
+
+            $in.text('Go to In-Marker (' + this.model.get('inFrame') + ')');
+            $out.text('Go to Out-Marker (' + this.model.get('outFrame') + ')');
+        },
+
+        jumpTo : function (frame) {
+            "use strict";
+            if (this.isReady()) {
+                this.video.currentTime = frame / this.model.get('fps');
             }
 
         },

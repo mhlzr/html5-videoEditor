@@ -38,6 +38,9 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
                 'click #timescale'        : 'timescaleClickHandler',
                 'click .layerInfo button' : 'buttonClickHandler',
 
+                'click .layerInfo' : 'layerClickHandler',
+                'click .layer'     : 'layerClickHandler',
+
                 'keyup .layerInfo span' : 'layerInfoNameChangeHandler'
                 // 'keydown'                   : 'keydownHandler'
             },
@@ -383,6 +386,21 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
             keydownHandler : function (e) {
                 "use strict";
                 //TODO control playback via keys
+            },
+
+            layerClickHandler : function (e) {
+                "use strict";
+                var $target = $(e.target),
+                    id;
+
+                while (!$target.attr('data-id')) {
+                    $target = $target.parent();
+                }
+
+                id = $target.attr('data-id');
+
+                //TODO highlight sequence on stage
+
             },
 
             highlight : function () {

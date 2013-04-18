@@ -174,6 +174,16 @@
         width: 100%;
       }
 
+      .info{
+        margin: 10px auto;
+        clear: both;
+        text-align: center;
+
+        button{
+          @include sassy-button("simple", 3px, 16px, $acceptColor);
+        }
+      }
+
       .buttonbar {
         clear: both;
         width: 305px;

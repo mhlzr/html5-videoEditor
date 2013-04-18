@@ -7,7 +7,10 @@
     <div class="video"></div>
 
     <div class="controls">
-
+        <div class="info">
+            <button data-cmd="jumpToIn">Go to In-Marker ({{this.inFrame}})</button>
+            <button data-cmd="jumpToOut">Go to Out-Marker ({{ this.outFrame}})</button>
+        </div>
         <div class="buttonbar">
             <button class="frameRewind" data-cmd="frameRewind"></button>
             <button class="framePrev" data-cmd="framePrev"></button>

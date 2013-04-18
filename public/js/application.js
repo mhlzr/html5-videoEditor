@@ -140,7 +140,7 @@ define([
             app.views.projectInfo.render();
 
             app.views.renderAll = function () {
-                console.log('APPLICATION.JS::RENDERING ALL VIEWS');
+
                 _.each(app.views, function (obj, key) {
                     if (_.isFunction(obj)) return;
                     if (_.isObject(obj)) obj.render();

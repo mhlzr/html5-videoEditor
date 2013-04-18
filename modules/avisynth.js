@@ -30,7 +30,7 @@ exports.createAVSFromComposition = function (comp) {
         //Index file
         avs.push('FFIndex("' + relFilePath + '")');
 
-        avs.push('stream' + i + ' = AudioDub( FFVideoSource("' + relFilePath + '"), FFAudioSource("' + relFilePath + '")).ChangeFPS(' + comp.fps + ').BilinearResize(' + comp.seqs[i].width + ',' + comp.seqs[i].height + ').Trim(' + comp.seqs[i].inFrame * comp.fps + ',-' + (comp.seqs[i].duration * comp.fps) + ')');
+        avs.push('stream' + i + ' = AudioDub( FFVideoSource("' + relFilePath + '"), FFAudioSource("' + relFilePath + '")).ChangeFPS(' + comp.fps + ').BilinearResize(' + comp.seqs[i].width + ',' + comp.seqs[i].height + ').Trim(' + comp.seqs[i].inFrame + ',-' + (comp.seqs[i].outFrame) + ')');
 
         //Stacking the videos
         avs.push('o' + i + ' = ' + ((i == 0) ? 'base' : ('o' + (i - 1).toString())) + '.AddVideo(stream' + i + ', ' + comp.seqs[i].position + ', ' + ((comp.seqs[i].position + comp.seqs[i].duration) * comp.fps).toString() + ', ' + comp.seqs[i].x + ', ' + comp.seqs[i].y + ')');

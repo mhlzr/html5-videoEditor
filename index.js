@@ -61,6 +61,22 @@ app.get(new RegExp(/^\/preview\/([0-9a-fA-F]{32}$)/), function (req, res) {
 
 });
 
+/**
+ * ROUTE FOR DOWNLOADING VIDEO
+ */
+app.get(new RegExp(/^\/projects\/.*\/compositions\/\S*|\s*/), function (req, res) {
+    //there are currently only mp4s to download
+    var filePath = __dirname + '/public/' + req.url + '.mp4';
+    fs.exists(filePath, function (exists) {
+        if (exists) {
+            res.download(filePath);
+        } else {
+            res.writeHead(404);
+            res.end('Done!');
+        }
+    });
+
+});
 
 /**
  * CLEAR ALL DATA
@@ -71,7 +87,6 @@ app.get('/reset', function onReset(req, res) {
         res.end('Done!');
     });
 });
-
 
 /**
  * Everything else is a 404
@@ -259,6 +274,8 @@ io.sockets.on('connection', function (socket) {
             settings.fps = docs.fps;
             settings.duration = docs.duration;
             settings.fileName = docs.name + '.' + data.format.ext;
+            settings.projectId = data.projectId;
+            settings.compositionId = data.compositionId;
 
             //get all sequences that are used in the composition
             manager.sequences.getSequencesByCompositionId({id : data.compositionId}, function onFound(err, seqs) {
@@ -303,6 +320,10 @@ io.sockets.on('connection', function (socket) {
                         //create avisynth-file
                         fs.writeFile(path, avsString, function (err) {
                             //send to encoder
+                            settings.avsPath = path;
+
+                            encoder.addEncodingJob(settings);
+                            encoder.start();
                         });
 
                     });
@@ -335,16 +356,29 @@ io.sockets.on('connection', function (socket) {
 
     });
 
-    /*
-     encoder.on('encoding:complete', function onEncodingComplete() {
+    encoder.on('encoding:progress', function onEncodingProgress(event) {
+        socket.emit('composition/' + event.compositionId + ':update', {
+            encodingProgress : event.encodingProgress,
+            isComplete       : event.isComplete
+        });
 
-     });
-     encoder.on('encoding:progress', function onEncodingProgress() {
-     */
+        if (event.isComplete) {
+
+            //TODO get filesize from disk
+            //save to db
+            //TODO file reference
+            /*
+             manager.compositions.update({id : event.compositionId, status : 'Encoded', files : [] }, function onUpdated(err) {
+             if (err) throw err;
+             });
+             */
+
+        }
+
+    });
+
 })
 ;
 
 
 app.listen(80);
-
-

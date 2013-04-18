@@ -32,7 +32,7 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
             ],
 
             idAttribute : '_id',
-            url         : 'composition',
+            urlRoot     : 'composition',
 
             defaults : {
                 _id       : null,
@@ -49,13 +49,14 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
                 scale     : 1.0,
                 status    : 'Unencoded', //Unencoded, Encoding, Encoded
                 rotation  : 0,
-                publicId  : null //will be set server-side
+                publicId  : null, //will be set server-side,
+                progress  : 0
             },
 
             initialize : function () {
                 "use strict";
 
-                _.bindAll(this, 'sequenceAddedHandler', 'destroyHandler');
+                _.bindAll(this, 'sequenceAddedHandler', 'destroyHandler', 'initServerUpdateListener', 'serverUpdateHandler', 'sequenceChangeHandler');
 
                 this.on('change:durationH', this.calculateDuration);
                 this.on('change:durationM', this.calculateDuration);
@@ -64,6 +65,7 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
                 this.on('change:height', this.calculateRatio);
 
                 this.get('sequences').on('add', this.sequenceAddedHandler);
+                this.get('sequences').on('change', this.sequenceChangeHandler);
 
                 this.on('destroy', this.destroyHandler);
 
@@ -84,7 +86,7 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
             },
 
             initServerUpdateListener : function () {
-                //TODO
+                this.ioBind('update', app.socket, this.serverUpdateHandler, this);
             },
 
             calculateDuration : function () {
@@ -115,8 +117,8 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
 
             sendEncodingRequest : function () {
                 "use strict";
-                //TODO remove comment
-               // if (this.get('status') === 'Encoding') return;
+
+                if (this.get('status') === 'Encoding') return;
 
                 app.socket.emit('encode', {
                     'projectId'     : app.project.id,
@@ -125,6 +127,20 @@ define(['underscore', 'backbone', 'backbone-rel', 'model/sequence', 'model/file'
                 });
 
                 this.set('status', 'Encoding');
+            },
+
+            serverUpdateHandler : function (data) {
+                this.set('progress', data.encodingProgress);
+
+                if (data.isComplete) {
+                    this.set('status', 'Encoded');
+                    this.save();
+                }
+            },
+
+            sequenceChangeHandler : function () {
+                "use strict";
+                this.set('status', 'Unencoded');
             },
 
             destroyHandler : function () {

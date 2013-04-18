@@ -15,7 +15,7 @@ define(["jquery", "backbone", 'underscore', 'utils', 'config', 'hbs!templates/ti
 
             initialize : function () {
                 "use strict";
-                _.bindAll(this, 'playheadChangeHandler', 'render', 'sequenceAddedHandler', 'sequenceRemovedHandler', 'sequenceChangedHandler');
+                _.bindAll(this, 'playheadChangeHandler', 'render', 'sequenceAddedHandler', 'sequenceRemovedHandler', 'sequenceChangedHandler', 'dragEndLayerBarHandler');
 
                 this.model.get('sequences').on('add', this.sequenceAddedHandler);
                 this.model.get('sequences').on('remove', this.sequenceRemovedHandler);

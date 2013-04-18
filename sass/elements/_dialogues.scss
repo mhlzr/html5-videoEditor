@@ -162,6 +162,7 @@
     video {
       max-width: 100%;
       height: auto;
+      max-height: 450px;
     }
   }
 
@@ -174,12 +175,12 @@
         width: 100%;
       }
 
-      .info{
+      .info {
         margin: 10px auto;
         clear: both;
         text-align: center;
 
-        button{
+        button {
           @include sassy-button("simple", 3px, 16px, $acceptColor);
         }
       }

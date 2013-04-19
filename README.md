@@ -9,6 +9,8 @@ Right now it allows you to load videos into the browser, they get automatically 
 Then you can  create a composition (=new video), copy videos to the stage, trim them, transform them, stack them and then finally encode them on the server-side using [AviSynth](http://www.avisynth.org) and [ffmpeg](http://www.ffmpeg.org)
 Currently each encoding job will produce a H264 encoded video.
 
+![Alt text](/screenshot.jpg "Screenshot")
+
 Installation
 ------------
 
@@ -19,6 +21,7 @@ For the application you will need the following on the server-side (where the no
 * ffmpeg
 * avisynth
 * mongodb
+
 
 License
 -------
